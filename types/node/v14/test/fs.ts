@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import assert = require('assert');
-import * as util from 'util';
-import * as url from 'url';
+import * as fs from 'node:fs';
+import assert = require('node:assert');
+import * as util from 'node:util';
+import * as url from 'node:url';
 
 {
     fs.writeFile("thebible.txt",
@@ -347,6 +347,22 @@ async function testPromisify() {
         await fs.promises.rmdir('some/test/file', { recursive: true, maxRetries: 123, retryDelay: 123 });
     } catch (e) {}
 })();
+
+{
+    fs.open('test', (err, fd) => {});
+    fs.open('test', 'r', (err, fd) => {});
+    fs.open('test', undefined, (err, fd) => {});
+    fs.open('test', 'r', 0o666, (err, fd) => {});
+    fs.open('test', 'r', undefined, (err, fd) => {});
+}
+
+async () => {
+    await fs.promises.open('test');
+    await fs.promises.open('test', 'r');
+    await fs.promises.open('test', undefined);
+    await fs.promises.open('test', 'r', 0o666);
+    await fs.promises.open('test', 'r', undefined);
+};
 
 {
     fs.opendir('test', async (err, dir) => {

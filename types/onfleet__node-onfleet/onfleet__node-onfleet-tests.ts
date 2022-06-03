@@ -34,9 +34,20 @@ const testAddress = {
 
 async function testTasks(onfleet: Onfleet) {
     // test tasks.get
-    await onfleet.tasks.get('fake_task_id');
-    await onfleet.tasks.get({ from: 1455072025000 });
-    await onfleet.tasks.get({ from: 145507202500, lastId: 'fake_task_id' });
+    const task = await onfleet.tasks.get('fake_task_id');
+    // test tasks.get GetTaskResult props
+    task.estimatedCompletionTime;
+    task.eta;
+    task.trackingViewed;
+
+    const result = await onfleet.tasks.get({ from: 1455072025000 });
+    for (const resultTask of result.tasks) {
+        resultTask.pickupTask;
+        resultTask.eta;
+    }
+    if (result.lastId) {
+        await onfleet.tasks.get({ from: 1455072025000, lastId: result.lastId });
+    }
     await onfleet.tasks.get('fake_task_id', 'shortId');
 
     // test tasks.create

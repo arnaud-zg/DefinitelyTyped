@@ -11,6 +11,8 @@ import SwaggerUI from 'swagger-ui-react';
         }}
         defaultModelExpandDepth={-1}
         defaultModelsExpandDepth={-1}
+        defaultModelRendering={"model"}
+        queryConfigEnabled={true}
         plugins={[
             {
                 components: {
@@ -21,6 +23,14 @@ import SwaggerUI from 'swagger-ui-react';
         supportedSubmitMethods={[]}
         deepLinking
         showMutatedRequest={false}
+        showExtensions={true}
+        presets={[]}
+        filter={true}
+        requestSnippetsEnabled={true}
+        requestSnippets={{}}
         tryItOutEnabled={true}
+        displayRequestDuration={true}
+        persistAuthorization={true}
+        withCredentials={true}
     />
 </div>;

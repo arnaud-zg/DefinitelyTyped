@@ -29,6 +29,7 @@ DateTime.utc({ locale: 'en-US' }); // $ExpectType DateTime
 DateTime.utc(2018, 5, 31, 23, { numberingSystem: 'arabext' }); // $ExpectType DateTime
 DateTime.utc(2019, { locale: 'en-GB' }, 5); // $ExpectError
 DateTime.isDateTime(0 as unknown); // $ExpectType boolean
+new DateTime(); // $ExpectError
 
 const dt = DateTime.local(2017, 5, 15, 8, 30);
 
@@ -83,13 +84,16 @@ DateTime.local().toString(); // => '2017-09-14T03:20:34.091-04:00'
 
 const getters = DateTime.local();
 getters.year; // $ExpectType number
-getters.month; // $ExpectType number
-getters.day; // $ExpectType number
-getters.second; // $ExpectType number
-getters.weekday; // $ExpectType number
+getters.month; // $ExpectType MonthNumbers
+getters.day; // $ExpectType DayNumbers
+getters.minute; // $ExpectType SecondNumbers
+getters.second; // $ExpectType SecondNumbers
+getters.weekday; // $ExpectType WeekdayNumbers
 getters.zoneName; // $ExpectType string
 getters.offset; // $ExpectType number
-getters.daysInMonth; // $ExpectType number
+getters.daysInMonth; // $ExpectType PossibleDaysInMonth
+getters.daysInYear; // $ExpectType PossibleDaysInYear
+getters.weeksInWeekYear; // $ExpectType PossibleWeeksInYear
 getters.ordinal; // $ExpectType number
 getters.isInLeapYear; // $ExpectType boolean
 
@@ -122,9 +126,11 @@ dt.toSQL({ includeOffset: false, includeZone: true }); // $ExpectType string
 dt.toSQLDate(); // $ExpectType string
 dt.toSQLTime(); // $ExpectType string
 dt.toSQLTime({ includeOffset: false, includeZone: true }); // $ExpectType string
+dt.toSQLTime({ includeOffsetSpace: false, includeZone: true }); // $ExpectType string
 dt.valueOf(); // $ExpectType number
 dt.toObject(); // $ExpectType ToObjectOutput
 dt.toObject({ includeConfig: true }); // $ExpectType ToObjectOutput
+dt.toUnixInteger(); // $ExpectType number
 
 // $ExpectType string | null
 dt.toRelative({
@@ -168,7 +174,7 @@ dt.offsetNameLong; // $ExpectType string
 dt.isOffsetFixed; // $ExpectType boolean
 dt.isInDST; // $ExpectType boolean
 
-dt.set({ hour: 3 }).hour; // $ExpectType number
+dt.set({ hour: 3 }).hour; // $ExpectType HourNumbers
 
 const f: { month: 'long'; day: 'numeric' } = { month: 'long', day: 'numeric' };
 dt.setLocale('fr').toLocaleString(f);
@@ -202,6 +208,7 @@ Duration.fromDurationLike({ hours: 1 }); // $ExpectType Duration
 Duration.fromDurationLike(1000); // $ExpectType Duration
 Duration.fromDurationLike(dur); // $ExpectType Duration
 Duration.fromDurationLike(''); // $ExpectError
+new Duration({ hour: 2, minute: 7 }); // $ExpectError
 dt.plus(dur); // $ExpectType DateTime
 dt.plus({ quarters: 2, months: 1 }); // $ExpectType DateTime
 dur.hours; // $ExpectType number
@@ -246,6 +253,7 @@ i.divideEqually(5);
 if (Interval.isInterval(anything)) {
     anything; // $ExpectType Interval
 }
+new Interval(now, later); // $ExpectError
 Interval.invalid(); // $ExpectError
 Interval.invalid('code', 'because I said so'); // $ExpectType Interval
 Interval.isInterval(0 as unknown); // $ExpectType boolean

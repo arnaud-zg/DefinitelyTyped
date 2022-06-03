@@ -43,11 +43,15 @@ const backend = new ShareDB({
     milestoneDb: new MyMilestoneDB(),
     suppressPublish: false,
     maxSubmitRetries: 3,
+    errorHandler: (error, context) => {
+        console.log(error, context.agent.custom);
+    },
 });
 console.log(backend.db);
 backend.on('error', (error) => console.error(error));
 backend.on('send', (agent, context) => console.log(agent, context));
 backend.addListener('timing', (type, time, request) => console.log(type, new Date(time), request));
+backend.on('someCustomEvent', (arg0: string, arg1: number) => {});
 
 // getOps allows for `from` and `to` to both be `null`:
 // https://github.com/share/sharedb/blob/960f5d152f6a8051ed2dcb00a57681a3ebbd7dc2/README.md#getops
@@ -190,6 +194,21 @@ backend.use('readSnapshots', (context, callback) => {
     callback();
 });
 
+backend.use('receivePresence', (context, callback) => {
+    console.log(
+        context.presence.ch,
+        context.presence.id,
+    );
+});
+
+backend.use('sendPresence', (context, callback) => {
+    console.log(
+        context.presence.ch,
+        context.presence.id,
+    );
+    callback();
+});
+
 backend.on('submitRequestEnd', (error, request) => {
     console.log(request.op);
 });
@@ -214,6 +233,8 @@ doc.fetch((err) => {
         startServer();
     }
 });
+
+doc.create({foo: true}, 'http://sharejs.org/types/JSONv0');
 
 function startServer() {
     const server = http.createServer();

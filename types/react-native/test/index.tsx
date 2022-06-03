@@ -15,6 +15,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import {
     AccessibilityInfo,
+    ActionSheetIOS,
     AsyncStorage,
     Alert,
     AppState,
@@ -443,7 +444,7 @@ export class PressableTest extends React.Component<{}> {
     render() {
         return (
             <>
-                <Pressable ref={this.myRef} onPress={this.onPressButton} style={{ backgroundColor: 'blue' }}>
+                <Pressable ref={this.myRef} onPress={this.onPressButton} style={{ backgroundColor: 'blue' }} unstable_pressDelay={100}>
                     <View style={{ width: 150, height: 100, backgroundColor: 'red' }}>
                         <Text style={{ margin: 30 }}>Button</Text>
                     </View>
@@ -667,6 +668,10 @@ export class SectionListTest extends React.Component<SectionListProps<string>, {
                     )}
                     CellRendererComponent={cellRenderer}
                     maxToRenderPerBatch={5}
+                    ListFooterComponent={null}
+                    ListFooterComponentStyle={[{ padding: 8 }, [{ backgroundColor: 'transparent' }]]}
+                    ListHeaderComponent={null}
+                    ListHeaderComponentStyle={[{ padding: 8 }, [{ backgroundColor: 'transparent' }]]}
                 />
             </React.Fragment>
         );
@@ -739,6 +744,70 @@ export class SectionListTypedSectionTest extends React.Component<SectionListProp
                     }}
                     CellRendererComponent={cellRenderer}
                     maxToRenderPerBatch={5}
+                />
+
+                <SectionList
+                    ref={this.myList}
+                    sections={sections}
+                    renderSectionHeader={({ section }) => {
+                        section; // $ExpectType SectionListData<string, SectionT>
+
+                        return section.displayTitle ? (
+                            <View>
+                                <Text>{section.title}</Text>
+                            </View>
+                        ) : null;
+                    }}
+                    renderItem={info => {
+                        info; // $ExpectType SectionListRenderItemInfo<string, SectionT>
+
+                        return (
+                            <View>
+                                <Text>
+                                    {info.section.displayTitle ? <Text>{`${info.section.title} - `}</Text> : null}
+                                    <Text>{info.item}</Text>
+                                </Text>
+                            </View>
+                        );
+                    }}
+                    CellRendererComponent={cellRenderer}
+                    maxToRenderPerBatch={5}
+                    ListFooterComponent={null}
+                    ListFooterComponentStyle={null}
+                    ListHeaderComponent={null}
+                    ListHeaderComponentStyle={null}
+                />
+
+                <SectionList
+                    ref={this.myList}
+                    sections={sections}
+                    renderSectionHeader={({ section }) => {
+                        section; // $ExpectType SectionListData<string, SectionT>
+
+                        return section.displayTitle ? (
+                            <View>
+                                <Text>{section.title}</Text>
+                            </View>
+                        ) : null;
+                    }}
+                    renderItem={info => {
+                        info; // $ExpectType SectionListRenderItemInfo<string, SectionT>
+
+                        return (
+                            <View>
+                                <Text>
+                                    {info.section.displayTitle ? <Text>{`${info.section.title} - `}</Text> : null}
+                                    <Text>{info.item}</Text>
+                                </Text>
+                            </View>
+                        );
+                    }}
+                    CellRendererComponent={cellRenderer}
+                    maxToRenderPerBatch={5}
+                    ListFooterComponent={null}
+                    ListFooterComponentStyle={undefined}
+                    ListHeaderComponent={null}
+                    ListHeaderComponentStyle={undefined}
                 />
             </React.Fragment>
         );
@@ -1205,7 +1274,9 @@ export class ImageBackgroundProps extends React.Component {
                 <ImageBackground
                     source={{ uri: 'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png' }}
                     imageRef={this.setImageRef}
-                />
+                >
+                    <Text>Some text</Text>
+                </ImageBackground>
             </View>
         );
     }
@@ -1375,6 +1446,13 @@ const ScrollViewMaintainVisibleContentPositionTest = () => (
     <ScrollView maintainVisibleContentPosition={{ autoscrollToTopThreshold: 1, minIndexForVisible: 10 }}></ScrollView>
 );
 
+const ScrollViewInsetsTest = () => (
+  <>
+    <ScrollView automaticallyAdjustKeyboardInsets />
+    <ScrollView automaticallyAdjustKeyboardInsets={false} />
+  </>
+);
+
 const MaxFontSizeMultiplierTest = () => <Text maxFontSizeMultiplier={0}>Text</Text>;
 
 const ShareTest = () => {
@@ -1450,6 +1528,37 @@ const PermissionsAndroidTest = () => {
                 break;
         }
         switch (results['android.permission.ACCESS_BACKGROUND_LOCATION']) {
+            case 'granted':
+                break;
+            case 'denied':
+                break;
+            case 'never_ask_again':
+                break;
+        }
+    });
+
+    PermissionsAndroid.requestMultiple([
+        'android.permission.BLUETOOTH_SCAN',
+        'android.permission.BLUETOOTH_CONNECT',
+        'android.permission.BLUETOOTH_ADVERTISE'
+    ]).then(results => {
+        switch (results['android.permission.BLUETOOTH_SCAN']) {
+            case 'granted':
+                break;
+            case 'denied':
+                break;
+            case 'never_ask_again':
+                break;
+        }
+        switch (results['android.permission.BLUETOOTH_CONNECT']) {
+            case 'granted':
+                break;
+            case 'denied':
+                break;
+            case 'never_ask_again':
+                break;
+        }
+        switch (results['android.permission.BLUETOOTH_ADVERTISE']) {
             case 'granted':
                 break;
             case 'denied':
@@ -1822,3 +1931,30 @@ LayoutAnimation.configureNext(
 );
 
 LayoutAnimation.configureNext(LayoutAnimation.create(123, 'easeIn', 'opacity'));
+
+// ActionSheetIOS
+const ActionSheetIOSTest = () => {
+    // test destructiveButtonIndex undefined
+    ActionSheetIOS.showActionSheetWithOptions({
+        options: ['foo'],
+        destructiveButtonIndex: undefined,
+    }, () => undefined);
+
+    // test destructiveButtonIndex null
+    ActionSheetIOS.showActionSheetWithOptions({
+        options: ['foo'],
+        destructiveButtonIndex: null,
+    }, () => undefined);
+
+    // test destructiveButtonIndex single number
+    ActionSheetIOS.showActionSheetWithOptions({
+        options: ['foo'],
+        destructiveButtonIndex: 0,
+    }, () => undefined);
+
+    // test destructiveButtonIndex number array
+    ActionSheetIOS.showActionSheetWithOptions({
+        options: ['foo', 'bar'],
+        destructiveButtonIndex: [0, 1],
+    }, () => undefined);
+}

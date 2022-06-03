@@ -25,10 +25,11 @@ export type FakeMethod =
     | 'cancelAnimationFrame'
     | 'requestIdleCallback'
     | 'cancelIdleCallback'
-    | 'performance';
+    | 'performance'
+    | 'queueMicrotask';
 
 /**
- * Global methods avaliable to every clock and also as standalone methods (inside `timers` global object).
+ * Global methods available to every clock and also as standalone methods (inside `timers` global object).
  */
 export interface GlobalTimers<TTimerId extends TimerId> {
     /**
@@ -121,6 +122,13 @@ export interface FakeClock<TTimerId extends TimerId> extends GlobalTimers<TTimer
      * Current clock time.
      */
     now: number;
+
+    /**
+     * Mimics performance.now().
+     */
+    performance: {
+        now: () => number;
+    };
 
     /**
      * Don't know what this prop is for, but it was included in the clocks that `createClock` or
@@ -260,21 +268,14 @@ export interface FakeClock<TTimerId extends TimerId> extends GlobalTimers<TTimer
 /**
  * Fake clock for a browser environment.
  */
-export type BrowserClock = FakeClock<number> & {
-    /**
-     * Mimics performance.now().
-     */
-    performance: {
-        now: () => number;
-    };
-};
+export type BrowserClock = FakeClock<number>;
 
 /**
  * Fake clock for a Node environment.
  */
 export type NodeClock = FakeClock<NodeTimer> & {
     /**
-     * Mimicks process.hrtime().
+     * Mimics process.hrtime().
      *
      * @param prevTime   Previous system time to calculate time elapsed.
      * @returns High resolution real time as [seconds, nanoseconds].
@@ -338,8 +339,8 @@ export interface FakeTimerInstallOpts {
     now?: number | Date | undefined;
 
     /**
-     * An array with explicit function names to hijack. When not set, @sinonjs/fake-timers will automatically fake all methods except nextTick
-     * e.g., FakeTimers.install({ toFake: ["setTimeout", "nextTick"]}) will fake only setTimeout and nextTick
+     * An array with names of global methods and APIs to fake. By default, `@sinonjs/fake-timers` does not replace `nextTick()` and `queueMicrotask()`.
+     * For instance, `FakeTimers.install({ toFake: ['setTimeout', 'nextTick'] })` will fake only `setTimeout()` and `nextTick()`
      */
     toFake?: FakeMethod[] | undefined;
 

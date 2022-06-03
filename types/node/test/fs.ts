@@ -93,8 +93,18 @@ import { CopyOptions, cpSync, cp } from 'fs';
 }
 
 {
+    // 6-param version using no default options:
     fs.read(1, new DataView(new ArrayBuffer(1)), 0, 1, 0, (err: NodeJS.ErrnoException | null, bytesRead: number, buffer: DataView) => { });
     fs.read(1, Buffer.from('test'), 1, 2, 123n, () => { });
+    // 3-param version using no default options:
+    fs.read(1, {buffer: new DataView(new ArrayBuffer(1)), offset: 0, length: 1, position: 0}, (err: NodeJS.ErrnoException | null, bytesRead: number, buffer: DataView) => { });
+    fs.read(1, {buffer: Buffer.from('test'), offset: 1, length: 2, position: 123n}, () => { });
+    // 3-param version using some default options:
+    fs.read(1, {length: 1, position: 0}, (err: NodeJS.ErrnoException | null, bytesRead: number, buffer: NodeJS.ArrayBufferView) => { });
+    fs.read(1, {buffer: Buffer.from('test'), position: 123n}, () => { });
+    // 2-param version using all-default options:
+    fs.read(1, (err: NodeJS.ErrnoException | null, bytesRead: number, buffer: NodeJS.ArrayBufferView) => { });
+    fs.read(1, () => { });
 }
 
 {
@@ -191,6 +201,20 @@ async function testPromisify() {
         signal: new AbortSignal(),
     }, (event, filename) => {
         console.log(event, filename);
+    });
+}
+
+{
+    fs.watchFile('/tmp/foo-', (current, previous) => {
+        console.log(current, previous);
+    });
+
+    fs.watchFile('/tmp/foo-', {
+        persistent: true,
+        bigint: true,
+        interval: 1000,
+    }, (current, previous) => {
+        console.log(current, previous);
     });
 }
 
@@ -354,6 +378,14 @@ async function testPromisify() {
 })();
 
 {
+    fs.open('test', (err, fd) => {});
+    fs.open('test', 'r', (err, fd) => {});
+    fs.open('test', undefined, (err, fd) => {});
+    fs.open('test', 'r', 0o666, (err, fd) => {});
+    fs.open('test', 'r', undefined, (err, fd) => {});
+}
+
+{
     fs.opendir('test', async (err, dir) => {
         const dirEnt: fs.Dirent | null = await dir.read();
     });
@@ -426,8 +458,13 @@ async () => {
         length: 3,
     })).buffer; // $ExpectType Uint32Array
 
+    await handle.read(new Uint32Array(), 1, 2, 3);
+    await handle.read(Buffer.from('hurr'));
+
     await handle.write('hurr', 0, 'utf-8');
     await handle.write(Buffer.from('hurr'), 0, 42, 10);
+
+    handle.readableWebStream();
 };
 
 {
@@ -673,17 +710,21 @@ const anyStats: fs.Stats | fs.BigIntStats = fs.statSync('.', { bigint: Math.rand
 }
 
 {
-    fs.promises.open('/dev/input/event0', 'r').then((fd) => {
+    fs.promises.open('/dev/input/event0').then(fd => {
         // Create a stream from some character device.
         const stream = fd.createReadStream(); // $ExpectType ReadStream
         stream.close();
         stream.push(null);
         stream.read(0);
     });
-}
-
-{
-    fs.promises.open('/tmp/tmp.txt', 'w').then((fd) => {
+    fs.promises.open('/dev/input/event0', 'r').then(fd => {
+        // Create a stream from some character device.
+        const stream = fd.createReadStream(); // $ExpectType ReadStream
+        stream.close();
+        stream.push(null);
+        stream.read(0);
+    });
+    fs.promises.open('/tmp/tmp.txt', 'w', 0o666).then(fd => {
         // Create a stream from some character device.
         const stream = fd.createWriteStream(); // $ExpectType WriteStream
         stream.close();
