@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-      "@maxim_mazurok/gapi.client.classroom": "latest"
+    "@maxim_mazurok/gapi.client.classroom-v1": "latest"
   }
 }

@@ -1,4 +1,4 @@
-// For Library Version: 1.103.0
+// For Library Version: 1.106.0
 
 declare module "sap/tnt/library" {
   export interface IToolHeader {
@@ -5590,7 +5590,7 @@ declare module "sap/f/DynamicPageTitle" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.50
      *
@@ -8346,6 +8346,17 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
      */
     static getMetadata(): ElementMetadata;
     /**
+     * Gets current value of property {@link #getFirstColumnBackArrowLabel firstColumnBackArrowLabel}.
+     *
+     * Text that describes the landmark of the back arrow of the first column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * @returns Value of property `firstColumnBackArrowLabel`
+     */
+    getFirstColumnBackArrowLabel(): string;
+    /**
      * Gets current value of property {@link #getFirstColumnLabel firstColumnLabel}.
      *
      * Text that describes the landmark of the first column of the corresponding `sap.f.FlexibleColumnLayout`
@@ -8356,6 +8367,17 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
      * @returns Value of property `firstColumnLabel`
      */
     getFirstColumnLabel(): string;
+    /**
+     * Gets current value of property {@link #getLastColumnForwardArrowLabel lastColumnForwardArrowLabel}.
+     *
+     * Text that describes the landmark of forward arrow of the last column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * @returns Value of property `lastColumnForwardArrowLabel`
+     */
+    getLastColumnForwardArrowLabel(): string;
     /**
      * Gets current value of property {@link #getLastColumnLabel lastColumnLabel}.
      *
@@ -8368,6 +8390,28 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
      */
     getLastColumnLabel(): string;
     /**
+     * Gets current value of property {@link #getMiddleColumnBackArrowLabel middleColumnBackArrowLabel}.
+     *
+     * Text that describes the landmark of back arrow of the middle column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * @returns Value of property `middleColumnBackArrowLabel`
+     */
+    getMiddleColumnBackArrowLabel(): string;
+    /**
+     * Gets current value of property {@link #getMiddleColumnForwardArrowLabel middleColumnForwardArrowLabel}.
+     *
+     * Text that describes the landmark of forward arrow of the middle column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * @returns Value of property `middleColumnForwardArrowLabel`
+     */
+    getMiddleColumnForwardArrowLabel(): string;
+    /**
      * Gets current value of property {@link #getMiddleColumnLabel middleColumnLabel}.
      *
      * Text that describes the landmark of the middle column of the corresponding `sap.f.FlexibleColumnLayout`
@@ -8378,6 +8422,24 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
      * @returns Value of property `middleColumnLabel`
      */
     getMiddleColumnLabel(): string;
+    /**
+     * Sets a new value for property {@link #getFirstColumnBackArrowLabel firstColumnBackArrowLabel}.
+     *
+     * Text that describes the landmark of the back arrow of the first column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setFirstColumnBackArrowLabel(
+      /**
+       * New value for property `firstColumnBackArrowLabel`
+       */
+      sFirstColumnBackArrowLabel?: string
+    ): this;
     /**
      * Sets a new value for property {@link #getFirstColumnLabel firstColumnLabel}.
      *
@@ -8397,6 +8459,24 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
       sFirstColumnLabel?: string
     ): this;
     /**
+     * Sets a new value for property {@link #getLastColumnForwardArrowLabel lastColumnForwardArrowLabel}.
+     *
+     * Text that describes the landmark of forward arrow of the last column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setLastColumnForwardArrowLabel(
+      /**
+       * New value for property `lastColumnForwardArrowLabel`
+       */
+      sLastColumnForwardArrowLabel?: string
+    ): this;
+    /**
      * Sets a new value for property {@link #getLastColumnLabel lastColumnLabel}.
      *
      * Text that describes the landmark of the last column of the corresponding `sap.f.FlexibleColumnLayout`
@@ -8413,6 +8493,42 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
        * New value for property `lastColumnLabel`
        */
       sLastColumnLabel?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getMiddleColumnBackArrowLabel middleColumnBackArrowLabel}.
+     *
+     * Text that describes the landmark of back arrow of the middle column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setMiddleColumnBackArrowLabel(
+      /**
+       * New value for property `middleColumnBackArrowLabel`
+       */
+      sMiddleColumnBackArrowLabel?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getMiddleColumnForwardArrowLabel middleColumnForwardArrowLabel}.
+     *
+     * Text that describes the landmark of forward arrow of the middle column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setMiddleColumnForwardArrowLabel(
+      /**
+       * New value for property `middleColumnForwardArrowLabel`
+       */
+      sMiddleColumnForwardArrowLabel?: string
     ): this;
     /**
      * Sets a new value for property {@link #getMiddleColumnLabel middleColumnLabel}.
@@ -8459,6 +8575,38 @@ declare module "sap/f/FlexibleColumnLayoutAccessibleLandmarkInfo" {
      * If not set, a predefined text is used.
      */
     lastColumnLabel?: string | PropertyBindingInfo;
+
+    /**
+     * Text that describes the landmark of the back arrow of the first column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     */
+    firstColumnBackArrowLabel?: string | PropertyBindingInfo;
+
+    /**
+     * Text that describes the landmark of forward arrow of the middle column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     */
+    middleColumnForwardArrowLabel?: string | PropertyBindingInfo;
+
+    /**
+     * Text that describes the landmark of back arrow of the middle column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     */
+    middleColumnBackArrowLabel?: string | PropertyBindingInfo;
+
+    /**
+     * Text that describes the landmark of forward arrow of the last column in the corresponding `sap.f.FlexibleColumnLayout`
+     * control.
+     *
+     * If not set, a predefined text is used.
+     */
+    lastColumnForwardArrowLabel?: string | PropertyBindingInfo;
   }
 }
 
@@ -8817,13 +8965,13 @@ declare module "sap/f/GridContainer" {
 
   import { dnd, NavigationDirection } from "sap/f/library";
 
+  import { ID, CSSSize } from "sap/ui/core/library";
+
   import Event from "sap/ui/base/Event";
 
   import GridContainerSettings from "sap/f/GridContainerSettings";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
-
-  import { CSSSize } from "sap/ui/core/library";
 
   import Item from "sap/ui/core/Item";
 
@@ -8984,6 +9132,28 @@ declare module "sap/f/GridContainer" {
      * @returns Metadata object describing this class
      */
     static getMetadata(): ElementMetadata;
+    /**
+     * Adds some ariaDescribedBy into the association {@link #getAriaDescribedBy ariaDescribedBy}.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    addAriaDescribedBy(
+      /**
+       * The ariaDescribedBy to add; if empty, nothing is inserted
+       */
+      vAriaDescribedBy: ID | Control
+    ): this;
+    /**
+     * Adds some ariaLabelledBy into the association {@link #getAriaLabelledBy ariaLabelledBy}.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    addAriaLabelledBy(
+      /**
+       * The ariaLabelledBy to add; if empty, nothing is inserted
+       */
+      vAriaLabelledBy: ID | Control
+    ): this;
     /**
      * Adds some item to the aggregation {@link #getItems items}.
      *
@@ -9350,6 +9520,16 @@ declare module "sap/f/GridContainer" {
      */
     getAllowDenseFill(): boolean;
     /**
+     * Returns array of IDs of the elements which are the current targets of the association {@link #getAriaDescribedBy
+     * ariaDescribedBy}.
+     */
+    getAriaDescribedBy(): ID[];
+    /**
+     * Returns array of IDs of the elements which are the current targets of the association {@link #getAriaLabelledBy
+     * ariaLabelledBy}.
+     */
+    getAriaLabelledBy(): ID[];
+    /**
      * Gets current value of property {@link #getContainerQuery containerQuery}.
      *
      * If set to `true` the current range (large, medium or small) is defined by the size of the container surrounding
@@ -9492,6 +9672,18 @@ declare module "sap/f/GridContainer" {
       iIndex: int
     ): this;
     /**
+     * Removes all the controls in the association named {@link #getAriaDescribedBy ariaDescribedBy}.
+     *
+     * @returns An array of the removed elements (might be empty)
+     */
+    removeAllAriaDescribedBy(): ID[];
+    /**
+     * Removes all the controls in the association named {@link #getAriaLabelledBy ariaLabelledBy}.
+     *
+     * @returns An array of the removed elements (might be empty)
+     */
+    removeAllAriaLabelledBy(): ID[];
+    /**
      * Removes all the controls from the aggregation {@link #getItems items}.
      *
      * Additionally, it unregisters them from the hosting UIArea.
@@ -9500,16 +9692,38 @@ declare module "sap/f/GridContainer" {
      */
     removeAllItems(): Control[];
     /**
+     * Removes an ariaDescribedBy from the association named {@link #getAriaDescribedBy ariaDescribedBy}.
+     *
+     * @returns The removed ariaDescribedBy or `null`
+     */
+    removeAriaDescribedBy(
+      /**
+       * The ariaDescribedBy to be removed or its index or ID
+       */
+      vAriaDescribedBy: int | ID | Control
+    ): ID | null;
+    /**
+     * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
+     *
+     * @returns The removed ariaLabelledBy or `null`
+     */
+    removeAriaLabelledBy(
+      /**
+       * The ariaLabelledBy to be removed or its index or ID
+       */
+      vAriaLabelledBy: int | ID | Control
+    ): ID | null;
+    /**
      * Removes an item from the aggregation named `items`.
      *
-     * @returns The removed item or null.
+     * @returns The removed item or `null`.
      */
     removeItem(
       /**
        * The item to remove or its index or ID.
        */
       vItem: int | string | Item
-    ): Control;
+    ): Control | null;
     /**
      * @EXPERIMENTAL (since 1.66)
      *
@@ -9791,6 +10005,16 @@ declare module "sap/f/GridContainer" {
      * The sap.f.GridContainerSettings applied for size "XL". Range: from 1440px.
      */
     layoutXL?: GridContainerSettings;
+
+    /**
+     * Association to controls / IDs which describe this control (see WAI-ARIA attribute aria-describedby).
+     */
+    ariaDescribedBy?: Array<Control | string>;
+
+    /**
+     * Association to controls / IDs which label this control (see WAI-ARIA attribute aria-labelledby).
+     */
+    ariaLabelledBy?: Array<Control | string>;
 
     /**
      * Fired when the currently active GridSettings change.

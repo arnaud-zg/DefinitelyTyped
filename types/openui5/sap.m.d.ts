@@ -1,4 +1,4 @@
-// For Library Version: 1.103.0
+// For Library Version: 1.106.0
 
 declare module "sap/f/library" {
   export interface IShellBar {
@@ -981,6 +981,15 @@ declare module "sap/m/library" {
      * DOM element.
      */
     Image = "Image",
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * The image is rendered with 'div' tag, containing the inline 'svg' **Note:** Please, be aware that this
+     * feature works under the Browser's Cross-Origin Resource Sharing (CORS) policy. This means that a web
+     * application using those APIs can only request resources from the same origin the application was loaded
+     * from unless the response from other origins includes the right CORS headers.
+     */
+    InlineSvg = "InlineSvg",
   }
   /**
    * @SINCE 1.44.0
@@ -1264,6 +1273,21 @@ declare module "sap/m/library" {
      * The LightBox image has timed out, could not load.
      */
     TimeOutError = "TIME_OUT_ERROR",
+  }
+  /**
+   * @SINCE 1.104.0
+   *
+   * Enumeration for possible Link accessibility roles.
+   */
+  export enum LinkAccessibleRole {
+    /**
+     * Link will receive `role="Button"` attibute.
+     */
+    Button = "Button",
+    /**
+     * Default mode.
+     */
+    Default = "Default",
   }
   /**
    * @SINCE 1.45.5
@@ -3114,6 +3138,29 @@ declare module "sap/m/library" {
        */
       iLength: int
     ): void;
+  }
+
+  export namespace p13n {
+    /**
+     * @SINCE 1.97
+     * @EXPERIMENTAL
+     *
+     * Interface for P13nPopup which are suitable as content for the `sap.m.p13n.Popup`. Implementation of this
+     * interface should include the following methods:
+     * 	 - `getTitle`
+     */
+    interface IContent {
+      __implements__sap_m_p13n_IContent: boolean;
+
+      /**
+       * @EXPERIMENTAL
+       *
+       * Returns the title, which should be displayed in the P13nPopup to describe related content.
+       *
+       * @returns The title for the corresponding content to be displayed in the `sap.m.p13n.Popup`.
+       */
+      getTitle(): string;
+    }
   }
 
   export namespace PopupHelper {
@@ -5344,7 +5391,7 @@ declare module "sap/m/Avatar" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -5355,7 +5402,7 @@ declare module "sap/m/Avatar" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.99.0
      *
@@ -5515,7 +5562,7 @@ declare module "sap/m/Avatar" {
        * Instance of the `LightBox` control or undefined
        */
       oLightBox: LightBox | undefined
-    ): object;
+    ): this;
     /**
      * Sets a new value for property {@link #getDisplayShape displayShape}.
      *
@@ -6539,7 +6586,7 @@ declare module "sap/m/Bar" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a contentLeft from the aggregation {@link #getContentLeft contentLeft}.
      *
@@ -7105,7 +7152,7 @@ declare module "sap/m/Breadcrumbs" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.34
      *
@@ -7537,7 +7584,7 @@ declare module "sap/m/BusyDialog" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Shows the text for the cancel button.
      *
@@ -7977,7 +8024,7 @@ declare module "sap/m/BusyIndicator" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getCustomIcon customIcon}.
      *
@@ -8218,6 +8265,7 @@ declare module "sap/m/Button" {
 
   import {
     IFormContent,
+    IAccessKeySupport,
     ID,
     URI,
     aria,
@@ -8253,8 +8301,11 @@ declare module "sap/m/Button" {
    * it and it changes its style to provide visual feedback to the user that it is pressed or hovered over
    * with the mouse cursor. A disabled `Button` appears inactive and cannot be pressed.
    */
-  export default class Button extends Control implements IFormContent {
+  export default class Button
+    extends Control
+    implements IFormContent, IAccessKeySupport {
     __implements__sap_ui_core_IFormContent: boolean;
+    __implements__sap_ui_core_IAccessKeySupport: boolean;
     /**
      * Constructor for a new `Button`.
      *
@@ -8658,7 +8709,7 @@ declare module "sap/m/Button" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -8669,7 +8720,7 @@ declare module "sap/m/Button" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getActiveIcon activeIcon}.
      *
@@ -10019,6 +10070,7 @@ declare module "sap/m/CheckBox" {
   import {
     IFormContent,
     ISemanticFormContent,
+    IAccessKeySupport,
     ID,
     TextAlign,
     TextDirection,
@@ -10068,9 +10120,10 @@ declare module "sap/m/CheckBox" {
    */
   export default class CheckBox
     extends Control
-    implements IFormContent, ISemanticFormContent {
+    implements IFormContent, ISemanticFormContent, IAccessKeySupport {
     __implements__sap_ui_core_IFormContent: boolean;
     __implements__sap_ui_core_ISemanticFormContent: boolean;
+    __implements__sap_ui_core_IAccessKeySupport: boolean;
     /**
      * Constructor for a new `CheckBox`.
      *
@@ -10459,7 +10512,7 @@ declare module "sap/m/CheckBox" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -10470,7 +10523,7 @@ declare module "sap/m/CheckBox" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getActiveHandling activeHandling}.
      *
@@ -11923,7 +11976,7 @@ declare module "sap/m/Column" {
     /**
      * @SINCE 1.98.0
      *
-     * Returns the `sap.ui.core.IColumnHeaderMenu<\code>, which is the current target of the association columnHeaderMenu`,
+     * Returns the `sap.ui.core.IColumnHeaderMenu<\code>, which is the current target of the association headerMenu`,
      * or null.
      */
     getColumnHeaderMenu(): IColumnHeaderMenu;
@@ -13864,7 +13917,7 @@ declare module "sap/m/ComboBoxBase" {
      *
      * @returns The list instance object or `null`.
      */
-    getList(): List;
+    getList(): List | null;
     /**
      * Gets current value of property {@link #getOpen open}.
      *
@@ -16053,14 +16106,14 @@ declare module "sap/m/DatePicker" {
      *
      * Removes a `specialDate` from the aggregation `specialDates`.
      *
-     * @returns The removed `specialDate` or null
+     * @returns The removed `specialDate` or `null`
      */
     removeSpecialDate(
       /**
-       * The `specialDate` to remove or its index or id
+       * The `specialDate` to remove or its index or ID
        */
       oSpecialDate: DateTypeRange
-    ): DateTypeRange;
+    ): DateTypeRange | null;
     /**
      * Sets the displayFormat of the DatePicker.
      *
@@ -16769,6 +16822,8 @@ declare module "sap/m/DateRangeSelection" {
 declare module "sap/m/DateTimeField" {
   import { default as InputBase, $InputBaseSettings } from "sap/m/InputBase";
 
+  import Event from "sap/ui/base/Event";
+
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
   import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
@@ -16842,6 +16897,102 @@ declare module "sap/m/DateTimeField" {
      */
     static getMetadata(): ElementMetadata;
     /**
+     * @SINCE 1.104.0
+     *
+     * Attaches event handler `fnFunction` to the {@link #event:liveChange liveChange} event of this `sap.m.DateTimeField`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.DateTimeField` itself.
+     *
+     * Fired when the value of the `DateTimeField` is changed by user interaction - each keystroke, delete,
+     * paste, etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachLiveChange(
+      /**
+       * An application-specific payload object that will be passed to the event handler along with the event
+       * object when firing the event
+       */
+      oData: object,
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.DateTimeField` itself
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Attaches event handler `fnFunction` to the {@link #event:liveChange liveChange} event of this `sap.m.DateTimeField`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.DateTimeField` itself.
+     *
+     * Fired when the value of the `DateTimeField` is changed by user interaction - each keystroke, delete,
+     * paste, etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachLiveChange(
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.DateTimeField` itself
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Detaches event handler `fnFunction` from the {@link #event:liveChange liveChange} event of this `sap.m.DateTimeField`.
+     *
+     * The passed function and listener object must match the ones used for event registration.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    detachLiveChange(
+      /**
+       * The function to be called, when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object on which the given function had to be called
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Fires event {@link #event:liveChange liveChange} to attached listeners.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    fireLiveChange(
+      /**
+       * Parameters to pass along with the event
+       */
+      mParameters?: {
+        /**
+         * The current value of the input, after a live change event.
+         */
+        value?: string;
+        /**
+         * The previous value of the input, before the last user interaction.
+         */
+        previousValue?: string;
+      }
+    ): this;
+    /**
      * Gets current value of property {@link #getDateValue dateValue}.
      *
      * Holds a reference to a JavaScript Date Object. The `value` (string) property will be set according to
@@ -16861,6 +17012,12 @@ declare module "sap/m/DateTimeField" {
      * @returns Value of property `displayFormat`
      */
     getDisplayFormat(): string;
+    /**
+     * Gets the inner input DOM value.
+     *
+     * @returns The value of the input.
+     */
+    getDOMValue(): any;
     /**
      * @SINCE 1.54
      *
@@ -16886,6 +17043,15 @@ declare module "sap/m/DateTimeField" {
      * @returns Value of property `valueFormat`
      */
     getValueFormat(): string;
+    /**
+     * Event handler for user input.
+     */
+    oninput(
+      /**
+       * User input.
+       */
+      oEvent: jQuery.Event
+    ): void;
     /**
      * Sets a new value for property {@link #getDateValue dateValue}.
      *
@@ -16994,6 +17160,16 @@ declare module "sap/m/DateTimeField" {
      * 			parts of the JavaScript Date Object.
      */
     initialFocusedDateValue?: object | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * @SINCE 1.104.0
+     *
+     * Fired when the value of the `DateTimeField` is changed by user interaction - each keystroke, delete,
+     * paste, etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     */
+    liveChange?: (oEvent: Event) => void;
   }
 }
 
@@ -17393,7 +17569,7 @@ declare module "sap/m/DateTimeInput" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getDateValue dateValue}.
      *
@@ -17934,6 +18110,12 @@ declare module "sap/m/DateTimePicker" {
      */
     getAccessibilityInfo(): object;
     /**
+     * @SINCE 1.102
+     *
+     * This method should not be used because it could produce unpredictable results. Use `getValue()` instead.
+     */
+    getDateValue(): object;
+    /**
      * Apply the correct icon to the used Date control
      */
     getIconSrc(): void;
@@ -17991,9 +18173,8 @@ declare module "sap/m/DateTimePicker" {
      * Gets current value of property {@link #getTimezone timezone}.
      *
      * The IANA timezone ID, e.g `"Europe/Berlin"`. Date and time are displayed in this timezone. The `value`
-     * property string is treated as if it is formatted in this timezone. However, the `dateValue` property
-     * is a JS Date object, which is the same point in time as the `value`, but in the local timezone. Thus,
-     * it is adjusted when the `timezone` changes.
+     * property string is treated as if it is formatted in this timezone. The `dateValue` property should not
+     * be used as this could lead to an unpredictable results. Use `getValue()` instead.
      *
      * @returns Value of property `timezone`
      */
@@ -18080,9 +18261,8 @@ declare module "sap/m/DateTimePicker" {
      * Sets a new value for property {@link #getTimezone timezone}.
      *
      * The IANA timezone ID, e.g `"Europe/Berlin"`. Date and time are displayed in this timezone. The `value`
-     * property string is treated as if it is formatted in this timezone. However, the `dateValue` property
-     * is a JS Date object, which is the same point in time as the `value`, but in the local timezone. Thus,
-     * it is adjusted when the `timezone` changes.
+     * property string is treated as if it is formatted in this timezone. The `dateValue` property should not
+     * be used as this could lead to an unpredictable results. Use `getValue()` instead.
      *
      * When called with a value of `null` or `undefined`, the default value of the property will be restored.
      *
@@ -18131,9 +18311,8 @@ declare module "sap/m/DateTimePicker" {
      * @SINCE 1.99
      *
      * The IANA timezone ID, e.g `"Europe/Berlin"`. Date and time are displayed in this timezone. The `value`
-     * property string is treated as if it is formatted in this timezone. However, the `dateValue` property
-     * is a JS Date object, which is the same point in time as the `value`, but in the local timezone. Thus,
-     * it is adjusted when the `timezone` changes.
+     * property string is treated as if it is formatted in this timezone. The `dateValue` property should not
+     * be used as this could lead to an unpredictable results. Use `getValue()` instead.
      */
     timezone?: string | PropertyBindingInfo;
   }
@@ -18504,8 +18683,10 @@ declare module "sap/m/Dialog" {
     ): this;
     /**
      * Close the dialog.
+     *
+     * @returns `this` to allow method chaining
      */
-    close(): void;
+    close(): this;
     /**
      * @SINCE 1.15.1
      *
@@ -19065,8 +19246,10 @@ declare module "sap/m/Dialog" {
     isOpen(): boolean;
     /**
      * Open the dialog.
+     *
+     * @returns `this` to allow method chaining
      */
-    open(): void;
+    open(): this;
     /**
      * Removes all the controls in the association named {@link #getAriaDescribedBy ariaDescribedBy}.
      *
@@ -19107,7 +19290,7 @@ declare module "sap/m/Dialog" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -19118,7 +19301,7 @@ declare module "sap/m/Dialog" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.21.1
      *
@@ -20910,6 +21093,26 @@ declare module "sap/m/DynamicDateRange" {
      */
     getFormatter(): object;
     /**
+     * @SINCE 1.105
+     *
+     * Gets current value of property {@link #getHideInput hideInput}.
+     *
+     * Determines whether the input field of the control is hidden or visible. When set to `true`, the input
+     * field becomes invisible and there is no way to open the value help popover. In that case it can be opened
+     * by another control through calling of control's `openBy` method, and the opening control's DOM reference
+     * must be provided as parameter.
+     *
+     * Note: Since the Dynamic Date Range is not responsible for accessibility attributes of the control which
+     * opens its popover, those attributes should be added by the application developer. The following is recommended
+     * to be added to the opening control: a text or tooltip that describes the action (example: "Open Dynamic
+     * Date Range"), and also aria-haspopup attribute with value of `true`.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `hideInput`
+     */
+    getHideInput(): boolean;
+    /**
      * Returns the DOMNode Id to be used for the "labelFor" attribute of the label.
      *
      * By default, this is the Id of the control itself.
@@ -21019,7 +21222,34 @@ declare module "sap/m/DynamicDateRange" {
      *
      * Opens the value help dialog.
      */
-    open(): void;
+    open(
+      /**
+       * DOM reference of the opening control. On tablet or desktop, the popover is positioned relatively to this
+       * control.
+       */
+      oDomRef: HTMLElement
+    ): void;
+    /**
+     * @SINCE 1.105
+     *
+     * Opens the value help popover. The popover is positioned relatively to the control given as `oDomRef`
+     * parameter on tablet or desktop and is full screen on phone. Therefore the control parameter is only used
+     * on tablet or desktop and is ignored on phone.
+     *
+     * Note: use this method to open the value help popover only when the `hideInput` property is set to `true`.
+     * Please consider opening of the value help popover by another control only in scenarios that comply with
+     * Fiori guidelines. For example, opening the value help popover by another popover is not recommended.
+     * The application developer should implement the following accessibility attributes to the opening control:
+     * a text or tooltip that describes the action (example: "Open Dynamic Date Range"), and aria-haspopup attribute
+     * with value of `true`.
+     */
+    openBy(
+      /**
+       * DOM reference of the opening control. On tablet or desktop, the popover is positioned relatively to this
+       * control.
+       */
+      oDomRef: HTMLElement
+    ): void;
     /**
      * @SINCE 1.92
      *
@@ -21048,7 +21278,7 @@ declare module "sap/m/DynamicDateRange" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.92
      *
@@ -21061,7 +21291,7 @@ declare module "sap/m/DynamicDateRange" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.92
      *
@@ -21138,6 +21368,33 @@ declare module "sap/m/DynamicDateRange" {
        * New value for property `formatter`
        */
       oFormatter: object
+    ): this;
+    /**
+     * @SINCE 1.105
+     *
+     * Sets a new value for property {@link #getHideInput hideInput}.
+     *
+     * Determines whether the input field of the control is hidden or visible. When set to `true`, the input
+     * field becomes invisible and there is no way to open the value help popover. In that case it can be opened
+     * by another control through calling of control's `openBy` method, and the opening control's DOM reference
+     * must be provided as parameter.
+     *
+     * Note: Since the Dynamic Date Range is not responsible for accessibility attributes of the control which
+     * opens its popover, those attributes should be added by the application developer. The following is recommended
+     * to be added to the opening control: a text or tooltip that describes the action (example: "Open Dynamic
+     * Date Range"), and also aria-haspopup attribute with value of `true`.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setHideInput(
+      /**
+       * New value for property `hideInput`
+       */
+      bHideInput?: boolean
     ): this;
     /**
      * @SINCE 1.92
@@ -21391,6 +21648,21 @@ declare module "sap/m/DynamicDateRange" {
     options?: string[] | PropertyBindingInfo | `{${string}}`;
 
     /**
+     * @SINCE 1.105
+     *
+     * Determines whether the input field of the control is hidden or visible. When set to `true`, the input
+     * field becomes invisible and there is no way to open the value help popover. In that case it can be opened
+     * by another control through calling of control's `openBy` method, and the opening control's DOM reference
+     * must be provided as parameter.
+     *
+     * Note: Since the Dynamic Date Range is not responsible for accessibility attributes of the control which
+     * opens its popover, those attributes should be added by the application developer. The following is recommended
+     * to be added to the opening control: a text or tooltip that describes the action (example: "Open Dynamic
+     * Date Range"), and also aria-haspopup attribute with value of `true`.
+     */
+    hideInput?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
      * @SINCE 1.92
      *
      * Association to controls / IDs that label this control (see WAI-ARIA attribute aria-labelledby).
@@ -21474,6 +21746,17 @@ declare module "sap/m/DynamicDateUtil" {
        */
       aOptionKeys: any[]
     ): object[];
+    /**
+     * Returns a date in machine timezone setting, removing the offset added by the application configuration.
+     *
+     * @returns A local JS date with removed offset
+     */
+    removeTimezoneOffset(
+      /**
+       * A local JS date with added offset
+       */
+      oDate: Date
+    ): Date;
     /**
      * Calculates a date range from a provided object in the format of the DynamicDateRange's value.
      *
@@ -23350,7 +23633,7 @@ declare module "sap/m/FacetFilterList" {
      *
      * @returns Object with the selected keys
      */
-    getSelectedKeys(): object;
+    getSelectedKeys(): Record<string, string>;
     /**
      * Gets current value of property {@link #getSequence sequence}.
      *
@@ -23559,9 +23842,9 @@ declare module "sap/m/FacetFilterList" {
      *
      * Used to pre-select FacetFilterItems, such as when restoring FacetFilterList selections from a variant.
      * Keys are cached separately from the actual FacetFilterItems so that they remain even when the physical
-     * items are removed by filtering or sorting. If aKeys is `undefined`, `null`, or {} (empty object) then
-     * all keys are deleted. After this method completes, only those items with matching keys will be selected.
-     * All other items in the list will be deselected.
+     * items are removed by filtering or sorting. If oKeys is `undefined`, `null`, or {} (empty object) then
+     * all items will be deselected. After this method completes, only those items with matching keys will be
+     * selected. All other items in the list will be deselected.
      */
     setSelectedKeys(
       /**
@@ -23571,7 +23854,7 @@ declare module "sap/m/FacetFilterList" {
        * or FacetFilter summary bar is displayed. If no property value is set then the property key is used for
        * the text.
        */
-      oKeys: object
+      oKeys: Record<string, string>
     ): void;
     /**
      * Sets a new value for property {@link #getSequence sequence}.
@@ -28021,7 +28304,7 @@ declare module "sap/m/GenericTag" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getDesign design}.
      *
@@ -28180,7 +28463,7 @@ declare module "sap/m/GenericTile" {
     WrappingType,
   } from "sap/m/library";
 
-  import { CSSColor, URI, CSSSize } from "sap/ui/core/library";
+  import { URI, CSSSize } from "sap/ui/core/library";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
@@ -28484,9 +28767,11 @@ declare module "sap/m/GenericTile" {
      *
      * Background color of the GenericTile. Only applicable for IconMode.
      *
+     * Default value is `...see text or source`.
+     *
      * @returns Value of property `backgroundColor`
      */
-    getBackgroundColor(): CSSColor;
+    getBackgroundColor(): string;
     /**
      * Gets current value of property {@link #getBackgroundImage backgroundImage}.
      *
@@ -28615,6 +28900,19 @@ declare module "sap/m/GenericTile" {
      * @returns Value of property `pressEnabled`
      */
     getPressEnabled(): boolean;
+    /**
+     * @SINCE 1.106
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Gets current value of property {@link #getRenderOnThemeChange renderOnThemeChange}.
+     *
+     * The Tile rerenders on theme change.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `renderOnThemeChange`
+     */
+    getRenderOnThemeChange(): boolean;
     /**
      * @SINCE 1.46.0
      *
@@ -28943,13 +29241,15 @@ declare module "sap/m/GenericTile" {
      *
      * When called with a value of `null` or `undefined`, the default value of the property will be restored.
      *
+     * Default value is `...see text or source`.
+     *
      * @returns Reference to `this` in order to allow method chaining
      */
     setBackgroundColor(
       /**
        * New value for property `backgroundColor`
        */
-      sBackgroundColor: CSSColor
+      sBackgroundColor?: string
     ): this;
     /**
      * Sets a new value for property {@link #getBackgroundImage backgroundImage}.
@@ -29144,6 +29444,26 @@ declare module "sap/m/GenericTile" {
        */
       value: boolean
     ): void;
+    /**
+     * @SINCE 1.106
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Sets a new value for property {@link #getRenderOnThemeChange renderOnThemeChange}.
+     *
+     * The Tile rerenders on theme change.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setRenderOnThemeChange(
+      /**
+       * New value for property `renderOnThemeChange`
+       */
+      bRenderOnThemeChange?: boolean
+    ): this;
     /**
      * @SINCE 1.46.0
      *
@@ -29560,7 +29880,7 @@ declare module "sap/m/GenericTile" {
      *
      * Background color of the GenericTile. Only applicable for IconMode.
      */
-    backgroundColor?: CSSColor | PropertyBindingInfo | `{${string}}`;
+    backgroundColor?: string | PropertyBindingInfo;
 
     /**
      * @SINCE 1.95
@@ -29580,6 +29900,14 @@ declare module "sap/m/GenericTile" {
      * The load state of the tileIcon.
      */
     iconLoaded?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * @SINCE 1.106
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * The Tile rerenders on theme change.
+     */
+    renderOnThemeChange?: boolean | PropertyBindingInfo | `{${string}}`;
 
     /**
      * The content of the tile.
@@ -30549,7 +30877,7 @@ declare module "sap/m/HeaderContainer" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a content from the aggregation {@link #getContent content}.
      *
@@ -31344,9 +31672,15 @@ declare module "sap/m/IconTabBar" {
      */
     getShowOverflowSelectList(): boolean;
     /**
-     * Reflector for the internal header's showSelection property.
+     * @deprecated (since 1.15.0) - Regarding to changes of this control this property is not needed anymore.
      *
-     * @returns The current property value.
+     * Gets current value of property {@link #getShowSelection showSelection}.
+     *
+     * Defines whether the current selection should be visualized.
+     *
+     * Default value is `true`.
+     *
+     * @returns Value of property `showSelection`
      */
     getShowSelection(): boolean;
     /**
@@ -33516,6 +33850,8 @@ declare module "sap/m/IllustratedMessage" {
 
   import Button from "sap/m/Button";
 
+  import { ID } from "sap/ui/core/library";
+
   import IllustratedMessageSize from "sap/m/IllustratedMessageSize";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
@@ -33630,6 +33966,19 @@ declare module "sap/m/IllustratedMessage" {
       oAdditionalContent: Button
     ): this;
     /**
+     * @SINCE 1.106.0
+     *
+     * Adds some illustrationAriaLabelledBy into the association {@link #getIllustrationAriaLabelledBy illustrationAriaLabelledBy}.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    addIllustrationAriaLabelledBy(
+      /**
+       * The illustrationAriaLabelledBy to add; if empty, nothing is inserted
+       */
+      vIllustrationAriaLabelledBy: ID | Control
+    ): this;
+    /**
      * @SINCE 1.98
      *
      * Destroys all the additionalContent in the aggregation {@link #getAdditionalContent additionalContent}.
@@ -33697,6 +34046,26 @@ declare module "sap/m/IllustratedMessage" {
      * @returns Value of property `enableFormattedText`
      */
     getEnableFormattedText(): boolean;
+    /**
+     * @SINCE 1.104
+     *
+     * Gets current value of property {@link #getEnableVerticalResponsiveness enableVerticalResponsiveness}.
+     *
+     * Defines whether the `IllustratedMessage` would resize itself according to it's height if `illustrationSize`
+     * property is set to `IllustratedMessageSize.Auto`.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `enableVerticalResponsiveness`
+     */
+    getEnableVerticalResponsiveness(): boolean;
+    /**
+     * @SINCE 1.106.0
+     *
+     * Returns array of IDs of the elements which are the current targets of the association {@link #getIllustrationAriaLabelledBy
+     * illustrationAriaLabelledBy}.
+     */
+    getIllustrationAriaLabelledBy(): ID[];
     /**
      * @SINCE 1.98
      *
@@ -33806,6 +34175,28 @@ declare module "sap/m/IllustratedMessage" {
      */
     removeAllAdditionalContent(): Button[];
     /**
+     * @SINCE 1.106.0
+     *
+     * Removes all the controls in the association named {@link #getIllustrationAriaLabelledBy illustrationAriaLabelledBy}.
+     *
+     * @returns An array of the removed elements (might be empty)
+     */
+    removeAllIllustrationAriaLabelledBy(): ID[];
+    /**
+     * @SINCE 1.106.0
+     *
+     * Removes an illustrationAriaLabelledBy from the association named {@link #getIllustrationAriaLabelledBy
+     * illustrationAriaLabelledBy}.
+     *
+     * @returns The removed illustrationAriaLabelledBy or `null`
+     */
+    removeIllustrationAriaLabelledBy(
+      /**
+       * The illustrationAriaLabelledBy to be removed or its index or ID
+       */
+      vIllustrationAriaLabelledBy: int | ID | Control
+    ): ID | null;
+    /**
      * @SINCE 1.98
      *
      * Sets a new value for property {@link #getDescription description}.
@@ -33848,6 +34239,26 @@ declare module "sap/m/IllustratedMessage" {
        * New value for property `enableFormattedText`
        */
       bEnableFormattedText?: boolean
+    ): this;
+    /**
+     * @SINCE 1.104
+     *
+     * Sets a new value for property {@link #getEnableVerticalResponsiveness enableVerticalResponsiveness}.
+     *
+     * Defines whether the `IllustratedMessage` would resize itself according to it's height if `illustrationSize`
+     * property is set to `IllustratedMessageSize.Auto`.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setEnableVerticalResponsiveness(
+      /**
+       * New value for property `enableVerticalResponsiveness`
+       */
+      bEnableVerticalResponsiveness?: boolean
     ): this;
     /**
      * @SINCE 1.98
@@ -33919,6 +34330,17 @@ declare module "sap/m/IllustratedMessage" {
     enableFormattedText?: boolean | PropertyBindingInfo | `{${string}}`;
 
     /**
+     * @SINCE 1.104
+     *
+     * Defines whether the `IllustratedMessage` would resize itself according to it's height if `illustrationSize`
+     * property is set to `IllustratedMessageSize.Auto`.
+     */
+    enableVerticalResponsiveness?:
+      | boolean
+      | PropertyBindingInfo
+      | `{${string}}`;
+
+    /**
      * @SINCE 1.98
      *
      * Determines which illustration breakpoint variant is used.
@@ -33968,6 +34390,13 @@ declare module "sap/m/IllustratedMessage" {
       | Button
       | AggregationBindingInfo
       | `{${string}}`;
+
+    /**
+     * @SINCE 1.106.0
+     *
+     * Association to controls / IDs which label those controls (see WAI-ARIA attribute aria-labelledBy).
+     */
+    illustrationAriaLabelledBy?: Array<Control | string>;
   }
 }
 
@@ -34235,6 +34664,8 @@ declare module "sap/m/IllustratedMessageType" {
 declare module "sap/m/Illustration" {
   import { default as Control, $ControlSettings } from "sap/ui/core/Control";
 
+  import { ID } from "sap/ui/core/library";
+
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
   import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
@@ -34309,6 +34740,26 @@ declare module "sap/m/Illustration" {
      */
     static getMetadata(): ElementMetadata;
     /**
+     * @SINCE 1.106.0
+     *
+     * Adds some ariaLabelledBy into the association {@link #getAriaLabelledBy ariaLabelledBy}.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    addAriaLabelledBy(
+      /**
+       * The ariaLabelledBy to add; if empty, nothing is inserted
+       */
+      vAriaLabelledBy: ID | Control
+    ): this;
+    /**
+     * @SINCE 1.106.0
+     *
+     * Returns array of IDs of the elements which are the current targets of the association {@link #getAriaLabelledBy
+     * ariaLabelledBy}.
+     */
+    getAriaLabelledBy(): ID[];
+    /**
      * @SINCE 1.98
      *
      * Gets current value of property {@link #getMedia media}.
@@ -34338,6 +34789,27 @@ declare module "sap/m/Illustration" {
      * @returns Value of property `type`
      */
     getType(): string;
+    /**
+     * @SINCE 1.106.0
+     *
+     * Removes all the controls in the association named {@link #getAriaLabelledBy ariaLabelledBy}.
+     *
+     * @returns An array of the removed elements (might be empty)
+     */
+    removeAllAriaLabelledBy(): ID[];
+    /**
+     * @SINCE 1.106.0
+     *
+     * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
+     *
+     * @returns The removed ariaLabelledBy or `null`
+     */
+    removeAriaLabelledBy(
+      /**
+       * The ariaLabelledBy to be removed or its index or ID
+       */
+      vAriaLabelledBy: int | ID | Control
+    ): ID | null;
     /**
      * @SINCE 1.98
      *
@@ -34412,6 +34884,13 @@ declare module "sap/m/Illustration" {
      * Defines which illustration type should be used when building the Symbol ID.
      */
     type?: string | PropertyBindingInfo;
+
+    /**
+     * @SINCE 1.106.0
+     *
+     * Association to controls / IDs which label those controls (see WAI-ARIA attribute aria-labelledBy).
+     */
+    ariaLabelledBy?: Array<Control | string>;
   }
 }
 
@@ -35231,7 +35710,7 @@ declare module "sap/m/Image" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.79
      *
@@ -35244,7 +35723,7 @@ declare module "sap/m/Image" {
        * The ariaDetails to be removed or its index or ID
        */
       vAriaDetails: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -35255,7 +35734,7 @@ declare module "sap/m/Image" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getActiveSrc activeSrc}.
      *
@@ -35439,7 +35918,7 @@ declare module "sap/m/Image" {
        * Instance of the `LightBox` control or undefined
        */
       oLightBox: LightBox | undefined
-    ): object;
+    ): this;
     /**
      * Sets a new value for property {@link #getHeight height}.
      *
@@ -35980,6 +36459,8 @@ declare module "sap/m/ImageContent" {
 declare module "sap/m/Input" {
   import { default as InputBase, $InputBaseSettings } from "sap/m/InputBase";
 
+  import { IAccessKeySupport, CSSSize, ID, URI } from "sap/ui/core/library";
+
   import Column from "sap/m/Column";
 
   import Item from "sap/ui/core/Item";
@@ -35996,8 +36477,6 @@ declare module "sap/m/Input" {
   } from "sap/ui/base/ManagedObject";
 
   import ListBase from "sap/m/ListBase";
-
-  import { CSSSize, ID, URI } from "sap/ui/core/library";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
@@ -36063,7 +36542,8 @@ declare module "sap/m/Input" {
    * 	 -  If a `selectedKey` is bound and the user types before the data is loaded, the user's input will
    * 			be overwritten by the binding update.
    */
-  export default class Input extends InputBase {
+  export default class Input extends InputBase implements IAccessKeySupport {
+    __implements__sap_ui_core_IAccessKeySupport: boolean;
     /**
      * Constructor for a new `Input`.
      *
@@ -36173,7 +36653,7 @@ declare module "sap/m/Input" {
      *
      * Fired when the value of the input is changed by user interaction - each keystroke, delete, paste, etc.
      *
-     * **Note:** Browsing autocomplete suggestions does not fires the event.
+     * **Note:** Browsing autocomplete suggestions does not fire the event.
      *
      * @returns Reference to `this` in order to allow method chaining
      */
@@ -36200,7 +36680,7 @@ declare module "sap/m/Input" {
      *
      * Fired when the value of the input is changed by user interaction - each keystroke, delete, paste, etc.
      *
-     * **Note:** Browsing autocomplete suggestions does not fires the event.
+     * **Note:** Browsing autocomplete suggestions does not fire the event.
      *
      * @returns Reference to `this` in order to allow method chaining
      */
@@ -36815,7 +37295,8 @@ declare module "sap/m/Input" {
      *
      * Maximum number of characters. Value '0' means the feature is switched off. This parameter is not compatible
      * with the input type `sap.m.InputType.Number`. If the input type is set to `Number`, the `maxLength` value
-     * is ignored.
+     * is ignored. If the `maxLength` is set after there is already a longer value, this value will not get
+     * truncated. The `maxLength` property has effect only when the value is modified by user interaction.
      *
      * Default value is `0`.
      *
@@ -37554,7 +38035,8 @@ declare module "sap/m/Input" {
      *
      * Maximum number of characters. Value '0' means the feature is switched off. This parameter is not compatible
      * with the input type `sap.m.InputType.Number`. If the input type is set to `Number`, the `maxLength` value
-     * is ignored.
+     * is ignored. If the `maxLength` is set after there is already a longer value, this value will not get
+     * truncated. The `maxLength` property has effect only when the value is modified by user interaction.
      *
      * When called with a value of `null` or `undefined`, the default value of the property will be restored.
      *
@@ -38006,7 +38488,8 @@ declare module "sap/m/Input" {
     /**
      * Maximum number of characters. Value '0' means the feature is switched off. This parameter is not compatible
      * with the input type `sap.m.InputType.Number`. If the input type is set to `Number`, the `maxLength` value
-     * is ignored.
+     * is ignored. If the `maxLength` is set after there is already a longer value, this value will not get
+     * truncated. The `maxLength` property has effect only when the value is modified by user interaction.
      */
     maxLength?: int | PropertyBindingInfo | `{${string}}`;
 
@@ -38251,7 +38734,7 @@ declare module "sap/m/Input" {
     /**
      * Fired when the value of the input is changed by user interaction - each keystroke, delete, paste, etc.
      *
-     * **Note:** Browsing autocomplete suggestions does not fires the event.
+     * **Note:** Browsing autocomplete suggestions does not fire the event.
      */
     liveChange?: (oEvent: Event) => void;
 
@@ -38877,7 +39360,7 @@ declare module "sap/m/InputBase" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.27.0
      *
@@ -38890,7 +39373,7 @@ declare module "sap/m/InputBase" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.22.1
      *
@@ -40107,8 +40590,7 @@ declare module "sap/m/InstanceManager" {
      */
     addLightBoxInstance(
       /**
-       * Dialog to be added to instance manager. Dialog which doesn't inherit from sap.m.Dialog can also be added
-       * as long as it has a close method.
+       * LightBox to be added to instance manager.
        */
       oLightBox: LightBox
     ): this;
@@ -40160,7 +40642,7 @@ declare module "sap/m/InstanceManager" {
      */
     getOpenDialogs(): Control[];
     /**
-     * Gets all of the open LightBoxes. If there's no dialog open, an empty array is returned.
+     * Gets all of the open LightBoxes. If there's no LightBox open, an empty array is returned.
      *
      * @returns The opened LightBoxes.
      */
@@ -40269,20 +40751,18 @@ declare module "sap/m/InstanceManager" {
     /**
      * Removes control from predefined dialog category in instance manager.
      *
-     * @returns The removed popover or `null`. If the popover isn't managed, this method returns `null` instead
-     * of the removed popover.
+     * @returns The removed dialog, or `null` if the dialog isn't managed.
      */
     removeDialogInstance(
       /**
        * to be removed from instance manager.
        */
       oDialog: Control
-    ): Control;
+    ): Control | null;
     /**
      * Removes a managed instance from the given category.
      *
-     * @returns The removed instance or `null`. If the instance isn't managed, this method returns `null` instead
-     * of the instance object.
+     * @returns The removed instance, or `null` if the instance isn't managed.
      */
     removeInstance(
       /**
@@ -40297,8 +40777,7 @@ declare module "sap/m/InstanceManager" {
     /**
      * Removes control from predefined lightbox category in instance manager.
      *
-     * @returns The removed popover or `null`. If the LightBox isn't managed, this method returns `null` instead
-     * of the removed LightBox.
+     * @returns The removed LightBox, or `null` if the LightBox isn't managed.
      */
     removeLightBoxInstance(
       /**
@@ -40309,8 +40788,7 @@ declare module "sap/m/InstanceManager" {
     /**
      * Removes control from predefined popover category in instance manager.
      *
-     * @returns The removed popover or `null`. If the popover isn't managed, this method returns `null` instead
-     * of the removed popover.
+     * @returns The removed popover, or `null` if the popover isn't managed.
      */
     removePopoverInstance(
       /**
@@ -40329,6 +40807,7 @@ declare module "sap/m/Label" {
   import {
     Label as Label1,
     IShrinkable,
+    IAccessKeySupport,
     ID,
     TextAlign,
     TextDirection,
@@ -40367,9 +40846,10 @@ declare module "sap/m/Label" {
    */
   export default class Label
     extends Control
-    implements Label1, IShrinkable, IOverflowToolbarContent {
+    implements Label1, IShrinkable, IAccessKeySupport, IOverflowToolbarContent {
     __implements__sap_ui_core_Label: boolean;
     __implements__sap_ui_core_IShrinkable: boolean;
+    __implements__sap_ui_core_IAccessKeySupport: boolean;
     __implements__sap_m_IOverflowToolbarContent: boolean;
     /**
      * Constructor for a new Label.
@@ -40948,7 +41428,7 @@ declare module "sap/m/LightBox" {
    *
    * Additional Information:
    *
-   * Check out the API Reference.
+   * Check out the {@link sap.m.LightBoxItem API Reference}.
    */
   export default class LightBox extends Control implements PopupInterface {
     __implements__sap_ui_core_PopupInterface: boolean;
@@ -41360,6 +41840,7 @@ declare module "sap/m/Link" {
     IShrinkable,
     IFormContent,
     ITitleContent,
+    IAccessKeySupport,
     ID,
     aria,
     URI,
@@ -41370,7 +41851,7 @@ declare module "sap/m/Link" {
 
   import Event from "sap/ui/base/Event";
 
-  import { EmptyIndicatorMode } from "sap/m/library";
+  import { LinkAccessibleRole, EmptyIndicatorMode } from "sap/m/library";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
@@ -41402,10 +41883,11 @@ declare module "sap/m/Link" {
    */
   export default class Link
     extends Control
-    implements IShrinkable, IFormContent, ITitleContent {
+    implements IShrinkable, IFormContent, ITitleContent, IAccessKeySupport {
     __implements__sap_ui_core_IShrinkable: boolean;
     __implements__sap_ui_core_IFormContent: boolean;
     __implements__sap_ui_core_ITitleContent: boolean;
+    __implements__sap_ui_core_IAccessKeySupport: boolean;
     /**
      * Constructor for a new `Link`.
      *
@@ -41588,6 +42070,22 @@ declare module "sap/m/Link" {
      */
     getAccessibilityInfo(): object;
     /**
+     * @SINCE 1.104.0
+     *
+     * Gets current value of property {@link #getAccessibleRole accessibleRole}.
+     *
+     * Describes the accessibility role of the link:
+     * 	 - `LinkAccessibleRole.Default` - a navagation is expected to the location given in `href` property
+     *
+     * 	 - `LinkAccessibleRole.Button` - there will be `role` attribute with value "Button" rendered. In this
+     * 			scenario the `href` property value shouldn't be set as navigation isn't expected to occur.
+     *
+     * Default value is `Default`.
+     *
+     * @returns Value of property `accessibleRole`
+     */
+    getAccessibleRole(): LinkAccessibleRole | keyof typeof LinkAccessibleRole;
+    /**
      * Returns array of IDs of the elements which are the current targets of the association {@link #getAriaDescribedBy
      * ariaDescribedBy}.
      */
@@ -41657,8 +42155,9 @@ declare module "sap/m/Link" {
     /**
      * Gets current value of property {@link #getHref href}.
      *
-     * Defines the link target URI. Supports standard hyperlink behavior. If a JavaScript action should be triggered,
-     * this should not be set, but instead an event handler for the `press` event should be registered.
+     * Defines the link target URI. Supports standard hyperlink behavior. **Note:** Don't set `href` property
+     * if an action should be triggered by the link. Instead set `accessibleRole` property to `LinkAccessibleRole.Button`
+     * and register a `press` event handler.
      *
      * @returns Value of property `href`
      */
@@ -41795,7 +42294,7 @@ declare module "sap/m/Link" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -41806,7 +42305,30 @@ declare module "sap/m/Link" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Sets a new value for property {@link #getAccessibleRole accessibleRole}.
+     *
+     * Describes the accessibility role of the link:
+     * 	 - `LinkAccessibleRole.Default` - a navagation is expected to the location given in `href` property
+     *
+     * 	 - `LinkAccessibleRole.Button` - there will be `role` attribute with value "Button" rendered. In this
+     * 			scenario the `href` property value shouldn't be set as navigation isn't expected to occur.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `Default`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setAccessibleRole(
+      /**
+       * New value for property `accessibleRole`
+       */
+      sAccessibleRole?: LinkAccessibleRole | keyof typeof LinkAccessibleRole
+    ): this;
     /**
      * @SINCE 1.86.0
      *
@@ -41893,8 +42415,9 @@ declare module "sap/m/Link" {
     /**
      * Sets a new value for property {@link #getHref href}.
      *
-     * Defines the link target URI. Supports standard hyperlink behavior. If a JavaScript action should be triggered,
-     * this should not be set, but instead an event handler for the `press` event should be registered.
+     * Defines the link target URI. Supports standard hyperlink behavior. **Note:** Don't set `href` property
+     * if an action should be triggered by the link. Instead set `accessibleRole` property to `LinkAccessibleRole.Button`
+     * and register a `press` event handler.
      *
      * When called with a value of `null` or `undefined`, the default value of the property will be restored.
      *
@@ -42118,8 +42641,9 @@ declare module "sap/m/Link" {
     width?: CSSSize | PropertyBindingInfo | `{${string}}`;
 
     /**
-     * Defines the link target URI. Supports standard hyperlink behavior. If a JavaScript action should be triggered,
-     * this should not be set, but instead an event handler for the `press` event should be registered.
+     * Defines the link target URI. Supports standard hyperlink behavior. **Note:** Don't set `href` property
+     * if an action should be triggered by the link. Instead set `accessibleRole` property to `LinkAccessibleRole.Button`
+     * and register a `press` event handler.
      */
     href?: URI | PropertyBindingInfo | `{${string}}`;
 
@@ -42193,6 +42717,20 @@ declare module "sap/m/Link" {
      */
     ariaHasPopup?:
       | (aria.HasPopup | keyof typeof aria.HasPopup)
+      | PropertyBindingInfo
+      | `{${string}}`;
+
+    /**
+     * @SINCE 1.104.0
+     *
+     * Describes the accessibility role of the link:
+     * 	 - `LinkAccessibleRole.Default` - a navagation is expected to the location given in `href` property
+     *
+     * 	 - `LinkAccessibleRole.Button` - there will be `role` attribute with value "Button" rendered. In this
+     * 			scenario the `href` property value shouldn't be set as navigation isn't expected to occur.
+     */
+    accessibleRole?:
+      | (LinkAccessibleRole | keyof typeof LinkAccessibleRole)
       | PropertyBindingInfo
       | `{${string}}`;
 
@@ -43253,6 +43791,20 @@ declare module "sap/m/ListBase" {
       oListener?: object
     ): this;
     /**
+     * This method is a hook for the RenderManager that gets called during the rendering of child Controls.
+     * It allows to add, remove and update existing accessibility attributes (ARIA) of those controls.
+     */
+    enhanceAccessibilityState(
+      /**
+       * The Control that gets rendered by the RenderManager
+       */
+      oElement: Control,
+      /**
+       * The mapping of "aria-" prefixed attributes
+       */
+      mAriaProps: object
+    ): void;
+    /**
      * @SINCE 1.54
      *
      * Fires event {@link #event:beforeOpenContextMenu beforeOpenContextMenu} to attached listeners.
@@ -43565,7 +44117,11 @@ declare module "sap/m/ListBase" {
      * Returns growing information as object with "actual" and "total" keys. Note: This function returns "null"
      * if "growing" feature is disabled.
      */
-    getGrowingInfo(): object;
+    getGrowingInfo(): {
+      actual: int;
+
+      total: int;
+    } | null;
     /**
      * @SINCE 1.16.0
      *
@@ -43939,7 +44495,7 @@ declare module "sap/m/ListBase" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a item from the aggregation {@link #getItems items}.
      *
@@ -45457,7 +46013,7 @@ declare module "sap/m/ListItemBase" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getCounter counter}.
      *
@@ -45721,6 +46277,8 @@ declare module "sap/m/MaskInput" {
 
   import MaskInputRule from "sap/m/MaskInputRule";
 
+  import Event from "sap/ui/base/Event";
+
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
   import {
@@ -45821,11 +46379,107 @@ declare module "sap/m/MaskInput" {
       oRule: MaskInputRule
     ): this;
     /**
+     * @SINCE 1.104.0
+     *
+     * Attaches event handler `fnFunction` to the {@link #event:liveChange liveChange} event of this `sap.m.MaskInput`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.MaskInput` itself.
+     *
+     * Fired when the value of the `MaskInput` is changed by user interaction - each keystroke, delete, paste,
+     * etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachLiveChange(
+      /**
+       * An application-specific payload object that will be passed to the event handler along with the event
+       * object when firing the event
+       */
+      oData: object,
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.MaskInput` itself
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Attaches event handler `fnFunction` to the {@link #event:liveChange liveChange} event of this `sap.m.MaskInput`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.MaskInput` itself.
+     *
+     * Fired when the value of the `MaskInput` is changed by user interaction - each keystroke, delete, paste,
+     * etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachLiveChange(
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.MaskInput` itself
+       */
+      oListener?: object
+    ): this;
+    /**
      * Destroys all the rules in the aggregation {@link #getRules rules}.
      *
      * @returns Reference to `this` in order to allow method chaining
      */
     destroyRules(): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Detaches event handler `fnFunction` from the {@link #event:liveChange liveChange} event of this `sap.m.MaskInput`.
+     *
+     * The passed function and listener object must match the ones used for event registration.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    detachLiveChange(
+      /**
+       * The function to be called, when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object on which the given function had to be called
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Fires event {@link #event:liveChange liveChange} to attached listeners.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    fireLiveChange(
+      /**
+       * Parameters to pass along with the event
+       */
+      mParameters?: {
+        /**
+         * The current value of the input, after a live change event.
+         */
+        value?: string;
+        /**
+         * The previous value of the input, before the last user interaction.
+         */
+        previousValue?: string;
+      }
+    ): this;
     /**
      * Gets current value of property {@link #getMask mask}.
      *
@@ -46013,6 +46667,16 @@ declare module "sap/m/MaskInput" {
       | MaskInputRule
       | AggregationBindingInfo
       | `{${string}}`;
+
+    /**
+     * @SINCE 1.104.0
+     *
+     * Fired when the value of the `MaskInput` is changed by user interaction - each keystroke, delete, paste,
+     * etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     */
+    liveChange?: (oEvent: Event) => void;
   }
 }
 
@@ -47034,7 +47698,7 @@ declare module "sap/m/MenuButton" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -47045,7 +47709,7 @@ declare module "sap/m/MenuButton" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getActiveIcon activeIcon}.
      *
@@ -49704,7 +50368,7 @@ declare module "sap/m/MessagePage" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -49715,7 +50379,7 @@ declare module "sap/m/MessagePage" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.54
      *
@@ -54976,7 +55640,7 @@ declare module "sap/m/NavContainer" {
       /**
        * The screen to which drilldown should happen. The ID or the control itself can be given.
        */
-      vPageIdOrControl: string,
+      vPageIdOrControl: string | Control,
       /**
        * The type of the transition/animation to apply. Options are "slide" (horizontal movement from the right),
        * "baseSlide", "fade", "flip", and "show" and the names of any registered custom transitions.
@@ -59093,7 +59757,7 @@ declare module "sap/m/ObjectHeader" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -59104,7 +59768,7 @@ declare module "sap/m/ObjectHeader" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a attribute from the aggregation {@link #getAttributes attributes}.
      *
@@ -60381,7 +61045,7 @@ declare module "sap/m/ObjectIdentifier" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @deprecated (since 1.24.0) - There is no replacement for the moment.
      *
@@ -61706,7 +62370,7 @@ declare module "sap/m/ObjectMarker" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -61717,7 +62381,7 @@ declare module "sap/m/ObjectMarker" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getAdditionalInfo additionalInfo}.
      *
@@ -62183,7 +62847,7 @@ declare module "sap/m/ObjectNumber" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -62194,7 +62858,7 @@ declare module "sap/m/ObjectNumber" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.86
      *
@@ -62778,7 +63442,7 @@ declare module "sap/m/ObjectStatus" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.54
      *
@@ -63645,6 +64309,556 @@ declare module "sap/m/OverflowToolbarToggleButton" {
     extends $ToggleButtonSettings {}
 }
 
+declare module "sap/m/p13n/BasePanel" {
+  import { default as Control, $ControlSettings } from "sap/ui/core/Control";
+
+  import { p13n } from "sap/m/library";
+
+  import Event from "sap/ui/base/Event";
+
+  import ElementMetadata from "sap/ui/core/ElementMetadata";
+
+  import MessageStrip from "sap/m/MessageStrip";
+
+  import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
+
+  /**
+   * @SINCE 1.96
+   * @EXPERIMENTAL (since 1.96)
+   *
+   * This control serves as base class for personalization implementations. This faceless class serves as
+   * a way to implement control-specific personalization panels.
+   */
+  export default class BasePanel extends Control implements p13n.IContent {
+    __implements__sap_m_p13n_IContent: boolean;
+    /**
+     * Constructor for a new `BasePanel`.
+     *
+     * Accepts an object literal `mSettings` that defines initial property values, aggregated and associated
+     * objects as well as event handlers. See {@link sap.ui.base.ManagedObject#constructor} for a general description
+     * of the syntax of the settings object.
+     */
+    constructor(
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: $BasePanelSettings
+    );
+    /**
+     * Constructor for a new `BasePanel`.
+     *
+     * Accepts an object literal `mSettings` that defines initial property values, aggregated and associated
+     * objects as well as event handlers. See {@link sap.ui.base.ManagedObject#constructor} for a general description
+     * of the syntax of the settings object.
+     */
+    constructor(
+      /**
+       * ID for the new control, generated automatically if no ID is given
+       */
+      sId?: string,
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: $BasePanelSettings
+    );
+
+    /**
+     * Creates a new subclass of class sap.m.p13n.BasePanel with name `sClassName` and enriches it with the
+     * information contained in `oClassInfo`.
+     *
+     * `oClassInfo` might contain the same kind of information as described in {@link sap.ui.core.Control.extend}.
+     *
+     * @returns Created class / constructor function
+     */
+    static extend<T extends Record<string, unknown>>(
+      /**
+       * Name of the class being created
+       */
+      sClassName: string,
+      /**
+       * Object literal with information about the class
+       */
+      oClassInfo?: sap.ClassInfo<T, BasePanel>,
+      /**
+       * Constructor function for the metadata object; if not given, it defaults to the metadata implementation
+       * used by this class
+       */
+      FNMetaImpl?: Function
+    ): Function;
+    /**
+     * Returns a metadata object for class sap.m.p13n.BasePanel.
+     *
+     * @returns Metadata object describing this class
+     */
+    static getMetadata(): ElementMetadata;
+    /**
+     * Attaches event handler `fnFunction` to the {@link #event:change change} event of this `sap.m.p13n.BasePanel`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.p13n.BasePanel` itself.
+     *
+     * This event is fired if any change has been made within the `BasePanel` control.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachChange(
+      /**
+       * An application-specific payload object that will be passed to the event handler along with the event
+       * object when firing the event
+       */
+      oData: object,
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.p13n.BasePanel` itself
+       */
+      oListener?: object
+    ): this;
+    /**
+     * Attaches event handler `fnFunction` to the {@link #event:change change} event of this `sap.m.p13n.BasePanel`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.p13n.BasePanel` itself.
+     *
+     * This event is fired if any change has been made within the `BasePanel` control.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachChange(
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.p13n.BasePanel` itself
+       */
+      oListener?: object
+    ): this;
+    /**
+     * Destroys the messageStrip in the aggregation {@link #getMessageStrip messageStrip}.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    destroyMessageStrip(): this;
+    /**
+     * Detaches event handler `fnFunction` from the {@link #event:change change} event of this `sap.m.p13n.BasePanel`.
+     *
+     * The passed function and listener object must match the ones used for event registration.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    detachChange(
+      /**
+       * The function to be called, when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object on which the given function had to be called
+       */
+      oListener?: object
+    ): this;
+    /**
+     * Fires event {@link #event:change change} to attached listeners.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    fireChange(
+      /**
+       * Parameters to pass along with the event
+       */
+      mParameters?: object
+    ): this;
+    /**
+     * Gets current value of property {@link #getEnableReorder enableReorder}.
+     *
+     * Determines whether the reordering of personalization items is enabled.
+     *
+     * Default value is `true`.
+     *
+     * @returns Value of property `enableReorder`
+     */
+    getEnableReorder(): boolean;
+    /**
+     * Getter for the `messageStrip` aggregation.
+     *
+     * @returns The BasePanel instance
+     */
+    getMessageStrip(): BasePanel;
+    /**
+     * Returns the personalization state that is currently displayed by the `BasePanel`.
+     *
+     * @returns An array containing the personalization state that is currently displayed by the `BasePanel`
+     */
+    getP13nData(
+      /**
+       * Determines whether only the present items is included
+       */
+      bOnlyActive: boolean
+    ): Item[];
+    /**
+     * Gets current value of property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * @returns Value of property `title`
+     */
+    getTitle(): string;
+    /**
+     * The `enableReorder` property determines whether additional move buttons are shown when hovering over
+     * the inner list. In addition, drag and drop will be enabled for the inner list control.
+     *
+     * @returns The BasePanel instance
+     */
+    setEnableReorder(
+      /**
+       * Determines whether reordering is enabled
+       */
+      bEnableReorder: boolean
+    ): BasePanel;
+    /**
+     * Displays a `sap.m.MessageStrip` instance in the content area of the `BasePanel`.
+     *
+     * @returns The `BasePanel` instance
+     */
+    setMessageStrip(
+      /**
+       * Instance of a sap.m.MessageStrip
+       */
+      oStrip: MessageStrip
+    ): BasePanel;
+    /**
+     * Sets the personalization state of the panel instance.
+     *
+     * @returns The BasePanel instance
+     */
+    setP13nData(
+      /**
+       * An array containing the personalization state that is represented by the `BasePanel`.
+       */
+      aP13nData: Item[]
+    ): this;
+    /**
+     * Sets a new value for property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setTitle(
+      /**
+       * New value for property `title`
+       */
+      sTitle: string
+    ): this;
+  }
+  /**
+   * P13n `Item` object type.
+   */
+  export type Item = {
+    /**
+     * The unique key of the item
+     */
+    name: string;
+    /**
+     * The label describing the personalization item
+     */
+    label: string;
+    /**
+     * Defines the selection state of the personalization item
+     */
+    visible: boolean;
+  };
+
+  export interface $BasePanelSettings extends $ControlSettings {
+    /**
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     */
+    title?: string | PropertyBindingInfo;
+
+    /**
+     * Determines whether the reordering of personalization items is enabled.
+     */
+    enableReorder?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Defines an optional message strip to be displayed in the content area.
+     */
+    messageStrip?: MessageStrip;
+
+    /**
+     * This event is fired if any change has been made within the `BasePanel` control.
+     */
+    change?: (oEvent: Event) => void;
+  }
+}
+
+declare module "sap/m/p13n/Engine" {
+  import Control from "sap/ui/core/Control";
+
+  import Metadata from "sap/ui/base/Metadata";
+
+  /**
+   * @SINCE 1.104
+   * @EXPERIMENTAL (since 1.104)
+   *
+   * The `Engine` offers personalization capabilities by registering a control instance for modification such
+   * as:
+   *
+   *
+   * 	 - `sap.m.p13n.Popup` initialization
+   * 	 - Storing personalization states by choosing the desired persistence layer
+   * 	 - State appliance considering the persistence layer
+   *
+   * The Engine should be used whenever personalization should be enabled by considering a certain persistence
+   * layer. Available controller implementations for the registration process are:
+   *
+   *
+   * 	 - {@link sap.m.p13n.SelectionController SelectionController}: can be used to define a list of selectable
+   * 			entries
+   * 	 - {@link sap.m.p13n.SortController SortController}: can be used to define a list of sortable properties
+   *
+   * 	 - {@link sap.m.p13n.GroupController GroupController}: can be used to define a list of groupable properties
+   *
+   *
+   * The following persistence layers can be chosen for personalization services:
+   *
+   *
+   * 	 - {@link sap.m.p13n.modification.FlexModificationHandler FlexModificationHandler}: Can be used in combination
+   * 			with `sap.ui.fl.variants.VariantManagement` to persist state in variant using `sap.ui.fl` capabilities.
+   *
+   * 	 - {@link sap.m.p13n.modification.LocalStorageModificationHandler LocalStorageModificationHandler}:
+   * 			can be used to store personalization state in the local storage
+   * 	 - {@link sap.m.p13n.modification.ModificationHandler ModificationHandler}: will be used by default
+   * 			- this handler will not persist state.
+   */
+  interface Engine {
+    /**
+     * Creates a new subclass of class sap.m.p13n.Engine with name `sClassName` and enriches it with the information
+     * contained in `oClassInfo`.
+     *
+     * `oClassInfo` might contain the same kind of information as described in {@link sap.m.p13n.AdaptationProvider.extend}.
+     *
+     * @returns Created class / constructor function
+     */
+    extend(
+      /**
+       * Name of the class being created
+       */
+      sClassName: string,
+      /**
+       * Object literal with information about the class
+       */
+      oClassInfo?: object,
+      /**
+       * Constructor function for the metadata object; if not given, it defaults to the metadata implementation
+       * used by this class
+       */
+      FNMetaImpl?: Function
+    ): Function;
+    /**
+     * Returns a metadata object for class sap.m.p13n.Engine.
+     *
+     * @returns Metadata object describing this class
+     */
+    getMetadata(): Metadata;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * Apply a State on a control by passing an object that contains the registered controller key and an object
+     * matching the innter subcontroller housekeeping.
+     *
+     * @returns A Promise resolving after the state has been applied
+     */
+    applyState(
+      /**
+       * The registered control instance
+       */
+      oControl: Control,
+      /**
+       * The state object
+       */
+      oState: object,
+      /**
+       * Defines whether the state should be an additional delta on the current control state
+       */
+      bApplyAbsolute: boolean
+    ): Promise<any>;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * Attaches an event handler to the `StateHandlerRegistry` class. The event handler may be fired every time
+     * a user triggers a personalization change for a control instance during runtime.
+     *
+     * @returns Returns `this` to allow method chaining
+     */
+    attachStateChange(
+      /**
+       * The handler function to call when the event occurs
+       */
+      fnStateEventHandler: Function
+    ): this;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * Deregister a registered control. By deregistering a control the control will be removed from the `Engine`
+     * registry and all instance specific sub modules such as the registered controllers are going to be destroyed.
+     */
+    deregister(
+      /**
+       * The registered control instance
+       */
+      oControl: Control
+    ): void;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * Removes a previously attached state change event handler from the `StateHandlerRegistry` class. The passed
+     * parameters must match those used for registration with {@link sap.m.p13n.Engine#attachStateChange} beforehand.
+     *
+     * @returns Returns `this` to allow method chaining
+     */
+    detachStateChange(
+      /**
+       * The handler function to detach from the event
+       */
+      fnStateEventHandler: Function
+    ): this;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * This method should only be called once per instance to register provided classes of `sap.m.p13n.Controller`
+     * for the control instance.
+     */
+    register(
+      /**
+       * The control instance to be registered for adaptation
+       */
+      oControl: Control,
+      /**
+       * The config object providing key value pairs of keys and `sap.m.p13n.*Controller` classes.
+       */
+      oConfig: Object
+    ): void;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * This method can be used to trigger a reset on the provided control instance.
+     *
+     * @returns A Promise resolving once the reset is completed.
+     */
+    reset(
+      /**
+       * The according control instance.
+       */
+      oControl: Control,
+      /**
+       * The key for the affected config.
+       */
+      aKeys: string
+    ): Promise<any>;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * Retrieves the externalized state for a given control instance, after all necessary changes have been
+     * applied (e.g. modification handler appliance). After the returned Promise has been resolved, the returned
+     * State is in sync with the according state object of the control.
+     *
+     * @returns a Promise resolving in the current control state.
+     */
+    retrieveState(
+      /**
+       * The control instance implementing IxState to retrieve the externalized state
+       */
+      oControl: object
+    ): Promise<any>;
+    /**
+     * @EXPERIMENTAL (since 1.104)
+     *
+     * Opens the personalization dialog.
+     *
+     * @returns Promise resolving in the `sap.m.p13n.Popup` instance.
+     */
+    show(
+      /**
+       * The control instance to be personalized
+       */
+      oControl: Control,
+      /**
+       * The affected panels that should be added to the `sap.m.p13n.Popup`
+       */
+      vPanelKeys: string | string[],
+      /**
+       * The settings object for the personalization
+       */
+      mSettings: {
+        /**
+         * The title for the `sap.m.p13n.Popup` control
+         */
+        title?: string;
+        /**
+         * The source control to be used by the `sap.m.p13n.Popup` control (only necessary in case the mode is set
+         * to `ResponsivePopover`)
+         */
+        source?: Control;
+        /**
+         * The mode to be used by the `sap.m.p13n.Popup` control
+         */
+        mode?: object;
+        /**
+         * Height configuration for the related popup container
+         */
+        contentHeight?: object;
+        /**
+         * Width configuration for the related popup container
+         */
+        contentWidth?: object;
+      }
+    ): Promise<any>;
+  }
+  const Engine: Engine;
+  export default Engine;
+}
+
+declare module "sap/m/p13n/GroupController" {
+  import BaseObject from "sap/ui/base/Object";
+
+  import Control from "sap/ui/core/Control";
+
+  /**
+   * @SINCE 1.104
+   * @EXPERIMENTAL
+   *
+   * The `GroupController` serves as base class to create sort specific personalization implementations.
+   */
+  export default class GroupController extends BaseObject {
+    /**
+     * Constructor for a new `GroupController`.
+     */
+    constructor(
+      /**
+       * ID for the new control, generated automatically if no ID is given
+       */
+      sId?: string,
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: {
+        /**
+         * The control instance to be personalized by this controller
+         */
+        control: Control;
+      }
+    );
+  }
+}
+
 declare module "sap/m/p13n/GroupPanel" {
   import ElementMetadata from "sap/ui/core/ElementMetadata";
 
@@ -63669,8 +64883,7 @@ declare module "sap/m/p13n/GroupPanel" {
   };
 
   /**
-   * @SINCE 1.96
-   * @EXPERIMENTAL (since 1.96)
+   * @EXPERIMENTAL (since 1.104)
    *
    * This control can be used to customize personalization content for grouping for an associated control
    * instance.
@@ -63759,6 +64972,17 @@ declare module "sap/m/p13n/GroupPanel" {
      */
     getEnableShowField(): boolean;
     /**
+     * Gets current value of property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * Default value is `...see text or source`.
+     *
+     * @returns Value of property `title`
+     */
+    getTitle(): string;
+    /**
      * Sets a new value for property {@link #getEnableShowField enableShowField}.
      *
      * Toggles an additional checkbox in the group panel to define whether items are made visible.
@@ -63775,10 +64999,34 @@ declare module "sap/m/p13n/GroupPanel" {
        */
       bEnableShowField?: boolean
     ): this;
+    /**
+     * Sets a new value for property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `...see text or source`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setTitle(
+      /**
+       * New value for property `title`
+       */
+      sTitle?: string
+    ): this;
   }
 
   export interface $GroupPanelSettings
     extends /* was: sap.m.p13n.$QueryPanelSettings */ Object {
+    /**
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     */
+    title?: string | PropertyBindingInfo;
+
     /**
      * Toggles an additional checkbox in the group panel to define whether items are made visible.
      */
@@ -63786,24 +65034,40 @@ declare module "sap/m/p13n/GroupPanel" {
   }
 }
 
-declare module "sap/m/p13n/BasePanel" {
+declare module "sap/m/p13n/modification/FlexModificationHandler" {
   /**
-   * P13n `Item` object type.
+   * @EXPERIMENTAL (since 1.104)
+   *
+   * This class offers `sap.ui.fl` capabilities. It should be used as the persistence layer in the {@link
+   * sap.m.p13n.Engine#register Engine#register}process.
    */
-  export type Item = {
-    /**
-     * The unique key of the item
-     */
-    name: string;
-    /**
-     * The label describing the personalization item
-     */
-    label: string;
-    /**
-     * Defines the selection state of the personalization item
-     */
-    visible: boolean;
-  };
+  export default class FlexModificationHandler {
+    constructor();
+  }
+}
+
+declare module "sap/m/p13n/modification/LocalStorageModificationHandler" {
+  /**
+   * @EXPERIMENTAL (since 1.104)
+   *
+   * This class offers `localStorage` capabilities. It should be used as the persistence layer in the {@link
+   * sap.m.p13n.Engine#register Engine#register} process.
+   */
+  export default class LocalStorageModificationHandler {
+    constructor();
+  }
+}
+
+declare module "sap/m/p13n/modification/ModificationHandler" {
+  /**
+   * @EXPERIMENTAL (since 1.104)
+   *
+   * This class offers modification capabilities without persistence. It should be used as the persistence
+   * layer in the {@link sap.m.p13n.Engine#register Engine#register} process.
+   */
+  export default class ModificationHandler {
+    constructor();
+  }
 }
 
 declare module "sap/m/p13n/Popup" {
@@ -63811,11 +65075,11 @@ declare module "sap/m/p13n/Popup" {
 
   import Button from "sap/m/Button";
 
+  import { p13n, P13nPopupMode } from "sap/m/library";
+
   import Event from "sap/ui/base/Event";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
-
-  import { P13nPopupMode } from "sap/m/library";
 
   import { CSSSize } from "sap/ui/core/library";
 
@@ -63911,7 +65175,11 @@ declare module "sap/m/p13n/Popup" {
       /**
        * The panel instance
        */
-      oPanel: /* was: sap.m.p13n.IContent */ any
+      oPanel: p13n.IContent,
+      /**
+       * Optional key to be used for the panel registration instead of using the id
+       */
+      sKey?: string
     ): Popup;
     /**
      * Attaches event handler `fnFunction` to the {@link #event:close close} event of this `sap.m.p13n.Popup`.
@@ -64019,7 +65287,7 @@ declare module "sap/m/p13n/Popup" {
      *
      * @returns An array of panel instances
      */
-    getPanels(): /* was: sap.m.p13n.IContent */ any[];
+    getPanels(): p13n.IContent[];
     /**
      * Gets current value of property {@link #getReset reset}.
      *
@@ -64068,7 +65336,7 @@ declare module "sap/m/p13n/Popup" {
       /**
        * The panel whose index is looked for
        */
-      oPanel: /* was: sap.m.p13n.IContent */ any
+      oPanel: p13n.IContent
     ): int;
     /**
      * Inserts a additionalButton into the aggregation {@link #getAdditionalButtons additionalButtons}.
@@ -64096,7 +65364,7 @@ declare module "sap/m/p13n/Popup" {
       /**
        * The panel to insert; if empty, nothing is inserted
        */
-      oPanel: /* was: sap.m.p13n.IContent */ any,
+      oPanel: p13n.IContent,
       /**
        * The `0`-based index the panel should be inserted at; for a negative value of `iIndex`, the panel is inserted
        * at position 0; for a value greater than the current size of the aggregation, the panel is inserted at
@@ -64152,14 +65420,6 @@ declare module "sap/m/p13n/Popup" {
      */
     removeAllAdditionalButtons(): Button[];
     /**
-     * Removes all the controls from the aggregation {@link #getPanels panels}.
-     *
-     * Additionally, it unregisters them from the hosting UIArea.
-     *
-     * @returns An array of the removed elements (might be empty)
-     */
-    removeAllPanels(): /* was: sap.m.p13n.IContent */ any[];
-    /**
      * Removes a panel instance.
      *
      * @returns The popup instance
@@ -64168,7 +65428,7 @@ declare module "sap/m/p13n/Popup" {
       /**
        * The panel instance
        */
-      oPanel: /* was: sap.m.p13n.IContent */ any
+      oPanel: p13n.IContent
     ): Popup;
     /**
      * Sets the desired popup mode, see also {@link sap.m.P13nPopupMode}.
@@ -64181,22 +65441,6 @@ declare module "sap/m/p13n/Popup" {
        */
       sMode: P13nPopupMode | keyof typeof P13nPopupMode
     ): Popup;
-    /**
-     * Sets a new value for property {@link #getReset reset}.
-     *
-     * A callback that will be executed once a reset has been triggered. **Note:** The Reset button will only
-     * be shown in case this callback is provided.
-     *
-     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
-     *
-     * @returns Reference to `this` in order to allow method chaining
-     */
-    setReset(
-      /**
-       * New value for property `reset`
-       */
-      fnReset: Function
-    ): this;
     /**
      * Sets a new value for property {@link #getTitle title}.
      *
@@ -64259,9 +65503,9 @@ declare module "sap/m/p13n/Popup" {
     /**
      * The panels that are displayed by the `sap.m.p13n.Popup`.
      */
-    panels?: /* was: sap.m.p13n.IContent */
-      | any[]
-      | /* was: sap.m.p13n.IContent */ any
+    panels?:
+      | p13n.IContent[]
+      | p13n.IContent
       | AggregationBindingInfo
       | `{${string}}`;
 
@@ -64281,10 +65525,82 @@ declare module "sap/m/p13n/Popup" {
   }
 }
 
-declare module "sap/m/p13n/SelectionPanel" {
-  import ElementMetadata from "sap/ui/core/ElementMetadata";
+declare module "sap/m/p13n/SelectionController" {
+  import BaseObject from "sap/ui/base/Object";
 
-  import { Item } from "sap/m/p13n/BasePanel";
+  import Control from "sap/ui/core/Control";
+
+  import Metadata from "sap/ui/base/Metadata";
+
+  /**
+   * @EXPERIMENTAL (since 1.104)
+   *
+   * The `SelectionController` serves as base class to create control specific personalization implementations.
+   */
+  export default class SelectionController extends BaseObject {
+    /**
+     * Constructor for a new `SelectionController`.
+     */
+    constructor(
+      /**
+       * ID for the new control, generated automatically if no ID is given
+       */
+      sId?: string,
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: {
+        /**
+         * The control instance to be personalized by this controller
+         */
+        control: Control;
+        /**
+         * The name of the personalized aggregation
+         */
+        targetAggregation: string;
+      }
+    );
+
+    /**
+     * Creates a new subclass of class sap.m.p13n.SelectionController with name `sClassName` and enriches it
+     * with the information contained in `oClassInfo`.
+     *
+     * `oClassInfo` might contain the same kind of information as described in {@link sap.ui.base.Object.extend}.
+     *
+     * @returns Created class / constructor function
+     */
+    static extend<T extends Record<string, unknown>>(
+      /**
+       * Name of the class being created
+       */
+      sClassName: string,
+      /**
+       * Object literal with information about the class
+       */
+      oClassInfo?: sap.ClassInfo<T, SelectionController>,
+      /**
+       * Constructor function for the metadata object; if not given, it defaults to the metadata implementation
+       * used by this class
+       */
+      FNMetaImpl?: Function
+    ): Function;
+    /**
+     * Returns a metadata object for class sap.m.p13n.SelectionController.
+     *
+     * @returns Metadata object describing this class
+     */
+    static getMetadata(): Metadata;
+  }
+}
+
+declare module "sap/m/p13n/SelectionPanel" {
+  import {
+    default as BasePanel,
+    Item,
+    $BasePanelSettings,
+  } from "sap/m/p13n/BasePanel";
+
+  import ElementMetadata from "sap/ui/core/ElementMetadata";
 
   import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 
@@ -64295,8 +65611,7 @@ declare module "sap/m/p13n/SelectionPanel" {
    * This control can be used to customize personalization content for adding/removing items for an associated
    * control instance.
    */
-  export default class SelectionPanel
-    /* was: sap.m.p13n.BasePanel */ extends Object {
+  export default class SelectionPanel extends BasePanel {
     /**
      * Constructor for a new `SelectionPanel`.
      *
@@ -64400,13 +65715,24 @@ declare module "sap/m/p13n/SelectionPanel" {
     /**
      * Gets current value of property {@link #getShowHeader showHeader}.
      *
-     * Shows an additional header with a search field and the Show Selected button.
+     * /** Shows an additional header with a search field and the Show Selected button.
      *
      * Default value is `false`.
      *
      * @returns Value of property `showHeader`
      */
     getShowHeader(): boolean;
+    /**
+     * Gets current value of property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * Default value is `...see text or source`.
+     *
+     * @returns Value of property `title`
+     */
+    getTitle(): string;
     /**
      * Sets a new value for property {@link #getActiveColumn activeColumn}.
      *
@@ -64477,17 +65803,19 @@ declare module "sap/m/p13n/SelectionPanel" {
     ): this;
     /**
      * Sets the personalization state of the panel instance.
+     *
+     * @returns The `SelectionPanel` instance
      */
     setP13nData(
       /**
        * An array containing the personalization state that is represented by the `SelectionPanel`.
        */
       aP13nData: Item[]
-    ): void;
+    ): this;
     /**
      * Sets a new value for property {@link #getShowHeader showHeader}.
      *
-     * Shows an additional header with a search field and the Show Selected button.
+     * /** Shows an additional header with a search field and the Show Selected button.
      *
      * When called with a value of `null` or `undefined`, the default value of the property will be restored.
      *
@@ -64501,12 +65829,35 @@ declare module "sap/m/p13n/SelectionPanel" {
        */
       bShowHeader?: boolean
     ): this;
+    /**
+     * Sets a new value for property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `...see text or source`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setTitle(
+      /**
+       * New value for property `title`
+       */
+      sTitle?: string
+    ): this;
   }
 
-  export interface $SelectionPanelSettings
-    extends /* was: sap.m.p13n.$BasePanelSettings */ Object {
+  export interface $SelectionPanelSettings extends $BasePanelSettings {
     /**
-     * Shows an additional header with a search field and the Show Selected button.
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     */
+    title?: string | PropertyBindingInfo;
+
+    /**
+     * /** Shows an additional header with a search field and the Show Selected button.
      */
     showHeader?: boolean | PropertyBindingInfo | `{${string}}`;
 
@@ -64534,8 +65885,74 @@ declare module "sap/m/p13n/SelectionPanel" {
   }
 }
 
+declare module "sap/m/p13n/SortController" {
+  import BaseObject from "sap/ui/base/Object";
+
+  import Control from "sap/ui/core/Control";
+
+  import Metadata from "sap/ui/base/Metadata";
+
+  /**
+   * @EXPERIMENTAL (since 1.104)
+   *
+   * The `SortController` serves as base class to create sort specific personalization implementations.
+   */
+  export default class SortController extends BaseObject {
+    /**
+     * Constructor for a new `SortController`.
+     */
+    constructor(
+      /**
+       * ID for the new control, generated automatically if no ID is given
+       */
+      sId?: string,
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: {
+        /**
+         * The control instance to be personalized by this controller
+         */
+        control: Control;
+      }
+    );
+
+    /**
+     * Creates a new subclass of class sap.m.p13n.SortController with name `sClassName` and enriches it with
+     * the information contained in `oClassInfo`.
+     *
+     * `oClassInfo` might contain the same kind of information as described in {@link sap.ui.base.Object.extend}.
+     *
+     * @returns Created class / constructor function
+     */
+    static extend<T extends Record<string, unknown>>(
+      /**
+       * Name of the class being created
+       */
+      sClassName: string,
+      /**
+       * Object literal with information about the class
+       */
+      oClassInfo?: sap.ClassInfo<T, SortController>,
+      /**
+       * Constructor function for the metadata object; if not given, it defaults to the metadata implementation
+       * used by this class
+       */
+      FNMetaImpl?: Function
+    ): Function;
+    /**
+     * Returns a metadata object for class sap.m.p13n.SortController.
+     *
+     * @returns Metadata object describing this class
+     */
+    static getMetadata(): Metadata;
+  }
+}
+
 declare module "sap/m/p13n/SortPanel" {
   import ElementMetadata from "sap/ui/core/ElementMetadata";
+
+  import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 
   /**
    * P13n `SortItem` object type.
@@ -64573,9 +65990,6 @@ declare module "sap/m/p13n/SortPanel" {
      * Accepts an object literal `mSettings` that defines initial property values, aggregated and associated
      * objects as well as event handlers. See {@link sap.ui.base.ManagedObject#constructor} for a general description
      * of the syntax of the settings object.
-     *
-     * This class does not have its own settings, but all settings applicable to the base type {@link sap.m.p13n.QueryPanel#constructor
-     * sap.m.p13n.QueryPanel} can be used.
      */
     constructor(
       /**
@@ -64589,9 +66003,6 @@ declare module "sap/m/p13n/SortPanel" {
      * Accepts an object literal `mSettings` that defines initial property values, aggregated and associated
      * objects as well as event handlers. See {@link sap.ui.base.ManagedObject#constructor} for a general description
      * of the syntax of the settings object.
-     *
-     * This class does not have its own settings, but all settings applicable to the base type {@link sap.m.p13n.QueryPanel#constructor
-     * sap.m.p13n.QueryPanel} can be used.
      */
     constructor(
       /**
@@ -64644,10 +66055,45 @@ declare module "sap/m/p13n/SortPanel" {
        */
       aP13nData: SortItem
     ): SortPanel;
+    /**
+     * Gets current value of property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * Default value is `...see text or source`.
+     *
+     * @returns Value of property `title`
+     */
+    getTitle(): string;
+    /**
+     * Sets a new value for property {@link #getTitle title}.
+     *
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `...see text or source`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setTitle(
+      /**
+       * New value for property `title`
+       */
+      sTitle?: string
+    ): this;
   }
 
   export interface $SortPanelSettings
-    extends /* was: sap.m.p13n.$QueryPanelSettings */ Object {}
+    extends /* was: sap.m.p13n.$QueryPanelSettings */ Object {
+    /**
+     * A short text describing the panel. **Note:** This text will only be displayed if the panel is being used
+     * in a `sap.m.p13n.Popup`.
+     */
+    title?: string | PropertyBindingInfo;
+  }
 }
 
 declare module "sap/m/P13nColumnsItem" {
@@ -69904,6 +71350,8 @@ declare module "sap/m/P13nItem" {
 declare module "sap/m/P13nPanel" {
   import { default as Control, $ControlSettings } from "sap/ui/core/Control";
 
+  import { p13n } from "sap/m/library";
+
   import P13nItem from "sap/m/P13nItem";
 
   import Event from "sap/ui/base/Event";
@@ -69920,7 +71368,8 @@ declare module "sap/m/P13nPanel" {
    *
    * An abstract base type for `panels` aggregation in `P13nDialog` control.
    */
-  export default class P13nPanel extends Control {
+  export default class P13nPanel extends Control implements p13n.IContent {
+    __implements__sap_m_p13n_IContent: boolean;
     /**
      * Constructor for a new P13nPanel.
      *
@@ -75876,7 +77325,7 @@ declare module "sap/m/PlanningCalendar" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a row from the aggregation {@link #getRows rows}.
      *
@@ -76386,8 +77835,8 @@ declare module "sap/m/PlanningCalendar" {
       /**
        * the width to be set to the PlanningCalendar
        */
-      sWidth: undefined
-    ): object;
+      sWidth: CSSSize
+    ): this;
   }
   /**
    * A comparison function for appointments.
@@ -80816,7 +82265,7 @@ declare module "sap/m/Popover" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -80827,7 +82276,7 @@ declare module "sap/m/Popover" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a content from the aggregation {@link #getContent content}.
      *
@@ -81785,7 +83234,7 @@ declare module "sap/m/ProgressIndicator" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.69
      *
@@ -81798,7 +83247,7 @@ declare module "sap/m/ProgressIndicator" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.73
      *
@@ -85002,7 +86451,7 @@ declare module "sap/m/RadioButton" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -85013,7 +86462,7 @@ declare module "sap/m/RadioButton" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getActiveHandling activeHandling}.
      *
@@ -85722,7 +87171,7 @@ declare module "sap/m/RadioButtonGroup" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -85733,7 +87182,7 @@ declare module "sap/m/RadioButtonGroup" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a radio button from the group.
      *
@@ -86562,7 +88011,7 @@ declare module "sap/m/RatingIndicator" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -86573,7 +88022,7 @@ declare module "sap/m/RatingIndicator" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.50.0
      *
@@ -86856,6 +88305,10 @@ declare module "sap/m/ResponsivePopover" {
   import { IBar, PlacementType, TitleAlignment } from "sap/m/library";
 
   import ElementMetadata from "sap/ui/core/ElementMetadata";
+
+  import Popover from "sap/m/Popover";
+
+  import Dialog from "sap/m/Dialog";
 
   import {
     PropertyBindingInfo,
@@ -87577,10 +89030,10 @@ declare module "sap/m/ResponsivePopover" {
     openBy(
       /**
        * When this control is displayed on tablet or desktop, the ResponsivePopover is positioned relative to
-       * this control.
+       * this UI5 control or DOM element.
        */
-      oParent: object
-    ): object;
+      oParent: Control | HTMLElement
+    ): Popover | Dialog;
     /**
      * Removes all the controls in the association named {@link #getAriaDescribedBy ariaDescribedBy}.
      *
@@ -87611,7 +89064,7 @@ declare module "sap/m/ResponsivePopover" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -87622,7 +89075,7 @@ declare module "sap/m/ResponsivePopover" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a content from the aggregation {@link #getContent content}.
      *
@@ -90266,7 +91719,7 @@ declare module "sap/m/SearchField" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -90277,7 +91730,7 @@ declare module "sap/m/SearchField" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.34
      *
@@ -91277,7 +92730,7 @@ declare module "sap/m/SegmentedButton" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -91288,7 +92741,7 @@ declare module "sap/m/SegmentedButton" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @deprecated (since 1.28.0) - replaced by `items` aggregation
      *
@@ -92140,7 +93593,6 @@ declare module "sap/m/Select" {
     getAutoAdjustWidth(): boolean;
     /**
      * @SINCE 1.86
-     * @EXPERIMENTAL (since 1.86)
      *
      * Gets current value of property {@link #getColumnRatio columnRatio}.
      *
@@ -92264,14 +93716,14 @@ declare module "sap/m/Select" {
      *
      * **Note: ** If duplicate keys exist, the first item matching the key is returned.
      *
-     * @returns The `sap.ui.core.Item` instance or `null` if thre is no such item
+     * @returns The `sap.ui.core.Item` instance or `null` if there is no such item
      */
     getItemByKey(
       /**
        * An item key that specifies the item to be retrieved.
        */
       sKey: string
-    ): Item;
+    ): Item | null;
     /**
      * Gets aggregation `items`.
      *
@@ -92560,7 +94012,7 @@ declare module "sap/m/Select" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an item from the aggregation named `items`.
      *
@@ -92593,7 +94045,6 @@ declare module "sap/m/Select" {
     ): this;
     /**
      * @SINCE 1.86
-     * @EXPERIMENTAL (since 1.86)
      *
      * Sets a new value for property {@link #getColumnRatio columnRatio}.
      *
@@ -93149,7 +94600,6 @@ declare module "sap/m/Select" {
 
     /**
      * @SINCE 1.86
-     * @EXPERIMENTAL (since 1.86)
      *
      * Determines the ratio between the first and the second column when secondary values are displayed.
      *
@@ -96950,7 +98400,7 @@ declare module "sap/m/SelectList" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an item from the aggregation named `items`.
      *
@@ -105153,16 +106603,16 @@ declare module "sap/m/SinglePlanningCalendar" {
     /**
      * @SINCE 1.75
      *
-     * Finds the view object by given key
+     * Finds the view object by given key.
      *
-     * @returns the view object which matched the given `sKey`, or null if there is no such view
+     * @returns the view object which matched the given `sKey`, or `null` if there is no such view
      */
     getViewByKey(
       /**
        * The key of the view
        */
       sKey: string
-    ): SinglePlanningCalendarView;
+    ): SinglePlanningCalendarView | null;
     /**
      * Gets content of aggregation {@link #getViews views}.
      *
@@ -107021,7 +108471,7 @@ declare module "sap/m/Slider" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.56
      *
@@ -111391,7 +112841,7 @@ declare module "sap/m/StandardTile" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getActiveIcon activeIcon}.
      *
@@ -112255,7 +113705,7 @@ declare module "sap/m/StepInput" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -112266,7 +113716,7 @@ declare module "sap/m/StepInput" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * @SINCE 1.54
      *
@@ -113195,7 +114645,7 @@ declare module "sap/m/Switch" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getCustomTextOff customTextOff}.
      *
@@ -115789,7 +117239,7 @@ declare module "sap/m/TablePersoController" {
        * The table to be removed or its index or ID
        */
       vTable: int | ID | Table
-    ): ID;
+    ): ID | null;
     /**
      * Persist the personalizations
      */
@@ -120514,6 +121964,61 @@ declare module "sap/m/TimePicker" {
       oListener?: object
     ): this;
     /**
+     * @SINCE 1.104.0
+     *
+     * Attaches event handler `fnFunction` to the {@link #event:liveChange liveChange} event of this `sap.m.TimePicker`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.TimePicker` itself.
+     *
+     * Fired when the value of the `TimePicker` is changed by user interaction - each keystroke, delete, paste,
+     * etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachLiveChange(
+      /**
+       * An application-specific payload object that will be passed to the event handler along with the event
+       * object when firing the event
+       */
+      oData: object,
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.TimePicker` itself
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Attaches event handler `fnFunction` to the {@link #event:liveChange liveChange} event of this `sap.m.TimePicker`.
+     *
+     * When called, the context of the event handler (its `this`) will be bound to `oListener` if specified,
+     * otherwise it will be bound to this `sap.m.TimePicker` itself.
+     *
+     * Fired when the value of the `TimePicker` is changed by user interaction - each keystroke, delete, paste,
+     * etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    attachLiveChange(
+      /**
+       * The function to be called when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object to call the event handler with. Defaults to this `sap.m.TimePicker` itself
+       */
+      oListener?: object
+    ): this;
+    /**
      * Destroys all the rules in the aggregation {@link #getRules rules}.
      *
      * @returns Reference to `this` in order to allow method chaining
@@ -120550,6 +122055,25 @@ declare module "sap/m/TimePicker" {
      * @returns Reference to `this` in order to allow method chaining
      */
     detachAfterValueHelpOpen(
+      /**
+       * The function to be called, when the event occurs
+       */
+      fnFunction: (p1: Event) => void,
+      /**
+       * Context object on which the given function had to be called
+       */
+      oListener?: object
+    ): this;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Detaches event handler `fnFunction` from the {@link #event:liveChange liveChange} event of this `sap.m.TimePicker`.
+     *
+     * The passed function and listener object must match the ones used for event registration.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    detachLiveChange(
       /**
        * The function to be called, when the event occurs
        */
@@ -120613,6 +122137,28 @@ declare module "sap/m/TimePicker" {
        */
       oParams?: object
     ): void;
+    /**
+     * @SINCE 1.104.0
+     *
+     * Fires event {@link #event:liveChange liveChange} to attached listeners.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    fireLiveChange(
+      /**
+       * Parameters to pass along with the event
+       */
+      mParameters?: {
+        /**
+         * The current value of the input, after a live change event.
+         */
+        value?: string;
+        /**
+         * The previous value of the input, before the last user interaction.
+         */
+        previousValue?: string;
+      }
+    ): this;
     /**
      * See:
      * 	sap.ui.core.Control#getAccessibilityInfo
@@ -121175,6 +122721,16 @@ declare module "sap/m/TimePicker" {
      * Fired when `value help` dialog closes.
      */
     afterValueHelpClose?: (oEvent: Event) => void;
+
+    /**
+     * @SINCE 1.104.0
+     *
+     * Fired when the value of the `TimePicker` is changed by user interaction - each keystroke, delete, paste,
+     * etc.
+     *
+     * **Note:** Browsing autocomplete suggestions doesn't fire the event.
+     */
+    liveChange?: (oEvent: Event) => void;
   }
 }
 
@@ -123086,7 +124642,7 @@ declare module "sap/m/Token" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -123097,7 +124653,7 @@ declare module "sap/m/Token" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getEditable editable}.
      *
@@ -123892,7 +125448,7 @@ declare module "sap/m/Tokenizer" {
        * The ariaDescribedBy to be removed or its index or ID
        */
       vAriaDescribedBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes an ariaLabelledBy from the association named {@link #getAriaLabelledBy ariaLabelledBy}.
      *
@@ -123903,7 +125459,7 @@ declare module "sap/m/Tokenizer" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a token from the aggregation {@link #getTokens tokens}.
      *
@@ -124521,7 +126077,7 @@ declare module "sap/m/Toolbar" {
        * The ariaLabelledBy to be removed or its index or ID
        */
       vAriaLabelledBy: int | ID | Control
-    ): ID;
+    ): ID | null;
     /**
      * Removes a content from the aggregation {@link #getContent content}.
      *
@@ -126270,6 +127826,8 @@ declare module "sap/m/upload/UploadSet" {
 
   import Event from "sap/ui/base/Event";
 
+  import { URI } from "sap/ui/core/library";
+
   import FileUploader from "sap/ui/unified/FileUploader";
 
   import UploaderHttpRequestMethod from "sap/m/upload/UploaderHttpRequestMethod";
@@ -128001,6 +129559,43 @@ declare module "sap/m/upload/UploadSet" {
       }
     ): this;
     /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Gets current value of property {@link #getCloudFilePickerButtonText cloudFilePickerButtonText}.
+     *
+     * The text of the CloudFile picker button. The default text is "Upload from cloud" (translated to the respective
+     * language).
+     *
+     * Default value is `empty string`.
+     *
+     * @returns Value of property `cloudFilePickerButtonText`
+     */
+    getCloudFilePickerButtonText(): string;
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Gets current value of property {@link #getCloudFilePickerEnabled cloudFilePickerEnabled}.
+     *
+     * Enables CloudFile picker feature to upload files from cloud.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `cloudFilePickerEnabled`
+     */
+    getCloudFilePickerEnabled(): boolean;
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Gets current value of property {@link #getCloudFilePickerServiceUrl cloudFilePickerServiceUrl}.
+     *
+     * Url of the FileShare OData V4 service supplied for CloudFile picker control.
+     *
+     * Default value is `empty string`.
+     *
+     * @returns Value of property `cloudFilePickerServiceUrl`
+     */
+    getCloudFilePickerServiceUrl(): URI;
+    /**
      * Returns an instance of the default `sap.ui.unified.FileUploader` used for adding files using the operating
      * system's open file dialog, so that it can be customized, for example made invisible or assigned a different
      * icon.
@@ -128008,6 +129603,22 @@ declare module "sap/m/upload/UploadSet" {
      * @returns Instance of the default `sap.ui.unified.FileUploader`.
      */
     getDefaultFileUploader(): FileUploader;
+    /**
+     * Gets current value of property {@link #getDragDropDescription dragDropDescription}.
+     *
+     * Defines custom text for the 'No data' description label.
+     *
+     * @returns Value of property `dragDropDescription`
+     */
+    getDragDropDescription(): string;
+    /**
+     * Gets current value of property {@link #getDragDropText dragDropText}.
+     *
+     * Defines custom text for the 'No data' text label.
+     *
+     * @returns Value of property `dragDropText`
+     */
+    getDragDropText(): string;
     /**
      * Gets current value of property {@link #getFileTypes fileTypes}.
      *
@@ -128326,7 +129937,7 @@ declare module "sap/m/upload/UploadSet" {
       /**
        * The UploadSetItem to update with a new version. This parameter is mandatory.
        */
-      item: /* was: sap.m.UploadSetItem */ any
+      item: UploadSetItem
     ): this;
     /**
      * Attaches all necessary handlers to the given uploader instance, so that the progress and status of the
@@ -128403,6 +130014,94 @@ declare module "sap/m/upload/UploadSet" {
      * @returns this to allow method chaining
      */
     selectAll(): this;
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Sets a new value for property {@link #getCloudFilePickerButtonText cloudFilePickerButtonText}.
+     *
+     * The text of the CloudFile picker button. The default text is "Upload from cloud" (translated to the respective
+     * language).
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `empty string`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setCloudFilePickerButtonText(
+      /**
+       * New value for property `cloudFilePickerButtonText`
+       */
+      sCloudFilePickerButtonText?: string
+    ): this;
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Sets a new value for property {@link #getCloudFilePickerEnabled cloudFilePickerEnabled}.
+     *
+     * Enables CloudFile picker feature to upload files from cloud.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setCloudFilePickerEnabled(
+      /**
+       * New value for property `cloudFilePickerEnabled`
+       */
+      bCloudFilePickerEnabled?: boolean
+    ): this;
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Sets a new value for property {@link #getCloudFilePickerServiceUrl cloudFilePickerServiceUrl}.
+     *
+     * Url of the FileShare OData V4 service supplied for CloudFile picker control.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `empty string`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setCloudFilePickerServiceUrl(
+      /**
+       * New value for property `cloudFilePickerServiceUrl`
+       */
+      sCloudFilePickerServiceUrl?: URI
+    ): this;
+    /**
+     * Sets a new value for property {@link #getDragDropDescription dragDropDescription}.
+     *
+     * Defines custom text for the 'No data' description label.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setDragDropDescription(
+      /**
+       * New value for property `dragDropDescription`
+       */
+      sDragDropDescription?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getDragDropText dragDropText}.
+     *
+     * Defines custom text for the 'No data' text label.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setDragDropText(
+      /**
+       * New value for property `dragDropText`
+       */
+      sDragDropText?: string
+    ): this;
     /**
      * Sets a new value for property {@link #getFileTypes fileTypes}.
      *
@@ -128794,6 +130493,16 @@ declare module "sap/m/upload/UploadSet" {
     noDataDescription?: string | PropertyBindingInfo;
 
     /**
+     * Defines custom text for the 'No data' text label.
+     */
+    dragDropText?: string | PropertyBindingInfo;
+
+    /**
+     * Defines custom text for the 'No data' description label.
+     */
+    dragDropDescription?: string | PropertyBindingInfo;
+
+    /**
      * Defines whether the upload process should be triggered as soon as the file is added.
      *  If set to `false`, no upload is triggered when a file is added.
      */
@@ -128865,6 +130574,28 @@ declare module "sap/m/upload/UploadSet" {
       | (ListMode | keyof typeof ListMode)
       | PropertyBindingInfo
       | `{${string}}`;
+
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Enables CloudFile picker feature to upload files from cloud.
+     */
+    cloudFilePickerEnabled?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * Url of the FileShare OData V4 service supplied for CloudFile picker control.
+     */
+    cloudFilePickerServiceUrl?: URI | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * @EXPERIMENTAL (since 1.106)
+     *
+     * The text of the CloudFile picker button. The default text is "Upload from cloud" (translated to the respective
+     * language).
+     */
+    cloudFilePickerButtonText?: string | PropertyBindingInfo;
 
     /**
      * Items representing files that have already been uploaded.
@@ -129351,6 +131082,14 @@ declare module "sap/m/upload/UploadSetItem" {
      * Attributes of the item.
      */
     getAttributes(): ObjectAttribute[];
+    /**
+     * @SINCE 1.104.0
+     *
+     * Returns edit state of the item.
+     *
+     * @returns edit state of uploadSetItem
+     */
+    getEditState(): boolean;
     /**
      * Gets current value of property {@link #getEnabledEdit enabledEdit}.
      *
@@ -133585,6 +135324,518 @@ declare module "sap/m/UploadCollectionToolbarPlaceholder" {
     extends $ControlSettings {}
 }
 
+declare module "sap/m/VariantItem" {
+  import { default as Item, $ItemSettings } from "sap/ui/core/Item";
+
+  import ElementMetadata from "sap/ui/core/ElementMetadata";
+
+  import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
+
+  /**
+   * The VariantItem class describes a variant item.
+   */
+  export default class VariantItem extends Item {
+    /**
+     * Constructor for a new sap.m.VariantItem.
+     *
+     * Accepts an object literal `mSettings` that defines initial property values, aggregated and associated
+     * objects as well as event handlers. See {@link sap.ui.base.ManagedObject#constructor} for a general description
+     * of the syntax of the settings object.
+     */
+    constructor(
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: $VariantItemSettings
+    );
+    /**
+     * Constructor for a new sap.m.VariantItem.
+     *
+     * Accepts an object literal `mSettings` that defines initial property values, aggregated and associated
+     * objects as well as event handlers. See {@link sap.ui.base.ManagedObject#constructor} for a general description
+     * of the syntax of the settings object.
+     */
+    constructor(
+      /**
+       * ID for the new control, generated automatically if no ID is given
+       */
+      sId?: string,
+      /**
+       * Initial settings for the new control
+       */
+      mSettings?: $VariantItemSettings
+    );
+
+    /**
+     * Creates a new subclass of class sap.m.VariantItem with name `sClassName` and enriches it with the information
+     * contained in `oClassInfo`.
+     *
+     * `oClassInfo` might contain the same kind of information as described in {@link sap.ui.core.Item.extend}.
+     *
+     * @returns Created class / constructor function
+     */
+    static extend<T extends Record<string, unknown>>(
+      /**
+       * Name of the class being created
+       */
+      sClassName: string,
+      /**
+       * Object literal with information about the class
+       */
+      oClassInfo?: sap.ClassInfo<T, VariantItem>,
+      /**
+       * Constructor function for the metadata object; if not given, it defaults to the metadata implementation
+       * used by this class
+       */
+      FNMetaImpl?: Function
+    ): Function;
+    /**
+     * Returns a metadata object for class sap.m.VariantItem.
+     *
+     * @returns Metadata object describing this class
+     */
+    static getMetadata(): ElementMetadata;
+    /**
+     * Gets current value of property {@link #getAuthor author}.
+     *
+     * Contains the author information of the item.
+     *
+     * @returns Value of property `author`
+     */
+    getAuthor(): string;
+    /**
+     * Gets current value of property {@link #getChangeable changeable}.
+     *
+     * Indicates if the item is changeable.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `changeable`
+     */
+    getChangeable(): boolean;
+    /**
+     * Gets current value of property {@link #getContexts contexts}.
+     *
+     * Contains the contexts information of the item.
+     *
+     * Default value is `{}`.
+     *
+     * @returns Value of property `contexts`
+     */
+    getContexts(): object;
+    /**
+     * Gets current value of property {@link #getExecuteOnSelect executeOnSelect}.
+     *
+     * Indicates if the item is marked as apply automatically.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `executeOnSelect`
+     */
+    getExecuteOnSelect(): boolean;
+    /**
+     * Gets current value of property {@link #getFavorite favorite}.
+     *
+     * Indicates if the item is marked as favorite.
+     *
+     * Default value is `true`.
+     *
+     * @returns Value of property `favorite`
+     */
+    getFavorite(): boolean;
+    /**
+     * Gets current value of property {@link #getOriginalContexts originalContexts}.
+     *
+     * Contains the initial value of the property `contexts`. Is used for cancel operations.
+     *
+     * Default value is `{}`.
+     *
+     * @returns Value of property `originalContexts`
+     */
+    getOriginalContexts(): object;
+    /**
+     * Gets current value of property {@link #getOriginalExecuteOnSelect originalExecuteOnSelect}.
+     *
+     * Contains the initial value of the property `executeOnSelect`. Is used for cancel operations.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `originalExecuteOnSelect`
+     */
+    getOriginalExecuteOnSelect(): boolean;
+    /**
+     * Gets current value of property {@link #getOriginalFavorite originalFavorite}.
+     *
+     * Contains the initial value of the property `favorite`. Is used for cancel operations.
+     *
+     * Default value is `true`.
+     *
+     * @returns Value of property `originalFavorite`
+     */
+    getOriginalFavorite(): boolean;
+    /**
+     * Gets current value of property {@link #getOriginalTitle originalTitle}.
+     *
+     * Contains the initial value of the property `title`. Is used for cancel operations.
+     *
+     * @returns Value of property `originalTitle`
+     */
+    getOriginalTitle(): string;
+    /**
+     * Gets current value of property {@link #getRemove remove}.
+     *
+     * Indicates if the item is removable.
+     *
+     * Default value is `false`.
+     *
+     * @returns Value of property `remove`
+     */
+    getRemove(): boolean;
+    /**
+     * Gets current value of property {@link #getRename rename}.
+     *
+     * Indicates if the item is renamable.
+     *
+     * Default value is `true`.
+     *
+     * @returns Value of property `rename`
+     */
+    getRename(): boolean;
+    /**
+     * Gets current value of property {@link #getSharing sharing}.
+     *
+     * Contains the information is the item is public or private.
+     *
+     * Default value is `"private"`.
+     *
+     * @returns Value of property `sharing`
+     */
+    getSharing(): string;
+    /**
+     * Gets current value of property {@link #getTitle title}.
+     *
+     * Contains the title if the item.
+     *
+     * @returns Value of property `title`
+     */
+    getTitle(): string;
+    /**
+     * Gets current value of property {@link #getVisible visible}.
+     *
+     * Indicates if the item is visible.
+     *
+     * Default value is `true`.
+     *
+     * @returns Value of property `visible`
+     */
+    getVisible(): boolean;
+    /**
+     * Sets a new value for property {@link #getAuthor author}.
+     *
+     * Contains the author information of the item.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setAuthor(
+      /**
+       * New value for property `author`
+       */
+      sAuthor?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getChangeable changeable}.
+     *
+     * Indicates if the item is changeable.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setChangeable(
+      /**
+       * New value for property `changeable`
+       */
+      bChangeable?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getContexts contexts}.
+     *
+     * Contains the contexts information of the item.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `{}`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setContexts(
+      /**
+       * New value for property `contexts`
+       */
+      oContexts?: object
+    ): this;
+    /**
+     * Sets a new value for property {@link #getExecuteOnSelect executeOnSelect}.
+     *
+     * Indicates if the item is marked as apply automatically.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setExecuteOnSelect(
+      /**
+       * New value for property `executeOnSelect`
+       */
+      bExecuteOnSelect?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getFavorite favorite}.
+     *
+     * Indicates if the item is marked as favorite.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `true`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setFavorite(
+      /**
+       * New value for property `favorite`
+       */
+      bFavorite?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getOriginalContexts originalContexts}.
+     *
+     * Contains the initial value of the property `contexts`. Is used for cancel operations.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `{}`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setOriginalContexts(
+      /**
+       * New value for property `originalContexts`
+       */
+      oOriginalContexts?: object
+    ): this;
+    /**
+     * Sets a new value for property {@link #getOriginalExecuteOnSelect originalExecuteOnSelect}.
+     *
+     * Contains the initial value of the property `executeOnSelect`. Is used for cancel operations.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setOriginalExecuteOnSelect(
+      /**
+       * New value for property `originalExecuteOnSelect`
+       */
+      bOriginalExecuteOnSelect?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getOriginalFavorite originalFavorite}.
+     *
+     * Contains the initial value of the property `favorite`. Is used for cancel operations.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `true`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setOriginalFavorite(
+      /**
+       * New value for property `originalFavorite`
+       */
+      bOriginalFavorite?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getOriginalTitle originalTitle}.
+     *
+     * Contains the initial value of the property `title`. Is used for cancel operations.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setOriginalTitle(
+      /**
+       * New value for property `originalTitle`
+       */
+      sOriginalTitle?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getRemove remove}.
+     *
+     * Indicates if the item is removable.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `false`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setRemove(
+      /**
+       * New value for property `remove`
+       */
+      bRemove?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getRename rename}.
+     *
+     * Indicates if the item is renamable.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `true`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setRename(
+      /**
+       * New value for property `rename`
+       */
+      bRename?: boolean
+    ): this;
+    /**
+     * Sets a new value for property {@link #getSharing sharing}.
+     *
+     * Contains the information is the item is public or private.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `"private"`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setSharing(
+      /**
+       * New value for property `sharing`
+       */
+      sSharing?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getTitle title}.
+     *
+     * Contains the title if the item.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setTitle(
+      /**
+       * New value for property `title`
+       */
+      sTitle?: string
+    ): this;
+    /**
+     * Sets a new value for property {@link #getVisible visible}.
+     *
+     * Indicates if the item is visible.
+     *
+     * When called with a value of `null` or `undefined`, the default value of the property will be restored.
+     *
+     * Default value is `true`.
+     *
+     * @returns Reference to `this` in order to allow method chaining
+     */
+    setVisible(
+      /**
+       * New value for property `visible`
+       */
+      bVisible?: boolean
+    ): this;
+  }
+
+  export interface $VariantItemSettings extends $ItemSettings {
+    /**
+     * Contains the information is the item is public or private.
+     */
+    sharing?: string | PropertyBindingInfo;
+
+    /**
+     * Indicates if the item is removable.
+     */
+    remove?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Indicates if the item is marked as favorite.
+     */
+    favorite?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Contains the initial value of the property `favorite`. Is used for cancel operations.
+     */
+    originalFavorite?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Indicates if the item is marked as apply automatically.
+     */
+    executeOnSelect?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Contains the initial value of the property `executeOnSelect`. Is used for cancel operations.
+     */
+    originalExecuteOnSelect?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Indicates if the item is renamable.
+     */
+    rename?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Contains the title if the item.
+     */
+    title?: string | PropertyBindingInfo;
+
+    /**
+     * Contains the initial value of the property `title`. Is used for cancel operations.
+     */
+    originalTitle?: string | PropertyBindingInfo;
+
+    /**
+     * Indicates if the item is visible.
+     */
+    visible?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Indicates if the item is changeable.
+     */
+    changeable?: boolean | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Contains the author information of the item.
+     */
+    author?: string | PropertyBindingInfo;
+
+    /**
+     * Contains the contexts information of the item.
+     */
+    contexts?: object | PropertyBindingInfo | `{${string}}`;
+
+    /**
+     * Contains the initial value of the property `contexts`. Is used for cancel operations.
+     */
+    originalContexts?: object | PropertyBindingInfo | `{${string}}`;
+  }
+}
+
 declare module "sap/m/VBox" {
   import { default as FlexBox, $FlexBoxSettings } from "sap/m/FlexBox";
 
@@ -137015,6 +139266,14 @@ declare module "sap/m/Wizard" {
    * control. Also, in order to achieve the target Fiori design, the `sapUiNoContentPadding` class needs to
    * be added to the {@link sap.f.DynamicPage} as well as `sapUiResponsivePadding--header`, `sapUiResponsivePadding--content`
    * to the `sap.m.Wizard`.
+   *
+   * **Note:** The `sap.m.Wizard` control does not support runtime (dynamic) changes to the available paths
+   * (when branching is used) or additional steps being added after the last step. What is meant by runtime
+   * (dynamic) changes to the available paths: If the `sap.m.Wizard` is set as branching, and the available
+   * paths are:
+   * 	 - A -> B -> C
+   * 	 - A -> B -> D  Changing the `subsequentSteps` association of step C to point to step D (creating
+   * 			A -> B -> C -> D path) is not supported.
    */
   export default class Wizard
     extends Control
@@ -138140,7 +140399,7 @@ declare module "sap/m/WizardStep" {
        * The subsequentStep to be removed or its index or ID
        */
       vSubsequentStep: int | ID | WizardStep
-    ): ID;
+    ): ID | null;
     /**
      * Sets a new value for property {@link #getIcon icon}.
      *
@@ -138272,7 +140531,9 @@ declare module "sap/m/WizardStep" {
      *
      * This association is used only when the `enableBranching` property of the Wizard is set to true. Use the
      * association to store the next steps that are about to come after the current. If this is going to be
-     * a final step - leave this association empty.
+     * a final step - leave this association empty. **NOTE:** The association needs to be set prior the step
+     * is shown. Dynamical addition of subsequent steps is not supported use case especially when the current
+     * step is final (the association was empty before the step was displayed).
      */
     subsequentSteps?: Array<WizardStep | string>;
 
@@ -138927,13 +141188,29 @@ declare namespace sap {
 
     "sap/m/p13n/Container": undefined;
 
+    "sap/m/p13n/Engine": undefined;
+
+    "sap/m/p13n/GroupController": undefined;
+
     "sap/m/p13n/GroupPanel": undefined;
+
+    "sap/m/p13n/modification/FlexModificationHandler": undefined;
+
+    "sap/m/p13n/modification/LocalStorageModificationHandler": undefined;
+
+    "sap/m/p13n/modification/ModificationHandler": undefined;
+
+    "sap/m/p13n/modules/AdaptationProvider": undefined;
 
     "sap/m/p13n/Popup": undefined;
 
     "sap/m/p13n/QueryPanel": undefined;
 
+    "sap/m/p13n/SelectionController": undefined;
+
     "sap/m/p13n/SelectionPanel": undefined;
+
+    "sap/m/p13n/SortController": undefined;
 
     "sap/m/p13n/SortPanel": undefined;
 
@@ -139165,6 +141442,8 @@ declare namespace sap {
 
     "sap/m/Table": undefined;
 
+    "sap/m/table/Util": undefined;
+
     "sap/m/TablePersoController": undefined;
 
     "sap/m/TablePersoDialog": undefined;
@@ -139228,6 +141507,8 @@ declare namespace sap {
     "sap/m/UploadCollectionParameter": undefined;
 
     "sap/m/UploadCollectionToolbarPlaceholder": undefined;
+
+    "sap/m/VariantItem": undefined;
 
     "sap/m/VariantManagement": undefined;
 

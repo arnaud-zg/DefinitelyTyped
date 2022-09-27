@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-      "@maxim_mazurok/gapi.client.discovery": "latest"
+    "@maxim_mazurok/gapi.client.discovery-v1": "latest"
   }
 }

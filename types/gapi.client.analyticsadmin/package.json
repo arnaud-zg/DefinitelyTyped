@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-      "@maxim_mazurok/gapi.client.analyticsadmin": "latest"
+    "@maxim_mazurok/gapi.client.analyticsadmin-v1alpha": "latest"
   }
 }
