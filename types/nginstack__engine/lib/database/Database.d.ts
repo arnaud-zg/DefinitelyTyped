@@ -10,22 +10,37 @@ declare class Database {
     date: Date;
     userKey: number;
     userName: string;
-    userLanguage: number;
     workloadType: string;
     trackingId: string;
+    scope: string;
     referrer: string;
     protocol: string;
+    readTimeout: number;
+    writeTimeout: number;
     authenticateUser(userId: string, password: string): number;
     login(userId: string, password: string): boolean;
-    loginByAuthToken(idToken: string): void;
+    loginByAuthToken(authToken: string): void;
     loginBySession(session: Session): boolean;
     logout(): void;
-    query(sql: string | string[], options?: any): DataSet | DataSet[];
+    query(
+        sql: string | string[],
+        options?: {
+            queryCacheLifeTime?: number;
+            workloadType?: string;
+        }
+    ): DataSet | DataSet[];
+    parallelQuery(
+        sqls: string[],
+        options?: {
+            workloadType?: string;
+            workers?: number;
+        }
+    ): DataSet[];
     executeSQL(sql: string | string[]): void;
     executeDDL(statement: string): void;
     createKey(keysQty: number, useHighKeys?: boolean): number;
     incVersion(): number;
-    applyUpdates(dataSets: DataSet | any[], log?: boolean): number;
+    applyUpdates(dataSets: DataSet | DataSet[], logChanges?: boolean): number;
     getReferences(
         key: number,
         tableName: string,
@@ -52,29 +67,85 @@ declare class Database {
             content?: string;
             key?: number | DBKey;
             classKey?: number | DBKey;
-            version?: boolean;
+            version?: number | DBKey;
+            async?: boolean;
+            tag?: string;
         }
     ): void;
+    updateLogs(
+        filters: {
+            version?: number;
+            tag?: string;
+        },
+        values: {
+            freshTrack: boolean;
+        }
+    ): void;
+    archiveLog(
+        options: ArchiveLogOptionsByTableClass | ArchiveLogOptionsByType
+    ): ArchiveLogFileInfo[];
+    restoreLog(filePath: string, options?: RestoreLogOptions): ArchiveLogFileInfo;
+    sendPendingLogs(wait?: boolean, timeout?: number): boolean;
     discardEndpointInfoCache(): void;
     discardCaches(): void;
-    sendMail(mail: Mail): void;
+    sendEmail(email: Email): void;
     userHasScope(userKey: DBKey | number, scope: string | DBKey | number): boolean;
+    isEdgeServer(): boolean;
 }
 declare namespace Database {
-    export { fromConfig, Mail, Session, VersionInfo, DatabaseVersionInfo };
+    export {
+        fromConfig,
+        Email,
+        Session,
+        VersionInfo,
+        DatabaseVersionInfo,
+        ArchiveLogOptionsByTableClass,
+        ArchiveLogOptionsByType,
+        RestoreLogOptions,
+        ArchiveLogFileInfo,
+    };
 }
 import Connection = require('../connection/Connection.js');
-interface DatabaseVersionInfo {
-    server: VersionInfo;
-    client: VersionInfo;
-}
-type Session = import('../session/Session');
 import DataSet = require('../dataset/DataSet.js');
 import DBKey = require('../dbkey/DBKey.js');
-type Mail = import('../mail/Mail');
 declare function fromConfig(key: DBKey | number): Database;
+type Email = import('../email/Email');
+type Session = import('../session/Session');
 interface VersionInfo {
     major: number;
     minor: number;
     name: string;
+}
+interface DatabaseVersionInfo {
+    server: VersionInfo;
+    client: VersionInfo;
+}
+interface ArchiveLogOptionsByTableClass {
+    tableClass: number;
+    includedClasses?: number[];
+    excludedClasses?: number[];
+    retentionInDays: number;
+    storageProvider?: number;
+    tag?: string;
+}
+interface ArchiveLogOptionsByType {
+    logType: number;
+    retentionInDays: number;
+    storageProvider?: number;
+    tag?: string;
+}
+interface RestoreLogOptions {
+    retentionInDays?: number;
+    storageProvider?: number;
+    dryRun?: boolean;
+}
+interface ArchiveLogFileInfo {
+    eventKey: number | null;
+    path: string;
+    storageProvider: number | null;
+    logDate: Date;
+    archiveDate: Date | null;
+    recordCount: number;
+    recordCountPerClassKey: Record<string, number>;
+    recordCountPerTableName: Record<string, number>;
 }

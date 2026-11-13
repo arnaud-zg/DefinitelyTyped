@@ -18,6 +18,7 @@ declare let bool: boolean;
 declare let boolOrUndefined: boolean | undefined;
 declare let boolOrNumOrStr: boolean | number | string;
 declare let numOrUndefined: number | undefined;
+declare let numOrUndefinedOrNull: number | undefined | null;
 declare let strArrayOrUndefined: string[] | undefined;
 declare let nullOrUndefined: null | undefined;
 declare let objectOrUndefined: {} | undefined;
@@ -48,7 +49,7 @@ str = identity.cognitoIdentityPoolId;
 
 /* ClientContext */
 clientContextClient = clientCtx.client;
-anyObj = clientCtx.Custom;
+anyObj = clientCtx.custom;
 clientContextEnv = clientCtx.env;
 
 /* ClientContextEnv */
@@ -81,7 +82,9 @@ untypedCallback(null, { bar: 123 });
 // @ts-expect-error
 untypedCallback(null, anyObj, anyObj);
 
-interface TestResult { foo: number; }
+interface TestResult {
+    foo: number;
+}
 declare const typedCallback: AWSLambda.Callback<TestResult>;
 typedCallback();
 typedCallback(undefined);
@@ -105,16 +108,16 @@ context.succeed(str, anyObj);
 context.fail(error);
 context.fail(str);
 
-interface CustomEvent {
+interface CustomTEvent {
     eventString: string;
     eventBool: boolean;
 }
-interface CustomResult {
+interface CustomTResult {
     resultString: string;
     resultBool?: boolean | undefined;
 }
-type CustomHandler = AWSLambda.Handler<CustomEvent, CustomResult>;
-type CustomCallback = AWSLambda.Callback<CustomResult>;
+type CustomHandler = AWSLambda.Handler<CustomTEvent, CustomTResult>;
+type CustomCallback = AWSLambda.Callback<CustomTResult>;
 
 // Untyped handlers should work
 const untypedAsyncHandler: AWSLambda.Handler = async (event, context, cb) => {
@@ -147,25 +150,25 @@ const untypedCallbackHandler: AWSLambda.Handler = (event, context, cb) => {
 
 /* In node8.10 runtime, handlers may return a promise for the result value, so existing async
  * handlers that return Promise<void> before calling the callback will now have a `null` result.
- * Be safe and make that badly typed with a major verson bump to 8.10 so users expect the breaking change,
+ * Be safe and make that badly typed with a major version bump to 8.10 so users expect the breaking change,
  * since the upgrade effort should be pretty low in most cases, and it points them at a nicer solution.
  */
 
 // Test we get error for unsafe old style
 // @ts-expect-error
 const unsafeAsyncHandler: CustomHandler = async (event, context, cb) => {
-    cb(null, { resultString: 'No longer valid' });
+    cb(null, { resultString: "No longer valid" });
 };
 
 // Test safe old style still works
 const typedCallbackHandler: CustomHandler = (event, context, cb) => {
-    // $ExpectType CustomEvent
+    // $ExpectType CustomTEvent
     event;
     str = event.eventString;
     // $ExpectType Context
     context;
     str = context.functionName;
-    // $ExpectType Callback<CustomResult>
+    // $ExpectType Callback<CustomTResult>
     cb;
     cb();
     cb(null);
@@ -179,15 +182,15 @@ const typedCallbackHandler: CustomHandler = (event, context, cb) => {
 
 // Test preferred new type
 const typedAsyncHandler: CustomHandler = async (event, context, cb) => {
-    // $ExpectType CustomEvent
+    // $ExpectType CustomTEvent
     event;
     // $ExpectType Context
     context;
-    // $ExpectType Callback<CustomResult>
+    // $ExpectType Callback<CustomTResult>
     cb;
     // Can still use callback
     cb(null, { resultString: str });
-    return { resultString: 'Is now valid!' };
+    return { resultString: "Is now valid!" };
 };
 
 // @ts-expect-error
@@ -195,7 +198,24 @@ const badTypedAsyncHandler: CustomHandler = async (event, context, cb) => ({ res
 
 // Test using untyped Callback type still works.
 const mixedUntypedCallbackTypedHandler: CustomHandler = (
-    event: CustomEvent,
+    event: CustomTEvent,
     context: AWSLambda.Context,
     cb: AWSLambda.Callback,
 ) => {};
+
+// Test streamifyResponse
+const streamifyResponseHandler: AWSLambda.StreamifyHandler = (event, responseStream, context) => {
+    const metadata = {
+        statusCode: 200,
+        headers: {
+            "Content-Type": "application/json",
+            "CustomHeader": "outerspace",
+        },
+    };
+    responseStream = awslambda.HttpResponseStream.from(responseStream, metadata);
+    responseStream.setContentType("text/plain");
+    responseStream.write("Hello, world!");
+    responseStream.end();
+};
+
+awslambda.streamifyResponse(streamifyResponseHandler);

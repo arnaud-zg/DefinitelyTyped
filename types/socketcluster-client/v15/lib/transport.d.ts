@@ -1,13 +1,13 @@
-import AGServer = require('socketcluster-server/server');
-import WebSocket = require('ws');
+import AGServer = require("socketcluster-server/server");
+import WebSocket = require("ws");
 
-import AuthEngine = require('./auth');
-import { CallIdGenerator, ClientOptions, ProtocolVersions, States } from './clientsocket';
+import AuthEngine = require("./auth");
+import { CallIdGenerator, ClientOptions, ProtocolVersions, States } from "./clientsocket";
 
 declare class AGTransport {
-    readonly CONNECTING: 'connecting';
-    readonly OPEN: 'open';
-    readonly CLOSED: 'closed';
+    readonly CONNECTING: "connecting";
+    readonly OPEN: "open";
+    readonly CLOSED: "closed";
 
     state: States;
 
@@ -125,7 +125,7 @@ declare namespace AGTransport {
         data: any;
         callback?: EventObjectCallback | undefined;
         cid?: number | undefined;
-        timeout?: NodeJS.Timer | undefined;
+        timeout?: NodeJS.Timeout | undefined;
     }
 
     interface TransmitOptions {

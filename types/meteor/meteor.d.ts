@@ -48,16 +48,24 @@ declare module 'meteor/meteor' {
          * record's profile field)
          */
         interface UserProfile {}
+
+        /**
+         * UserServices is left intentionally underspecified to allow overriding in your application.
+         */
+        interface UserServices {}
+
         interface User {
             _id: string;
             username?: string | undefined;
             emails?: UserEmail[] | undefined;
             createdAt?: Date | undefined;
             profile?: UserProfile;
-            services?: any;
+            services?: UserServices;
         }
 
         function user(options?: { fields?: Mongo.FieldSpecifier | undefined }): User | null;
+
+        function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<User | null>;
 
         function userId(): string | null;
         var users: Mongo.Collection<User>;
@@ -227,6 +235,31 @@ declare module 'meteor/meteor' {
          * @param func The function to run
          */
         function defer(func: Function): void;
+
+        /**
+         * Wrap a function so that it only runs in background in specified environments..
+         * @param func The function to wrap
+         * @param options An object with an `on` property that is an array of environment names: `"development"`, `"production"`, and/or `"test"`.
+         */
+        function deferrable<T>(
+            func: () => T,
+            options: { on: Array<"development" | "production" | "test"> }
+        ): T | void;
+
+        /**
+         * Wrap a function to run in the background in development (similar to Meteor.isDevelopment ? Meteor.defer(fn) : Meteor.startup(fn)).
+         * @param func The function to wrap
+         */
+        function deferDev<T>(
+            func: () => T
+        ): T | void;
+        /**
+         * Wrap a function to run in the background in production (similar to Meteor.isProduction ? Meteor.defer(fn) : Meteor.startup(fn)).
+         * @param func The function to wrap
+         */
+        function deferProd<T>(
+            func: () => T
+        ): T | void;
         /** Timeout **/
 
         /** utils **/
@@ -246,7 +279,7 @@ declare module 'meteor/meteor' {
          * @param func A function that takes a callback as its final parameter
          * @param context Optional `this` object against which the original function will be invoked
          */
-        function wrapAsync(func: Function, context?: Object): any;
+        function wrapAsync<T extends Function>(func: T, context?: ThisParameterType<T>): Function;
 
         function bindEnvironment<TFunc extends Function>(func: TFunc): TFunc;
 
@@ -275,10 +308,9 @@ declare module 'meteor/meteor' {
     namespace Meteor {
         /** Login **/
         interface LoginWithExternalServiceOptions {
-            requestPermissions?: ReadonlyArray<string> | undefined;
+            requestPermissions?: readonly string[] | undefined;
             requestOfflineToken?: Boolean | undefined;
             forceApprovalPrompt?: Boolean | undefined;
-            loginUrlParameters?: Object | undefined;
             redirectUrl?: string | undefined;
             loginHint?: string | undefined;
             loginStyle?: string | undefined;
@@ -300,7 +332,16 @@ declare module 'meteor/meteor' {
         ): void;
 
         function loginWithGoogle(
-            options?: Meteor.LoginWithExternalServiceOptions,
+            options?: Meteor.LoginWithExternalServiceOptions & {
+                /** Google login accepts additional login parameters based on
+                 * https://developers.google.com/identity/openid-connect/openid-connect#authenticationuriparameters.
+                 * However, there's only one parameter that must be set
+                 * directly; all others can be set using Meteor's standard OAuth
+                 * login parameters */
+                loginUrlParameters?: {
+                    include_granted_scopes: boolean;
+                },
+            },
             callback?: (error?: global_Error | Meteor.Error | Meteor.TypedError) => void,
         ): void;
 
@@ -321,7 +362,7 @@ declare module 'meteor/meteor' {
 
         function loginWith<ExternalService>(
             options?: {
-                requestPermissions?: ReadonlyArray<string> | undefined;
+                requestPermissions?: readonly string[] | undefined;
                 requestOfflineToken?: boolean | undefined;
                 loginUrlParameters?: Object | undefined;
                 userEmail?: string | undefined;
@@ -332,7 +373,7 @@ declare module 'meteor/meteor' {
         ): void;
 
         function loginWithPassword(
-            user: Object | string,
+            user: { username: string } | { email: string } | { id: string } | string,
             password: string,
             callback?: (error?: global_Error | Meteor.Error | Meteor.TypedError) => void,
         ): void;
@@ -406,7 +447,7 @@ declare module 'meteor/meteor' {
             close: () => void;
             onClose: (callback: () => void) => void;
             clientAddress: string;
-            httpHeaders: Object;
+            httpHeaders: Record<string, string>;
         }
 
         function onConnection(callback: (connection: Connection) => void): void;
@@ -420,7 +461,7 @@ declare module 'meteor/meteor' {
          */
         function publish(
             name: string | null,
-            func: (this: Subscription, ...args: any[]) => void | Mongo.Cursor<any> | Mongo.Cursor<any>[] | Promise<void | Mongo.Cursor<any> | Mongo.Cursor<any>[]>,
+            func: (this: Subscription, ...args: any[]) => void | Mongo.Cursor<any> | Array<Mongo.Cursor<any>> | Promise<void | Mongo.Cursor<any> | Array<Mongo.Cursor<any>>>,
             options?: { is_auto: boolean },
         ): void;
 
@@ -434,7 +475,7 @@ declare module 'meteor/meteor' {
          * @param id The new document's ID.
          * @param fields The fields in the new document.  If `_id` is present it is ignored.
          */
-        added(collection: string, id: string, fields: Object): void;
+        added(collection: string, id: string, fields: Record<string, unknown>): void;
         /**
          * Call inside the publish function. Informs the subscriber that a document in the record set has been modified.
          * @param collection The name of the collection that contains the changed document.
@@ -442,7 +483,7 @@ declare module 'meteor/meteor' {
          * @param fields The fields in the document that have changed, together with their new values.  If a field is not present in `fields` it was left unchanged; if it is present in `fields` and
          * has a value of `undefined` it was removed from the document.  If `_id` is present it is ignored.
          */
-        changed(collection: string, id: string, fields: Object): void;
+        changed(collection: string, id: string, fields: Record<string, unknown>): void;
         /** Access inside the publish function. The incoming connection for this subscription. */
         connection: Meteor.Connection;
         /**

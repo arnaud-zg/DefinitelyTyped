@@ -20,7 +20,7 @@ declare class ClassDefManager {
     );
     vfs: any;
     classes: any;
-    cache: {};
+    private cache_;
     private masterDetailFieldsToValidate_;
     strictMode: boolean;
     protected runStartupScripts(): void;
@@ -29,30 +29,29 @@ declare class ClassDefManager {
     private strictEvaluator_;
     private validateFields_;
     private getDef_;
+    private hasModelDefCache_;
     getModelDef(
         classKey: number,
-        opt_options?:
-            | Record<any, any>
-            | {
-                  ignoredFileKeys: number[];
-                  forceStrictMode: boolean;
-              }
+        options?: {
+            ignoredFileKeys?: number[];
+            forceStrictMode?: boolean;
+        }
     ): ModelDef;
     getViewDef(
         classKey: number,
         opt_options?:
-            | Record<any, any>
             | {
                   ignoredFileKeys: number[];
               }
-    ): ModelDef;
+            | Record<any, any>
+    ): ViewDef;
     getConfig(
         classKey: number,
         opt_options?:
-            | Record<any, any>
             | {
                   ignoredFileKeys: number[];
               }
+            | Record<any, any>
     ): ConfigDef;
     getClassDef(classKey: number, opt_ignoredClassKeys?: number[]): ModelDef;
     getModelDefBySource(src: string, parent: number, opt_classKey?: number): ModelDef;
@@ -68,6 +67,7 @@ declare class ClassDefManager {
     clearCache(): void;
     hasOwnViewDef(classKey: number): boolean;
     hasOwnModelDef(classKey: number): boolean;
+    getJustToGroupChildren(classKey: number): string;
 }
 declare namespace ClassDefManager {
     export {
@@ -80,16 +80,15 @@ declare namespace ClassDefManager {
         getClassVersion,
         getInstance,
         DataSet,
+        ViewDef,
     };
 }
-type DataSet = import('../dataset/DataSet');
-declare const classes: import('../database/Classes.js');
 import ModelDef = require('./ModelDef.js');
 import ConfigDef = require('./ConfigDef.js');
-declare var protectedFieldProperties: string[];
-declare var protectedFieldEvents: string[];
-declare var protectedModelDefProperties: string[];
-declare var protectedModelDefEvents: string[];
+declare let protectedFieldProperties: string[];
+declare let protectedFieldEvents: string[];
+declare let protectedModelDefProperties: string[];
+declare let protectedModelDefEvents: string[];
 declare namespace constructors {
     export { ModelDef as VIEW };
     export { ModelDef as MODEL };
@@ -99,4 +98,6 @@ declare namespace constructors {
 declare function getParentClass(classKey: number | DBKey): number;
 declare function getClassVersion(classKey: number | DBKey): number;
 declare function getInstance(): ClassDefManager;
+type DataSet = import('../dataset/DataSet');
+type ViewDef = ModelDef;
 import DBKey = require('../dbkey/DBKey.js');

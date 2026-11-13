@@ -1,12 +1,3 @@
-// Type definitions for The Spotify Web API (including changes March 29th 2016)
-// Project: https://developer.spotify.com/web-api/
-// Definitions by: Niels Kristian Hansen Skovmand <https://github.com/skovmand>
-//                 Magnar Ovedal Myrtveit <https://github.com/Stadly>
-//                 Nils Måsén <https://github.com/piksel>
-//                 Basti Ortiz <https://github.com/Some-Dood>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 2.2
-
 // Release comments:
 // -----------------
 
@@ -71,17 +62,14 @@ declare namespace SpotifyApi {
      * Object for use in Recommendations Based on Seeds.
      * See: [Recommendations Based on Seeds](https://developer.spotify.com/web-api/get-recommendations/)
      *
-     * @limit q Optional. The target size of the list of recommended tracks. For seeds with unusually small pools or when highly restrictive filtering is applied, it may be impossible to generate the requested number of recommended tracks. Debugging information for such cases is available in the response. Default: 20. Minimum: 1. Maximum: 100.
-     * @market q Optional. An ISO 3166-1 alpha-2 country code. Provide this parameter if you want to apply Track Relinking. Because min_*, max_* and target_* are applied to pools before relinking, the generated results may not precisely match the filters applied. Original, non-relinked tracks are available via the linked_from attribute of the relinked track response.
-     * @max_ q Optional. Multiple values. For each tunable track attribute, a hard ceiling on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, max_instrumentalness=0.35 would filter out most tracks that are likely to be instrumental.
-     * @min_ q Optional. Multiple values. For each tunable track attribute, a hard floor on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, min_tempo=140 would restrict results to only those tracks with a tempo of greater than 140 beats per minute.
-     * @seed_artists q A comma separated list of Spotify IDs for seed artists. Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres.
-     * @seed_genres q A comma separated list of any genres in the set of available genre seeds. Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres.
-     * @seed_tracks q A comma separated list of Spotify IDs for a seed track. Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres.
-     * @target_ q Optional. Multiple values. For each of the tunable track attributes (below) a target value may be provided. Tracks with the attribute values nearest to the target values will be preferred. For example, you might request target_energy=0.6 and target_danceability=0.8. All target values will be weighed equally in ranking results.
+     * [max_*] - Multiple values. For each tunable track attribute, a hard ceiling on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, max_instrumentalness=0.35 would filter out most tracks that are likely to be instrumental.
+     * [min_*] - Multiple values. For each tunable track attribute, a hard floor on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, min_tempo=140 would restrict results to only those tracks with a tempo of greater than 140 beats per minute.
+     * [target_*] - Multiple values. For each of the tunable track attributes (below) a target value may be provided. Tracks with the attribute values nearest to the target values will be preferred. For example, you might request target_energy=0.6 and target_danceability=0.8. All target values will be weighed equally in ranking results.
      */
     interface RecommendationsOptionsObject {
+        /** The target size of the list of recommended tracks. For seeds with unusually small pools or when highly restrictive filtering is applied, it may be impossible to generate the requested number of recommended tracks. Debugging information for such cases is available in the response. Default: 20. Minimum: 1. Maximum: 100. */
         limit?: number | undefined;
+        /** An ISO 3166-1 alpha-2 country code. Provide this parameter if you want to apply Track Relinking. Because min_*, max_* and target_* are applied to pools before relinking, the generated results may not precisely match the filters applied. Original, non-relinked tracks are available via the linked_from attribute of the relinked track response. */
         market?: string | undefined;
         max_acousticness?: number | undefined;
         max_danceability?: number | undefined;
@@ -111,8 +99,11 @@ declare namespace SpotifyApi {
         min_tempo?: number | undefined;
         min_time_signature?: number | undefined;
         min_valence?: number | undefined;
+        /** A comma separated list of Spotify IDs for seed artists. Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres. */
         seed_artists?: string[] | string | undefined; // Array of strings or Comma separated string
+        /** A comma separated list of any genres in the set of available genre seeds. Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres. */
         seed_genres?: string[] | string | undefined; // Array of strings or Comma separated string
+        /** A comma separated list of Spotify IDs for a seed track. Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres. */
         seed_tracks?: string[] | string | undefined; // Array of strings or Comma separated string
         target_acousticness?: number | undefined;
         target_danceability?: number | undefined;
@@ -158,9 +149,9 @@ declare namespace SpotifyApi {
         uris?: string[] | undefined;
         offset?:
             | {
-                  position?: number | undefined;
-                  uri?: string | undefined;
-              }
+                position?: number | undefined;
+                uri?: string | undefined;
+            }
             | undefined;
         position_ms?: number | undefined;
     }
@@ -697,12 +688,14 @@ declare namespace SpotifyApi {
      * https://developer.spotify.com/web-api/search-item/
      */
     interface SearchResponse
-        extends Partial<ArtistSearchResponse>,
+        extends
+            Partial<ArtistSearchResponse>,
             Partial<AlbumSearchResponse>,
             Partial<TrackSearchResponse>,
             Partial<PlaylistSearchResponse>,
             Partial<ShowSearchResponse>,
-            Partial<EpisodeSearchResponse> {}
+            Partial<EpisodeSearchResponse>
+    {}
 
     /**
      * Get an Show
@@ -918,6 +911,7 @@ declare namespace SpotifyApi {
         copyrights: CopyrightObject[];
         /**
          * Known external IDs for the album.
+         * @deprecated since February 2026 for Development Mode apps
          */
         external_ids: ExternalIdObject;
         /**
@@ -927,11 +921,13 @@ declare namespace SpotifyApi {
         genres: string[];
         /**
          * The label for the album.
+         * @deprecated since February 2026 for Development Mode apps
          */
         label: string;
         /**
          * The popularity of the album. The value will be between `0` and `100`, with `100` being the most popular.
          * The popularity is calculated from the popularity of the album’s individual tracks;
+         * @deprecated since February 2026 for Development Mode apps
          */
         popularity: number;
         /**
@@ -949,12 +945,13 @@ declare namespace SpotifyApi {
          * The field is present when getting an artist’s albums.
          * Possible values are “album”, “single”, “compilation”, “appears_on”.
          * Compare to album_type this field represents relationship between the artist and the album.
+         * @deprecated since February 2026 for Development Mode apps
          */
-        album_group?: 'album' | 'single' | 'compilation' | 'appears_on' | undefined;
+        album_group?: "album" | "single" | "compilation" | "appears_on" | undefined;
         /**
          * The type of the album: one of “album”, “single”, or “compilation”.
          */
-        album_type: 'album' | 'single' | 'compilation';
+        album_type: "album" | "single" | "compilation";
         /**
          * The artists of the album.
          * Each artist object includes a link in href to more detailed information about the artist.
@@ -963,6 +960,7 @@ declare namespace SpotifyApi {
         /**
          * The markets in which the album is available: [ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
          * Note that an album is considered available in a market when at least 1 of its tracks is available in that market.
+         * @deprecated since February 2026 for Development Mode apps
          */
         available_markets?: string[] | undefined;
         /**
@@ -985,7 +983,7 @@ declare namespace SpotifyApi {
         /**
          * The precision with which release_date value is known: `year`, `month`, or `day`.
          */
-        release_date_precision: 'year' | 'month' | 'day';
+        release_date_precision: "year" | "month" | "day";
         /**
          * Part of the response when [Track Relinking](https://developer.spotify.com/documentation/general/guides/track-relinking-guide/) is applied,
          * the original track is not available in the given market, and Spotify did not have any tracks to relink it with.
@@ -993,7 +991,7 @@ declare namespace SpotifyApi {
          * and a restrictions object containing the reason why the track is not available: `"restrictions" : {"reason" : "market"}`
          */
         restrictions?: RestrictionsObject | undefined;
-        type: 'album';
+        type: "album";
         /**
          * The number of tracks in the album.
          */
@@ -1007,6 +1005,7 @@ declare namespace SpotifyApi {
     interface ArtistObjectFull extends ArtistObjectSimplified {
         /**
          * Information about the followers of the artist.
+         * @deprecated since February 2026 for Development Mode apps
          */
         followers: FollowersObject;
         /**
@@ -1022,6 +1021,7 @@ declare namespace SpotifyApi {
         /**
          * The popularity of the artist. The value will be between `0` and `100`, with `100` being the most popular.
          * The artist’s popularity is calculated from the popularity of all the artist’s tracks.
+         * @deprecated since February 2026 for Development Mode apps
          */
         popularity: number;
     }
@@ -1039,7 +1039,7 @@ declare namespace SpotifyApi {
          * The [Spotify ID](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for the artist.
          */
         id: string;
-        type: 'artist';
+        type: "artist";
     }
 
     /**
@@ -1062,7 +1062,7 @@ declare namespace SpotifyApi {
         tempo: number;
         time_signature: number;
         track_href: string;
-        type: 'audio_features';
+        type: "audio_features";
         uri: string;
         valence: number;
     }
@@ -1170,7 +1170,7 @@ declare namespace SpotifyApi {
      */
     interface CopyrightObject {
         text: string;
-        type: 'C' | 'P';
+        type: "C" | "P";
     }
 
     /**
@@ -1327,7 +1327,7 @@ declare namespace SpotifyApi {
          * see [Remove tracks from a playlist](https://developer.spotify.com/documentation/web-api/reference/playlists/remove-tracks-playlist/).
          */
         snapshot_id: string;
-        type: 'playlist';
+        type: "playlist";
     }
 
     /**
@@ -1341,8 +1341,14 @@ declare namespace SpotifyApi {
         followers: FollowersObject;
         /**
          * Information about the tracks of the playlist.
+         * @deprecated since February 2026 for Development Mode apps, use `items`
          */
         tracks: PagingObject<PlaylistTrackObject>;
+        /**
+         * Information about the items of the playlist. Only available when retrieving a users own
+         * playlist. Not available for all other playlists.
+         */
+        items?: PagingObject<PlaylistTrackObject>;
     }
 
     /**
@@ -1350,7 +1356,19 @@ declare namespace SpotifyApi {
      * [](https://developer.spotify.com/web-api/object-model/)
      */
     interface PlaylistObjectSimplified extends PlaylistBaseObject {
+        /**
+         * Information about the tracks of the playlist.
+         * @deprecated since February 2026 for Development Mode apps, use `items`
+         */
         tracks: {
+            href: string;
+            total: number;
+        };
+        /**
+         * Information about the items of the playlist. Only available when retrieving a users own
+         * playlist. Not available for all other playlists.
+         */
+        items?: {
             href: string;
             total: number;
         };
@@ -1364,7 +1382,11 @@ declare namespace SpotifyApi {
         added_at: string;
         added_by: UserObjectPublic;
         is_local: boolean;
+        /**
+         * @deprecated since February 2026 for Development Mode apps, use `item`
+         */
         track: TrackObjectFull | null;
+        item: TrackObjectFull | null;
     }
 
     /**
@@ -1375,7 +1397,7 @@ declare namespace SpotifyApi {
         seeds: RecommendationsSeedObject[];
         tracks: RecommendationTrackObject[];
     }
-    
+
     /**
      * Recommendation Track Object
      * Uses the same object structure as Full Track Object, but with `album.album_type` in caps.
@@ -1393,7 +1415,7 @@ declare namespace SpotifyApi {
          * The type of the album: one of “ALBUM”, “SINGLE”, or “COMPILATION”.
          * Note that this differs from the types returned by all other spotify APIs by being in all caps.
          */
-        album_type: 'ALBUM' | 'SINGLE' | 'COMPILATION';
+        album_type: "ALBUM" | "SINGLE" | "COMPILATION";
     }
 
     /**
@@ -1406,7 +1428,7 @@ declare namespace SpotifyApi {
         href: string;
         id: string;
         initialPoolSize: number;
-        type: 'artist' | 'track' | 'genre';
+        type: "artist" | "track" | "genre";
     }
 
     /**
@@ -1468,6 +1490,7 @@ declare namespace SpotifyApi {
         album: AlbumObjectSimplified;
         /**
          * Known external IDs for the track.
+         * @deprecated since February 2026 for Development Mode apps
          */
         external_ids: ExternalIdObject;
         /**
@@ -1475,6 +1498,7 @@ declare namespace SpotifyApi {
          * The popularity of a track is a value between `0` and `100`, with `100` being the most popular.
          * The popularity is calculated by algorithm and is based, in the most part,
          * on the total number of plays the track has had and how recent those plays are.
+         * @deprecated since February 2026 for Development Mode apps
          */
         popularity: number;
         /**
@@ -1495,6 +1519,7 @@ declare namespace SpotifyApi {
         /**
          * A list of the countries in which the track can be played,
          * identified by their [ISO 3166-1 alpha-2 code](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+         * @deprecated since February 2026 for Development Mode apps
          */
         available_markets?: string[] | undefined;
         /**
@@ -1511,6 +1536,7 @@ declare namespace SpotifyApi {
         explicit: boolean;
         /**
          * Known external URLs for this track.
+         * @deprecated since February 2026 for Development Mode apps
          */
         external_urls: ExternalUrlObject;
         /**
@@ -1554,7 +1580,7 @@ declare namespace SpotifyApi {
         /**
          * The object type: “track”.
          */
-        type: 'track';
+        type: "track";
         /**
          * The [Spotify URI](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for the track.
          */
@@ -1569,7 +1595,7 @@ declare namespace SpotifyApi {
         external_urls: ExternalUrlObject;
         href: string;
         id: string;
-        type: 'track';
+        type: "track";
         uri: string;
     }
 
@@ -1657,7 +1683,7 @@ declare namespace SpotifyApi {
          * The user’s most recent position in the episode. Set if the supplied access token is a user token and has the scope user-read-playback-position.
          */
         resume_point?: ResumePointObject | undefined;
-        type: 'episode';
+        type: "episode";
     }
 
     /**
@@ -1693,6 +1719,7 @@ declare namespace SpotifyApi {
     interface ShowObjectSimplified extends ContextObject {
         /**
          * A list of the countries in which the show can be played, identified by their [ISO 3166-1 alpha-2 code](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+         *  @deprecated since February 2026 for Development Mode apps
          */
         available_markets: string[];
         /**
@@ -1737,12 +1764,13 @@ declare namespace SpotifyApi {
         name: string;
         /**
          * The publisher of the show.
+         * @deprecated since February 2026 for Development Mode apps
          */
         publisher: string;
         /**
          * The object type: “show”.
          */
-        type: 'show';
+        type: "show";
         // This is found in https://developer.spotify.com/documentation/web-api/reference/shows/get-a-show/ but not in
         // https://developer.spotify.com/documentation/web-api/reference/object-model/#show-object-full.
         // Also it is not always sent, so it is marked optional here.
@@ -1758,8 +1786,17 @@ declare namespace SpotifyApi {
      */
     interface UserObjectPrivate extends UserObjectPublic {
         birthdate: string;
+        /**
+         * @deprecated since February 2026 for Development Mode apps
+         */
         country: string;
+        /**
+         * @deprecated since February 2026 for Development Mode apps
+         */
         email: string;
+        /**
+         * @deprecated since February 2026 for Development Mode apps
+         */
         product: string;
     }
 
@@ -1770,11 +1807,14 @@ declare namespace SpotifyApi {
     interface UserObjectPublic {
         display_name?: string | undefined;
         external_urls: ExternalUrlObject;
+        /**
+         * @deprecated since February 2026 for Development Mode apps
+         */
         followers?: FollowersObject | undefined;
         href: string;
         id: string;
         images?: ImageObject[] | undefined;
-        type: 'user';
+        type: "user";
         uri: string;
     }
 
@@ -1786,7 +1826,7 @@ declare namespace SpotifyApi {
         /**
          * The object type.
          */
-        type: 'artist' | 'playlist' | 'album' | 'show' | 'episode';
+        type: "artist" | "playlist" | "album" | "show" | "episode";
         /**
          * A link to the Web API endpoint providing full details.
          */
@@ -1813,7 +1853,7 @@ declare namespace SpotifyApi {
 
     interface PlaybackObject {
         shuffle_state: boolean;
-        repeat_state: 'off' | 'track' | 'context';
+        repeat_state: "off" | "track" | "context";
     }
 
     interface CurrentlyPlayingObject {
@@ -1824,13 +1864,14 @@ declare namespace SpotifyApi {
         is_playing: boolean;
         item: TrackObjectFull | EpisodeObject | null;
         context: ContextObject | null;
-        currently_playing_type: 'track' | 'episode' | 'ad' | 'unknown';
+        currently_playing_type: "track" | "episode" | "ad" | "unknown";
     }
 
     interface UserDevice {
         id: string | null;
         is_active: boolean;
         is_restricted: boolean;
+        is_private_session: boolean;
         name: string;
         type: string;
         volume_percent: number | null;

@@ -40,7 +40,7 @@ declare namespace OO {
          */
         lookup(name: string): unknown | undefined;
 
-        // #region Event utils
+        // #region EventEmitter overloads
         on<K extends keyof RegistryEventMap, A extends ArgTuple = [], C = null>(
             event: K,
             method: EventHandler<C, (this: C, ...args: [...A, ...RegistryEventMap[K]]) => void>,
@@ -79,33 +79,22 @@ declare namespace OO {
 
         emitThrow<K extends keyof RegistryEventMap>(event: K, ...args: RegistryEventMap[K]): boolean;
         emitThrow<K extends string>(event: K extends keyof RegistryEventMap ? never : K, ...args: any[]): boolean;
-
+        // eslint-disable-next-line @definitelytyped/no-unnecessary-generics
         connect<T extends Partial<Record<keyof RegistryEventMap, any>>, C>(
             context: C,
-            methods: {
-                [K in keyof T]: EventConnectionMapEntry<
-                    C,
-                    K extends keyof RegistryEventMap ? RegistryEventMap[K] : any[],
-                    T[K]
-                >;
-            },
+            methods: EventConnectionMap<T, C, RegistryEventMap>,
         ): this;
 
+        // eslint-disable-next-line @definitelytyped/no-unnecessary-generics
         disconnect<T extends Partial<Record<keyof RegistryEventMap, any>>, C>(
             context: C,
-            methods?: {
-                [K in keyof T]: EventConnectionMapEntry<
-                    C,
-                    K extends keyof RegistryEventMap ? RegistryEventMap[K] : any[],
-                    T[K]
-                >;
-            },
+            methods?: EventConnectionMap<T, C, RegistryEventMap>,
         ): this;
         // #endregion
     }
 
     interface RegistryConstructor {
-        new (): Registry;
+        new(): Registry;
         prototype: Registry;
         static: {};
     }

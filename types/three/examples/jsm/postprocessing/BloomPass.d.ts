@@ -1,14 +1,9 @@
-import { WebGLRenderTarget, ShaderMaterial } from '../../../src/Three';
+import { ShaderMaterial } from "three";
 
-import { Pass } from './Pass';
+import { Pass } from "./Pass.js";
 
 export class BloomPass extends Pass {
     constructor(strength?: number, kernelSize?: number, sigma?: number);
-    renderTargetX: WebGLRenderTarget;
-    renderTargetY: WebGLRenderTarget;
-    copyUniforms: object;
-    materialCopy: ShaderMaterial;
     convolutionUniforms: object;
     materialConvolution: ShaderMaterial;
-    fsQuad: object;
 }

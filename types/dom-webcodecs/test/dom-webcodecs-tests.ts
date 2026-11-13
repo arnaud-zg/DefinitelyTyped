@@ -26,7 +26,7 @@ function genericCodec(codec: AudioDecoder | AudioEncoder | VideoDecoder | VideoE
     codec.close();
 }
 
-function errorCallback(error: DOMException): void { }
+function errorCallback(error: DOMException): void {}
 
 //////////////////////////////////////////////////
 // audio-decoder.any.js
@@ -73,9 +73,9 @@ AudioDecoder.isConfigSupported({
 });
 
 AudioDecoder.isConfigSupported(audioDecoderConfig).then((result: AudioDecoderSupport) => {
-    // $ExpectType boolean
+    // $ExpectType boolean | undefined
     result.supported;
-    // $ExpectType AudioDecoderConfig
+    // $ExpectType AudioDecoderConfig | undefined
     result.config;
 });
 
@@ -128,6 +128,11 @@ AudioDecoder.isConfigSupported(futureAudioDecoderConfig);
 // $ExpectType void
 audioDecoder.configure(futureAudioDecoderConfig);
 
+audioDecoder.ondequeue = () => "";
+
+// $ExpectType void
+audioDecoder.addEventListener("dequeue", (e) => e, { once: true });
+
 genericCodec(audioDecoder);
 
 //////////////////////////////////////////////////
@@ -169,9 +174,9 @@ AudioEncoder.isConfigSupported({
 });
 
 AudioEncoder.isConfigSupported(audioEncoderConfig).then((result: AudioEncoderSupport) => {
-    // $ExpectType boolean
+    // $ExpectType boolean | undefined
     result.supported;
-    // $ExpectType AudioEncoderConfig
+    // $ExpectType AudioEncoderConfig | undefined
     result.config;
 });
 
@@ -224,6 +229,9 @@ audioEncoder.configure(futureAudioEncoderConfig);
 audioEncoder.encode(audioFrame);
 
 // $ExpectType void
+audioEncoder.addEventListener("dequeue", (e) => e, { once: true });
+
+// $ExpectType void
 audioFrame.close();
 
 // $ExpectType Promise<void>
@@ -257,6 +265,36 @@ new AudioData({
     numberOfFrames: 1,
     sampleRate: 48000,
 });
+
+// AudioDataInit.data is a plain BufferSource, as in the spec and in lib.dom.d.ts, so any
+// ArrayBuffer-backed view is accepted alongside the ArrayBuffer itself.
+// $ExpectType AudioData
+new AudioData({
+    data: new Uint8Array(1024),
+    timestamp: 100,
+    format: "f32",
+    numberOfChannels: 2,
+    numberOfFrames: 1,
+    sampleRate: 48000,
+});
+
+// $ExpectType AudioData
+new AudioData({
+    data: new DataView(audioBuffer),
+    timestamp: 100,
+    format: "f32",
+    numberOfChannels: 2,
+    numberOfFrames: 1,
+    sampleRate: 48000,
+});
+
+// copyTo, unlike AudioDataInit.data, is AllowShared in both the spec and lib.dom.d.ts, so a
+// SharedArrayBuffer-backed destination is accepted here. Keeping the two apart is what stops
+// this file from colliding with the lib.dom.d.ts declarations it merges into.
+declare const sharedDestination: Uint8Array<SharedArrayBuffer>;
+
+// $ExpectType void
+audioFrame.copyTo(sharedDestination, { planeIndex: 0 });
 
 // $ExpectType AudioData
 audioFrame.clone();
@@ -355,6 +393,12 @@ const videoDecoderConfig: VideoDecoderConfig = {
     codec: "avc1.64000c",
 };
 
+const videoDecoderConfigWithRotationAndFlip: VideoDecoderConfig = {
+    codec: "avc1.64000c",
+    rotation: 180,
+    flip: false,
+};
+
 // @ts-expect-error
 VideoDecoder.isConfigSupported();
 
@@ -362,9 +406,16 @@ VideoDecoder.isConfigSupported();
 VideoDecoder.isConfigSupported({ description: new Uint8Array(0) });
 
 VideoDecoder.isConfigSupported(videoDecoderConfig).then((result: VideoDecoderSupport) => {
-    // $ExpectType boolean
+    // $ExpectType boolean | undefined
     result.supported;
-    // $ExpectType VideoDecoderConfig
+    // $ExpectType VideoDecoderConfig | undefined
+    result.config;
+});
+
+VideoDecoder.isConfigSupported(videoDecoderConfigWithRotationAndFlip).then((result: VideoDecoderSupport) => {
+    // $ExpectType boolean | undefined
+    result.supported;
+    // $ExpectType VideoDecoderConfig | undefined
     result.config;
 });
 
@@ -377,7 +428,7 @@ function videoOutput(output: VideoFrame): void {
     output.displayWidth;
     // $ExpectType number
     output.displayHeight;
-    // $ExpectType number | null
+    // $ExpectType number
     output.timestamp;
     // $ExpectType void
     output.close();
@@ -410,6 +461,9 @@ videoDecoder.configure({ description: new Uint8Array(0) });
 // $ExpectType void
 videoDecoder.configure(videoDecoderConfig);
 
+// $ExpectType void
+videoDecoder.configure(videoDecoderConfigWithRotationAndFlip);
+
 // additional properties are allowed
 const futureVideoDecoderConfig = {
     codec: "avc1.64000c",
@@ -423,6 +477,9 @@ VideoDecoder.isConfigSupported(futureVideoDecoderConfig);
 videoDecoder.configure(futureVideoDecoderConfig);
 
 genericCodec(videoDecoder);
+
+// $ExpectType void
+videoDecoder.addEventListener("dequeue", () => {}, { once: true });
 
 // $ExpectType void
 videoDecoder.decode(encodedVideoChunk);
@@ -481,9 +538,9 @@ VideoEncoder.isConfigSupported({
 });
 
 VideoEncoder.isConfigSupported(videoEncoderConfig).then((result: VideoEncoderSupport) => {
-    // $ExpectType boolean
+    // $ExpectType boolean | undefined
     result.supported;
-    // $ExpectType VideoEncoderConfig
+    // $ExpectType VideoEncoderConfig | undefined
     result.config;
 });
 
@@ -502,8 +559,8 @@ VideoEncoder.isConfigSupported(futureVideoEncoderConfig);
 
 const videoFrame = new VideoFrame(imageBitmap, { timestamp: 1000000 });
 
-function encodedVideoOutput(output: EncodedVideoChunk, metadata: EncodedVideoChunkMetadata): void {
-    if (metadata.decoderConfig !== undefined) {
+function encodedVideoOutput(output: EncodedVideoChunk, metadata?: EncodedVideoChunkMetadata): void {
+    if (metadata?.decoderConfig !== undefined) {
         videoDecoder.configure(metadata.decoderConfig);
     }
     videoDecoder.decode(output);
@@ -545,6 +602,9 @@ videoEncoder.configure(futureVideoEncoderConfig);
 videoEncoder.encodeQueueSize;
 
 // $ExpectType void
+videoEncoder.addEventListener("dequeue", () => {}, { once: true });
+
+// $ExpectType void
 videoEncoder.encode(videoFrame);
 
 // $ExpectType Promise<void>
@@ -563,7 +623,7 @@ videoFrame.close();
 //////////////////////////////////////////////////
 // video-frame.any.js
 
-// $ExpectType number | null
+// $ExpectType number
 videoFrame.timestamp;
 // $ExpectType number | null
 videoFrame.duration;
@@ -579,6 +639,10 @@ videoFrame.visibleRect?.height;
 videoFrame.displayWidth;
 // $ExpectType number
 videoFrame.displayHeight;
+// $ExpectType number | undefined
+videoFrame.rotation;
+// $ExpectType boolean | undefined
+videoFrame.flip;
 
 // @ts-expect-error
 new VideoFrame(new ArrayBuffer(1024), {
@@ -599,7 +663,7 @@ new VideoFrame(new ArrayBuffer(1024), {
 });
 
 const videoFramePlaneInit: VideoFrameBufferInit = {
-    format: 'BGRA',
+    format: "BGRA",
     timestamp: 1234,
     codedWidth: 4,
     codedHeight: 2,
@@ -608,7 +672,7 @@ const videoFramePlaneInit: VideoFrameBufferInit = {
 new VideoFrame(new ArrayBuffer(1024), videoFramePlaneInit);
 
 new VideoFrame(new ArrayBuffer(1024), {
-    format: 'BGRA',
+    format: "BGRA",
     timestamp: 1234,
     duration: 4321,
     codedWidth: 4,

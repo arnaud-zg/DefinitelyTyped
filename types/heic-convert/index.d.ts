@@ -1,17 +1,12 @@
-// Type definitions for heic-convert 1.2
-// Project: https://github.com/catdad-experiments/heic-convert
-// Definitions by: Tregan <https://github.com/treemmett>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
 interface ConversionOptions {
     /**
      * the HEIC file buffer
      */
-    buffer: ArrayBufferLike;
+    buffer: Uint8Array;
     /**
      * output format
      */
-    format: 'JPEG' | 'PNG';
+    format: "JPEG" | "PNG";
     /**
      * the JPEG compression quality, between 0 and 1
      * @default 0.92
@@ -20,11 +15,11 @@ interface ConversionOptions {
 }
 
 interface Convertible {
-    convert(): Promise<ArrayBuffer>;
+    convert(): Promise<Uint8Array>;
 }
 
 /** @async */
-declare function convert(image: ConversionOptions): Promise<ArrayBuffer>;
+declare function convert(image: ConversionOptions): Promise<Uint8Array>;
 declare namespace convert {
     /** @async */
     function all(image: ConversionOptions): Promise<Convertible[]>;

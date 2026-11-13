@@ -35,6 +35,12 @@ declare module 'meteor/meteor' {
         interface UserProfile {
             name?: string | undefined;
         }
+
+        interface UserServices {
+            google?: {
+                email: string;
+            }
+        }
     }
 }
 
@@ -82,6 +88,12 @@ namespace MeteorTests {
                 .aggregate([{ $group: { _id: null, names: { $addToSet: '$name' } } }])
                 .toArray()
                 .then();
+
+            Meteor.deferrable(
+                () => console.log('This is deferred until after startup.'),
+                {on: ['development', 'test']},
+            )
+
         });
     }
 
@@ -392,6 +404,7 @@ namespace MeteorTests {
         if (Meteor.isServer) {
             Logs.remove({});
             Players.remove({ karma: { $lt: -2 } });
+            Meteor.defer(() => console.log('Old low-karma players removed from the Players collection.'));
         }
     });
 
@@ -492,7 +505,7 @@ namespace MeteorTests {
     interface CommentsDAO {
         text: string;
         authorId: string;
-        inlineLinks: { objectType: InlineObjectType; objectId: string; objectUrl: string }[];
+        inlineLinks: Array<{ objectType: InlineObjectType; objectId: string; objectUrl: string }>;
         tags: string[];
         viewNumber: number;
         private: boolean;
@@ -544,6 +557,18 @@ namespace MeteorTests {
     );
     Comments.update({ viewNumber: { $exists: false } }, { $set: { viewNumber: 0 } });
     Comments.update({ private: true }, { $unset: { tags: true } });
+
+    for (const comment of Comments.find({})) {
+        // $ExpectType CommentsDAO
+        comment;
+    }
+
+    (async function() {
+        for await (const comment of Comments.find({})) {
+            // $ExpectType CommentsDAO
+            comment;
+        }
+    })();
 
     /**
      * From Sessions, Session.set section
@@ -629,6 +654,20 @@ namespace MeteorTests {
     Accounts.user({ fields: {} });
     Accounts.user({ fields: { _id: 1 } });
     Accounts.user({ fields: { profile: 0 } });
+
+    (async () => {
+        await Meteor.userAsync();
+        await Meteor.userAsync({});
+        await Meteor.userAsync({ fields: {} });
+        await Meteor.userAsync({ fields: { _id: 1 } });
+        await Meteor.userAsync({ fields: { profile: 0 } });
+
+        await Accounts.userAsync();
+        await Accounts.userAsync({});
+        await Accounts.userAsync({ fields: {} });
+        await Accounts.userAsync({ fields: { _id: 1 } });
+        await Accounts.userAsync({ fields: { profile: 0 } });
+    })();
 
     /**
      * Fixes this discussion https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/55173
@@ -903,7 +942,7 @@ namespace MeteorTests {
     var buffer: unknown;
 
     check(buffer, Match.Where(EJSON.isBinary));
-    // $ExpectType Uint8Array
+    // $ExpectType Uint8Array || Uint8Array<ArrayBufferLike>
     buffer;
 
     /**
@@ -1082,7 +1121,7 @@ namespace MeteorTests {
         return '<h1>Some html here</h1>';
     };
     Accounts.emailTemplates.enrollAccount.from = function (user: Meteor.User) {
-        return 'asdf@asdf.com';
+        return user.services?.google?.email || 'asdf@asdf.com';
     };
     Accounts.emailTemplates.enrollAccount.text = function (user: Meteor.User, url: string) {
         return (
@@ -1108,14 +1147,14 @@ namespace MeteorTests {
         Accounts.registerLoginHandler('impersonate', (options: { targetUserId: string }) => {
             const currentUser = Meteor.userId();
             if (!currentUser) {
-                return { error: 'No user was logged in' };
+                return { error: new Error('No user was logged in') };
             }
 
             const isSuperUser = (userId: string) => true;
 
             if (!isSuperUser(currentUser)) {
                 const errMsg = `User ${currentUser} tried to impersonate but is not allowed`;
-                return { error: errMsg };
+                return { error: new Error(errMsg) };
             }
             // By returning an object with userId, the session will now be logged in as that user
             return { userId: options.targetUserId };
@@ -1171,6 +1210,18 @@ namespace MeteorTests {
         Rooms._dropIndex('indexName');
     }
 
+    Meteor.deferDev(() => {
+        console.log('This is a development-only deferred function.');
+    });
+
+    Meteor.deferProd(() => {
+        console.log('This is a production-only deferred function.');
+    });
+
+    (async function() {
+        await Rooms.dropIndexAsync('indexName');
+    })();
+
     // Covers https://github.com/meteor-typings/meteor/issues/20
     Rooms.find().count(true);
 
@@ -1219,7 +1270,7 @@ namespace MeteorTests {
         });
     }
 
-    function canAcceptUpdates(module: NodeModule) {
+    function canAcceptUpdates(module: NodeJS.Module) {
         return true;
     }
     if (module.hot) {
@@ -1268,7 +1319,7 @@ Meteor.absoluteUrl.defaultOptions = {
 Random.choice([1, 2, 3]); // $ExpectType number | undefined
 Random.choice('String'); // $ExpectType string
 
-EJSON.newBinary(5); // $ExpectType Uint8Array
+EJSON.newBinary(5); // $ExpectType Uint8Array || Uint8Array<ArrayBufferLike>
 
 // Connection
 Meteor.onConnection(connection => {

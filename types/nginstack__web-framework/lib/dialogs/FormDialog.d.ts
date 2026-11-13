@@ -3,17 +3,24 @@ declare function FormDialog(process: Process): void;
 declare class FormDialog {
     constructor(process: Process);
     private process_;
-    private _fields;
+    private fields_;
+    private reservedWords_;
+    autoSanitize: boolean;
     title: string;
+    content: string;
+    width: number | null;
+    private checkWordAvailability_;
     addField(name: string, type: string, size?: number): FormDialogField;
     field(name: any): FormDialogField;
+    resetButtonVisible: boolean;
     show(): boolean;
-    private _nameToId;
-    private _getProperties;
+    private getDefinition_;
+    private nameToId_;
+    private getProperties_;
     private getUserProfileName_;
 }
 declare namespace FormDialog {
     export { Process };
 }
-type Process = import('../process/Process');
-import FormDialogField = require('./FormDialogField.js');
+import FormDialogField = require("./FormDialogField.js");
+type Process = import("../process/Process");

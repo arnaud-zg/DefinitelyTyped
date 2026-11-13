@@ -1,11 +1,3 @@
-// Type definitions for Reveal 4.3
-// Project: https://github.com/hakimel/reveal.js/
-// Definitions by: robertop87 <https://github.com/robertop87>,
-//                 Nava2 <https://github.com/Nava2>,
-//                 JPtenBerge <https://github.com/JPtenBerge>
-//                 Keita Watanabe <https://github.com/kwatanwa17>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
 export as namespace Reveal;
 
 export = Reveal;
@@ -13,16 +5,16 @@ export = Reveal;
 /**
  * reveal.js - MIT licensed
  *
- * Copyright (C) 2011-2022 Hakim El Hattab, https://hakim.se
+ * Copyright (C) 2011-2023 Hakim El Hattab, https://hakim.se
  *
  * @see {@link https://revealjs.com}
  * @see {@link https://github.com/hakimel/reveal.js/blob/master/js/reveal.js}
+ * @see {@link https://revealjs.com/api/}
  */
 declare const Reveal: {
-    new (options?: Reveal.Options): Reveal.Api;
-    new (revealElement: Element, options: Reveal.Options): Reveal.Api;
-    initialize(options?: Reveal.Options): Promise<Reveal.Api>;
-};
+    new(options?: Reveal.Options): Reveal.Api;
+    new(revealElement: HTMLElement, options: Reveal.Options): Reveal.Api;
+} & Reveal.Api;
 
 declare namespace Reveal {
     /**
@@ -44,7 +36,7 @@ declare namespace Reveal {
          * @param options - RevealOption see {@link Options}
          * @returns a promise
          */
-        initialize: (options?: Options) => Promise<Api>;
+        initialize(options?: Options): Promise<Api>;
 
         /**
          * Applies the configuration settings from the config
@@ -52,20 +44,20 @@ declare namespace Reveal {
          *
          * @param options - RevealOption see {@link Options}
          */
-        configure: (options?: Options) => void;
+        configure(options?: Options): void;
 
         /**
          * Uninitializes reveal.js by undoing changes made to the
          * DOM and removing all event listeners.
          */
-        destroy: () => void;
+        destroy(): void;
 
         /**
          * Syncs the presentation with the current DOM. Useful
          * when new slides or control elements are added or when
          * the configuration has changed.
          */
-        sync: () => void;
+        sync(): void;
 
         /**
          * Updates reveal.js to keep in sync with new slide attributes. For
@@ -78,7 +70,7 @@ declare namespace Reveal {
          * @param  slide
          * @see {@link sync}
          */
-        syncSlide: (slide: HTMLElement) => void;
+        syncSlide(slide: HTMLElement): void;
 
         /**
          * Formats the fragments on the given slide so that they have
@@ -88,103 +80,52 @@ declare namespace Reveal {
          * @param slide
          * @returns a list of the HTML fragments that were synced
          */
-        syncFragments: (slide: HTMLElement) => Element[];
+        syncFragments(slide: HTMLElement): HTMLElement[];
 
         // Navigation methods
 
         //     TODO: this type definition may not be correct as the
-        // optional parameters are placed before the required parametes
+        // optional parameters are placed before the required parameters
         // see https://github.com/hakimel/reveal.js/blob/master/js/reveal.js#L1234
         /**
          * Steps from the current point in the presentation to the
          * slide which matches the specified horizontal and vertical
          * indices.
          *
-         * @param h - Horizontal index of the target slide
-         * @param v - Vertical index of the target slide
-         * @param f - Index of a fragment within the
-         * target slide to activate
+         * @param horizontalIndex - Horizontal index of the target slide
+         * @param verticalIndex - Vertical index of the target slide
+         * @param fragmentIndex - Index of a fragment within the target slide to activate
          * @param origin - Origin for use in multimaster environments
          */
-        slide(h?: number, v?: number, f?: number, origin?: number): void;
+        slide(horizontalIndex?: number, verticalIndex?: number, fragmentIndex?: number, origin?: number): void;
 
         /**
-         * Nvigate to the left slide
+         * Navigate to the left slide
          *
-         * @param skipFragments
+         * @param params see {@link NavigateParams}
          */
-        left(skipFragments?: boolean): void;
+        left: NavigationFunction;
 
         /**
-         * Nvigate to the right slide
+         * Navigate to the right slide
          *
-         * @param skipFragments
+         * @param params see {@link NavigateParams}
          */
-        right(skipFragments?: boolean): void;
+        right: NavigationFunction;
 
         /**
-         * Nvigate to the above slide
+         * Navigate to the above slide
          *
-         * @param skipFragments
+         * @param params see {@link NavigateParams}
          */
-        up(skipFragments?: boolean): void;
+        up: NavigationFunction;
 
         /**
-         * Nvigate to the below slide
+         * Navigate to the below slide
          *
-         * @param skipFragments
+         * @param params see {@link NavigateParams}
          */
-        down(skipFragments?: boolean): void;
-
-        /**
-         * Navigates backwards, prioritized in the following order:
-         * 1) Previous fragment
-         * 2) Previous vertical slide
-         * 3) Previous horizontal slide
-         *
-         * @param skipFragments
-         */
-        prev(skipFragments?: boolean): void;
-
-        /**
-         * Navigates forwards, prioritized in the following order:
-         * 1) Next fragment
-         * 2) Next vertical slide
-         * 3) Next horizontal slide
-         *
-         * @param skipFragments
-         */
-        next(skipFragments?: boolean): void;
-
-        // Navigation alias
-
-        /**
-         * Nvigate to the left slide
-         *
-         * @param skipFragments
-         */
-        navigateLeft(skipFragments?: boolean): void;
-
-        /**
-         * Nvigate to the right slide
-         *
-         * @param skipFragments
-         */
-        navigateRight(skipFragments?: boolean): void;
-
-        /**
-         * Nvigate to the above slide
-         *
-         * @param skipFragments
-         */
-        navigateUp(skipFragments?: boolean): void;
-
-        /**
-         * Nvigate to the below slide
-         *
-         * @param skipFragments
-         */
-        navigateDown(skipFragments?: boolean): void;
+        down: NavigationFunction;
 
         /**
          * Navigates backwards, prioritized in the following order:
@@ -192,9 +133,9 @@ declare namespace Reveal {
          * 2) Previous vertical slide
          * 3) Previous horizontal slide
          *
-         * @param skipFragments
+         * @param params see {@link NavigateParams}
          */
-        navigatePrev(skipFragments?: boolean): void;
+        prev: NavigationFunction;
 
         /**
          * Navigates forwards, prioritized in the following order:
@@ -202,9 +143,41 @@ declare namespace Reveal {
          * 2) Next vertical slide
          * 3) Next horizontal slide
          *
-         * @param skipFragments
+         * @param params see {@link NavigateParams}
          */
-        navigateNext(skipFragments?: boolean): void;
+        next: NavigationFunction;
+
+        // Navigation aliases
+
+        /**
+         * Alias for `left` see {@link left}
+         */
+        navigateLeft: NavigationFunction;
+
+        /**
+         * Alias for `right` see {@link right}
+         */
+        navigateRight: NavigationFunction;
+
+        /**
+         * Alias for `up` see {@link up}
+         */
+        navigateUp: NavigationFunction;
+
+        /**
+         * Alias for `down` see {@link down}
+         */
+        navigateDown: NavigationFunction;
+
+        /**
+         * Alias for `prev` see {@link prev}
+         */
+        navigatePrev: NavigationFunction;
+
+        /**
+         * Alias for `next` see {@link next}
+         */
+        navigateNext: NavigationFunction;
 
         // Fragment methods
 
@@ -237,6 +210,8 @@ declare namespace Reveal {
          */
         nextFragment(): boolean;
 
+        // TODO - These functions are used for handling custom events defined by reveal.js on the `revealElement`.
+        // The `dispatchEvent` function can help finding the correct event names, but library users can dispatch any synthetic events.
         /**
          * Adds a listener to one of our custom reveal.js events,
          * like slidechanged.
@@ -245,7 +220,7 @@ declare namespace Reveal {
          * @param listener
          * @param useCapture
          */
-        on: Document['addEventListener'];
+        on: HTMLElement["addEventListener"];
 
         /**
          * Unsubscribes from a reveal.js event.
@@ -254,28 +229,30 @@ declare namespace Reveal {
          * @param listener
          * @param useCapture
          */
-        off: Document['removeEventListener'];
+        off: HTMLElement["removeEventListener"];
 
         /**
          * Legacy event binding methods left in for backwards compatibility
          * Adds a listener to one of our custom reveal.js events,
          * like slidechanged.
+         * See: {@link on}
          *
          * @param type
          * @param listener
          * @param useCapture
          */
-        addEventListener: Document['addEventListener'];
+        addEventListener: HTMLElement["addEventListener"];
 
         /**
          * Legacy event binding methods left in for backwards compatibility
          * Unsubscribes from a reveal.js event.
+         * See: {@link off}
          *
          * @param type
          * @param listener
          * @param useCapture
          */
-        removeEventListener: Document['removeEventListener'];
+        removeEventListener: HTMLElement["removeEventListener"];
 
         /**
          * Applies JavaScript-controlled layout rules to the
@@ -286,14 +263,17 @@ declare namespace Reveal {
         /**
          * Randomly shuffles all slides in the deck.
          */
-        shuffle(): void;
+        shuffle(slides?: HTMLElement[]): void;
 
         /**
          * Determine what available routes there are for navigation.
          *
+         * @param params - If includeFragments is set, a route will be considered
+         * available if either a slide OR a fragment is available in the given direction
+         *
          * @returns Available route {left, right, up, down}
          */
-        availableRoutes(): {
+        availableRoutes(params?: { includeFragments?: boolean }): {
             down: boolean;
             left: boolean;
             right: boolean;
@@ -301,7 +281,8 @@ declare namespace Reveal {
         };
 
         /**
-         * Returns an object with the available fragments as booleans (prev/next)
+         * Returns an object describing the available fragment
+         * directions.
          *
          * @returns Available fragments {prev, next}
          */
@@ -341,32 +322,23 @@ declare namespace Reveal {
          */
         toggleAutoSlide(override?: boolean): void;
 
-        // State navigation checks
+        // Slide navigation checks
 
         /**
-         * Returns true if we're currently on the first slide in
-         * the presentation.
-         *
          * @returns true if we're currently on the first slide in
          * the presentation.
          */
         isFirstSlide(): boolean;
 
         /**
-         * Returns true if we're currently on the last slide in
-         * the presenation. If the last slide is a stack, we only
+         * @returns Returns true if we're currently on the last slide in
+         * the presentation. If the last slide is a stack, we only
          * consider this the last slide if it's at the end of the
          * stack.
-         *
-         * @returns true if we're currently on the last slide in
-         * the presenation.
          */
         isLastSlide(): boolean;
 
         /**
-         * Returns true if we're on the last slide in the current
-         * vertical stack.
-         *
          * @returns true if we're on the last slide in the current
          * vertical stack.
          */
@@ -376,45 +348,36 @@ declare namespace Reveal {
          * Checks if the current or specified slide is vertical
          * (nested within another slide).
          *
-         * @param slide - the slide to check orientation of
+         * @param slide - the slide to check orientation of. Defaults to the current slide.
          * @return true if the current or specified slide is vertical
          */
         isVerticalSlide(slide?: HTMLElement): boolean;
 
-        // Stete checks
+        // State checks
 
         /**
-         * Checks if we are currently in the paused mode.
-         *
          * @returns true if we are currently in the paused mode.
          */
         isPaused(): boolean;
 
         /**
-         * Checks if the auto slide mode is currently on.
-         *
          * @returns true if the auto slide mode is currently on.
          */
         isAutoSliding(): boolean;
 
         /**
-         * Checks if this presentation is running inside of the
-         * speaker notes window.
-         *
          * @returns true if this presentation is running inside of
-         * the speaker notes wind
+         * the speaker notes window.
          */
         isSpeakerNotes(): boolean;
 
         /**
-         * Checks if the overview is currently active.
-         *
          * @returns true if the overview is active, false otherwise
          */
         isOverview(): boolean;
 
         /**
-         * Checks if it is focused
+         * Checks if the presentation is focused
          *
          * @returns true if the it is focused, false otherwise
          */
@@ -423,8 +386,7 @@ declare namespace Reveal {
         /**
          * Checks if this instance is being used to print a PDF.
          *
-         * @returns true if being used to print a PDF,
-         * false otherwise
+         * @returns true if being used to print a PDF, false otherwise
          */
         isPrintingPDF(): boolean;
 
@@ -471,12 +433,12 @@ declare namespace Reveal {
         // Adds or removes all internal event listeners
 
         /**
-         * Binds all event listeners.
+         * Binds all internal event listeners.
          */
         addEventListeners(): void;
 
         /**
-         * Unbinds all event listeners.
+         * Unbinds all internal event listeners.
          */
         removeEventListeners(): void;
 
@@ -490,7 +452,8 @@ declare namespace Reveal {
             data,
             bubbles,
         }: {
-            target?: any;
+            /** `revealElement` by default */
+            target?: HTMLElement;
             type: string;
             data: any;
             bubbles?: boolean;
@@ -505,13 +468,7 @@ declare namespace Reveal {
          *
          * @returns The current state - {indexh, indexv, indexf, paused, overview}
          */
-        getState(): {
-            indexh: number;
-            indexv: number;
-            indexf: number;
-            paused: boolean;
-            overview: boolean;
-        };
+        getState(): RevealState;
 
         /**
          * Restores the presentation to the given state.
@@ -519,8 +476,7 @@ declare namespace Reveal {
          * @param object - state as generated by getState()
          * @see {@link getState} generates the parameter `state`
          */
-        setState(object: { indexh: number; indexv: number; indexf: number; paused: boolean; overview: boolean }): void;
-        // Presentation progress on range of 0-1
+        setState(object: RevealState): void;
 
         /**
          * Returns a value ranging from 0-1 that represents
@@ -530,8 +486,6 @@ declare namespace Reveal {
          * how far into the presentation we have navigated.
          */
         getProgress(): number;
-
-        // Returns the indices of the current, or specified, slide
 
         /**
          * Retrieves the h/v location and fragment of the current,
@@ -557,18 +511,15 @@ declare namespace Reveal {
          */
         getSlidesAttributes(): any[];
 
-        // Returns the number of slides that we have passed
-
         /**
          * Returns the number of past slides. This can be used as a global
          * flattened index for slides.
          *
-         * @param slide - The slide we're counting before
+         * @param [slide] - The slide we're counting before, defaults to current slide
          *
          * @returns Past slide count
          */
-        getSlidePastCount(slide: HTMLElement): number;
-        // Returns the total number of slides
+        getSlidePastCount(slide?: HTMLElement): number;
 
         /**
          * Retrieves the total number of slides in this presentation.
@@ -577,19 +528,15 @@ declare namespace Reveal {
          */
         getTotalSlides(): number;
 
-        // Returns the slide element at the specified index
-
         /**
          * Returns the slide element matching the specified index.
          *
          * @param x - slide index
-         * @param y - slide index
+         * @param [y] - slide index
          *
          * @returns the slide element matching the specified index
          */
-        getSlide(x: number, y: number): HTMLElement;
-
-        // Returns the previous slide element, may be null
+        getSlide(x: number, y?: number): HTMLElement;
 
         /**
          * Returns the previous slide element, may be null
@@ -598,8 +545,6 @@ declare namespace Reveal {
          */
         getPreviousSlide(): HTMLElement | null;
 
-        // Returns the current slide element
-
         /**
          * Returns the current slide element
          *
@@ -607,7 +552,16 @@ declare namespace Reveal {
          */
         getCurrentSlide(): HTMLElement;
 
-        // Returns the slide background element at the specified index
+        /**
+         * Returns the background element for the given slide.
+         * All slides, even the ones with no background properties
+         * defined, have a background element so as long as the
+         * index is valid an element will be returned.
+         *
+         * @param element A slide
+         * @returns the background element for the given slide
+         */
+        getSlideBackground(element: HTMLElement): HTMLElement | undefined;
 
         /**
          * Returns the background element for the given slide.
@@ -617,12 +571,10 @@ declare namespace Reveal {
          *
          * @param x - Horizontal background index OR a slide
          * HTML element
-         * @param y - Vertical background index
+         * @param [y] - Vertical background index
          * @returns the background element for the given slide
          */
-        getSlideBackground(x: number | HTMLElement, y: number): HTMLElement | undefined;
-
-        // Returns the speaker notes string for a slide, or null
+        getSlideBackground(x: number, y?: number): HTMLElement | undefined;
 
         /**
          * Retrieves the speaker notes from a slide. Notes can be
@@ -630,21 +582,17 @@ declare namespace Reveal {
          * 1. As a data-notes attribute on the slide <section>
          * 2. As an <aside class="notes"> inside of the slide
          *
-         * @param slide
+         * @param [slide] - defaults to current slide
          * @returns the speaker notes from a slide
          */
-        getSlideNotes(slide: HTMLElement): string | null;
-
-        // Returns an Array of all slides
+        getSlideNotes(slide?: HTMLElement): string | null;
 
         /**
          * Retrieves all slides in this presentation.
          *
          * @returns all slides in this presentation
          */
-        getSlides(): Element[];
-
-        // Returns an array with all horizontal/vertical slides in the deck
+        getSlides(): HTMLElement[];
 
         /**
          * Returns a list of all horizontal slides in the deck. Each
@@ -653,14 +601,14 @@ declare namespace Reveal {
          *
          * @returns a list of all horizontal slides in the deck
          */
-        getHorizontalSlides(): Element[];
+        getHorizontalSlides(): HTMLElement[];
 
         /**
          * Returns all vertical slides that exist within this deck.
          *
          * @returns all vertical slides that exist within this deck
          */
-        getVerticalSlides(): Element[];
+        getVerticalSlides(): HTMLElement[];
 
         // Checks if the presentation contains two or more horizontal
         // and vertical slides
@@ -679,8 +627,6 @@ declare namespace Reveal {
          */
         hasVerticalSlides(): boolean;
 
-        // Checks if the deck has navigated on either axis at least once
-
         /**
          * Checks if the deck has navigated on either axis at least once
          *
@@ -697,7 +643,7 @@ declare namespace Reveal {
          */
         hasNavigatedVertically(): boolean;
 
-        // Adds/removes a custom key binding
+        // Custom keyboard bindings
 
         /**
          * Add a custom key binding with optional description to
@@ -706,7 +652,10 @@ declare namespace Reveal {
          * @param binding
          * @param callback
          */
-        addKeyBinding(binding: string | { keyCode: number; key: string; description: string }, callback: any): void;
+        addKeyBinding(
+            keyCode: number | { keyCode: number; key: string; description: string },
+            callback: string | ((event: KeyboardEvent) => void),
+        ): void;
 
         /**
          * Removes the specified custom key binding.
@@ -715,16 +664,12 @@ declare namespace Reveal {
          */
         removeKeyBinding(keyCode: number): void;
 
-        // Programmatically triggers a keyboard event
-
         /**
          * Programmatically triggers a keyboard event
          *
          * @param keyCode
          */
         triggerKey(keyCode: number): void;
-
-        // Registers a new shortcut to include in the help overlay
 
         /**
          * Registers a new shortcut to include in the help overlay
@@ -739,13 +684,11 @@ declare namespace Reveal {
          * values are based on the width and height configuration
          * options.
          *
-         * @param presentationWidth
-         * @param presentationHeight
+         * @param [presentationWidth=dom.wrapper.offsetWidth]
+         * @param [presentationHeight=dom.wrapper.offsetHeight]
          * @returns the computed pixel size of the slides
          */
-        getComputedSlideSize(presentationWidth: number, presentationHeight: number): ComputedSlideSize;
-
-        // Returns the current scale of the presentation content
+        getComputedSlideSize(presentationWidth?: number, presentationHeight?: number): ComputedSlideSize;
 
         /**
          * Returns the current scale of the presentation content
@@ -754,8 +697,6 @@ declare namespace Reveal {
          */
         getScale(): number;
 
-        // Returns the current configuration object
-
         /**
          * Returns the current configuration object
          *
@@ -763,16 +704,12 @@ declare namespace Reveal {
          */
         getConfig(): Options;
 
-        // Helper method, retrieves query string as a key:value map
-
         /**
          * Returns a key:value hash of all query params.
          *
          * @returns a key:value hash of all query params
          */
-        getQueryHash(): any;
-
-        // Returns the path to the current slide as represented in the URL
+        getQueryHash(): Record<string, string>;
 
         /**
          * Return a hash URL that will resolve to the given slide location.
@@ -780,19 +717,17 @@ declare namespace Reveal {
          * @param slide - the slide to link to
          * @returns a hash URL that will resolve to the given slide location
          */
-        getSlidePath(slide: HTMLElement): string;
-
-        // Returns reveal.js DOM elements
+        getSlidePath(slide?: HTMLElement): string;
 
         /**
          * @returns reveal.js DOM element
          */
-        getRevealElement(): Element;
+        getRevealElement(): HTMLElement | null;
 
         /**
          * @returns reveal.js DOM element
          */
-        getSlidesElement(): Element;
+        getSlidesElement(): HTMLElement | null;
 
         /**
          * @returns reveal.js DOM element
@@ -802,14 +737,14 @@ declare namespace Reveal {
         /**
          * @returns reveal.js DOM element
          */
-        getBackgroundsElement(): HTMLDivElement;
+        getBackgroundsElement(): HTMLDivElement | undefined;
 
         // API for registering and retrieving plugins
 
         /**
          * Registers a new plugin with this reveal.js instance.
          *
-         * reveal.js waits for all regisered plugins to initialize
+         * reveal.js waits for all registered plugins to initialize
          * before considering itself ready, as long as the plugin
          * is registered before calling `Reveal.initialize()`.
          *
@@ -847,24 +782,28 @@ declare namespace Reveal {
      * @see {@link https://github.com/hakimel/reveal.js/blob/master/js/config.js}
      */
     interface Options {
-        // Presentaion size
+        // Presentation size
         // https://github.com/reveal/revealjs.com/blob/master/src/presentation-size.md
 
         /**
          * The "normal" size of the presentation, aspect ratio will be preserved
          * when the presentation is scaled to fit different resolutions
          *
+         * Can be specified using percentage units.
+         *
          * @defaultValue `960`
          */
-        width?: number;
+        width?: number | string;
 
         /**
          * The "normal" size of the presentation, aspect ratio will be preserved
          * when the presentation is scaled to fit different resolutions
          *
+         * Can be specified using percentage units.
+         *
          * @defaultValue `700`
          */
-        height?: number;
+        height?: number | string;
 
         /**
          * Factor of the display size that should remain empty around the content
@@ -874,14 +813,14 @@ declare namespace Reveal {
         margin?: number;
 
         /**
-         * Bounds for smallest/largest possible scale to apply to content
+         * Bound for smallest possible scale to apply to content
          *
          * @defaultValue `0.2`
          */
         minScale?: number;
 
         /**
-         * Bounds for smallest/largest possible scale to apply to content
+         * Bound for largest possible scale to apply to content
          *
          * @defaultValue `2.0`
          */
@@ -892,7 +831,7 @@ declare namespace Reveal {
          *
          * @defaultValue `true`
          */
-        controls?: boolean;
+        controls?: boolean | "speaker-only";
 
         /**
          * Help the user learn the controls by providing hints, for example by
@@ -907,7 +846,7 @@ declare namespace Reveal {
          *
          * @defaultValue `bottom-right`
          */
-        controlsLayout?: 'edges' | 'bottom-right';
+        controlsLayout?: "edges" | "bottom-right";
 
         /**
          * Visibility rule for backwards navigation arrows; "faded", "hidden"
@@ -915,7 +854,7 @@ declare namespace Reveal {
          *
          * @defaultValue `faded`
          */
-        controlsBackArrows?: 'faded' | 'hidden' | 'visible';
+        controlsBackArrows?: "faded" | "hidden" | "visible";
 
         /**
          * Display a presentation progress bar
@@ -940,7 +879,13 @@ declare namespace Reveal {
          *
          * @defaultValue `false`
          */
-        slideNumber?: boolean | 'h.v' | 'h/v' | 'c' | 'c/t' | ((...args: any) => [string] | [string, string, string]);
+        slideNumber?:
+            | boolean
+            | "h.v"
+            | "h/v"
+            | "c"
+            | "c/t"
+            | ((slideObject: any) => [string] | [string, string, string]);
 
         /**
          * Can be used to limit the contexts in which the slide number appears
@@ -950,7 +895,7 @@ declare namespace Reveal {
          *
          * @defaultValue `all`
          */
-        showSlideNumber?: 'all' | 'print' | 'speaker';
+        showSlideNumber?: "all" | "print" | "speaker";
 
         /**
          * Use 1 based indexing for # links to match slide number (default is zero
@@ -997,7 +942,7 @@ declare namespace Reveal {
          *
          * @defaultValue `null`
          */
-        keyboardCondition?: 'focused' | null;
+        keyboardCondition?: null | "focused" | ((event: KeyboardEvent) => boolean);
 
         /**
          * Disables the default reveal.js slide layout (scaling and centering)
@@ -1070,7 +1015,7 @@ declare namespace Reveal {
          *
          * @defaultValue `default`
          */
-        navigationMode?: 'default' | 'linear' | 'grid';
+        navigationMode?: "default" | "linear" | "grid";
 
         /**
          * Randomizes the order of slides each time the presentation loads
@@ -1122,7 +1067,7 @@ declare namespace Reveal {
          *
          * @defaultValue `false`
          */
-        showNotes?: boolean;
+        showNotes?: boolean | "separate-page";
 
         /**
          * Flags if slides with data-visibility="hidden" should be kep visible
@@ -1203,18 +1148,18 @@ declare namespace Reveal {
          * 'border-color', 'border-radius', 'outline', 'outline-offset']`
          */
         autoAnimateStyles?: Array<
-            | 'opacity'
-            | 'color'
-            | 'background-color'
-            | 'padding'
-            | 'font-size'
-            | 'line-height'
-            | 'letter-spacing'
-            | 'border-width'
-            | 'border-color'
-            | 'border-radius'
-            | 'outline'
-            | 'outline-offset'
+            | "opacity"
+            | "color"
+            | "background-color"
+            | "padding"
+            | "font-size"
+            | "line-height"
+            | "letter-spacing"
+            | "border-width"
+            | "border-color"
+            | "border-radius"
+            | "outline"
+            | "outline-offset"
         >;
 
         /**
@@ -1240,7 +1185,7 @@ declare namespace Reveal {
          *
          * @defaultValue `null`
          */
-        autoSlideMethod?: any;
+        autoSlideMethod?: null | (() => void);
 
         /**
          * Specify the average time in seconds that you think you will spend
@@ -1261,7 +1206,7 @@ declare namespace Reveal {
         /**
          * Opens links in an iframe preview overlay
          * Add `data-preview-link` and `data-preview-link="false"`
-         * to customise each link
+         * to customize each link
          * individually
          *
          * @defaultValue `false`
@@ -1294,21 +1239,21 @@ declare namespace Reveal {
          *
          * @defaultValue `slide`
          */
-        transition?: 'none' | 'fade' | 'slide' | 'convex' | 'concave' | 'zoom';
+        transition?: "none" | "fade" | "slide" | "convex" | "concave" | "zoom";
 
         /**
          * Transition speed
          *
          * @defaultValue `default`
          */
-        transitionSpeed?: 'default' | 'fast' | 'slow';
+        transitionSpeed?: "default" | "fast" | "slow";
 
         /**
          * Transition style for full page slide backgrounds
          *
          * @defaultValue `fade`
          */
-        backgroundTransition?: 'none' | 'fade' | 'slide' | 'convex' | 'concave' | 'zoom';
+        backgroundTransition?: "none" | "fade" | "slide" | "convex" | "concave" | "zoom";
 
         // background
         // https://revealjs.com/backgrounds/#parallax-background
@@ -1338,7 +1283,7 @@ declare namespace Reveal {
          *
          * @defaultValue ``
          */
-        parallaxBackgroundRepeat?: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' | 'initial' | 'inherit' | '';
+        parallaxBackgroundRepeat?: "repeat" | "repeat-x" | "repeat-y" | "no-repeat" | "initial" | "inherit" | "";
 
         /**
          * Parallax background position
@@ -1363,6 +1308,37 @@ declare namespace Reveal {
          * @defaultValue `null`
          */
         parallaxBackgroundVertical?: number | null;
+
+        /**
+         * Use to initialize reveal.js with an alternate view
+         *
+         * @defaultValue `null`
+         */
+        view?: "print" | "scroll" | null;
+
+        /**  Height of each slide in the scroll view.
+         *
+         *  @defaultValue `full`
+         */
+        scrollLayout?: "full" | "compact";
+
+        /** Controls how scroll snapping works in the scroll view
+         *
+         * @defaultValue `mandatory`
+         */
+        scrollSnap?: false | "proximity" | "mandatory";
+
+        /** Enable and configure the scroll view progress bar.
+         *
+         * @defaultValue `auto`
+         */
+        scrollProgress?: "auto" | boolean;
+
+        /** Viewport width that automatically activates scroll view
+         *
+         * @defaultValue `435`
+         */
+        scrollActivationWidth?: number;
 
         /**
          * The maximum number of pages a single slide can expand onto when printing
@@ -1490,6 +1466,15 @@ declare namespace Reveal {
     }
 
     /**
+     * Options for navigation
+     */
+    interface NavigateParams {
+        skipFragments?: boolean;
+    }
+
+    type NavigationFunction = (params?: NavigateParams) => void;
+
+    /**
      * Multiplex configuration
      *
      * @see {@link https://github.com/reveal/multiplex}
@@ -1550,7 +1535,7 @@ declare namespace Reveal {
      */
     interface HighlightConfig {
         highlightOnLoad?: boolean;
-        excapeHTML?: boolean;
+        escapeHTML?: boolean;
         beforeHighlight?: (...args: any) => any;
     }
 
@@ -1576,14 +1561,18 @@ declare namespace Reveal {
         sanitizer?: (...args: any) => any;
         silent?: boolean;
         smartLists?: boolean;
-        smartpants?: boolean;
+        smartypants?: boolean;
         tokenizer?: object;
         walkTokens?: (...args: any) => any;
         xhtml?: boolean;
+        separator?: string;
+        verticalSeparator?: string;
+        notesSeparator?: string;
+        attributes?: string;
     }
 
     /**
-     * Reveal Depencency
+     * Reveal Dependency
      *
      * @see {@link https://revealjs.com/plugins/#dependencies}
      */
@@ -1597,17 +1586,29 @@ declare namespace Reveal {
     interface ComputedSlideSize {
         width: number;
         height: number;
-        presentaionWidth: number;
-        presentaionHeight: number;
+        presentationWidth: number;
+        presentationHeight: number;
+    }
+
+    interface RevealState {
+        indexh: number;
+        indexv: number;
+        indexf: number;
+        paused: boolean;
+        overview: boolean;
     }
 
     // NOTE: it is possible to extend type definitions depend on the plugin
     /**
      * Reveal Plugin
+     *
+     * @see {@link https://revealjs.com/creating-plugins/}
      */
     interface Plugin {
         id: string;
-        init(reveal: Api): Promise<any>;
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        init?(reveal: Api): void | Promise<any>;
+        destroy?(): void;
     }
 
     interface PluginFunction {

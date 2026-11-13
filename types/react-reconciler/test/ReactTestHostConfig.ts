@@ -5,10 +5,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
-import ReactReconcilerConstants = require('react-reconciler/constants');
+import ReactReconcilerConstants = require("react-reconciler/constants");
+import { ReactContext } from "react-reconciler";
 
 export const REACT_OPAQUE_ID_TYPE: number | symbol = 0xeae0;
 
@@ -21,7 +21,7 @@ export interface Props {
 export interface Container {
     children: Array<Instance | TextInstance>;
     createNodeMock: (...args: any[]) => any;
-    tag: 'CONTAINER';
+    tag: "CONTAINER";
 }
 export interface Instance {
     type: string;
@@ -34,39 +34,63 @@ export interface Instance {
         [key: string]: any;
     };
     rootContainerInstance: Container;
-    tag: 'INSTANCE';
+    tag: "INSTANCE";
 }
 export interface TextInstance {
     text: string;
     isHidden: boolean;
-    tag: 'TEXT';
+    tag: "TEXT";
 }
 export type HydratableInstance = Instance | TextInstance;
-export type PublicInstance = (Instance | TextInstance) & { kind: 'PublicInstance' };
+export type FormInstance = Instance;
+export type PublicInstance = (Instance | TextInstance) & { kind: "PublicInstance" };
 export interface HostContext {
-    [key: string]: any;
-}
-export interface UpdatePayload {
     [key: string]: any;
 }
 export type ChildSet = undefined; // Unused
 export type TimeoutHandle = TimeoutID;
 export type NoTimeout = -1;
+export type TransitionStatus = any;
+export interface SuspendedState {
+    kind: "SuspendedState";
+}
 export type EventResponder = any;
 export type OpaqueIDType =
     | string
     | {
-          $$typeof: number | symbol;
-          toString: () => string | void;
-          valueOf: () => string | void;
-      };
+        $$typeof: number | symbol;
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        toString: () => string | void;
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        valueOf: () => string | void;
+    };
 
-export type RendererInspectionConfig = Readonly<{}>;
+export interface RendererInspectionConfig {
+    kind: "RendererInspectionConfig";
+}
 
-export * from './ReactFiberHostConfigWithNoPersistence';
-export * from './ReactFiberHostConfigWithNoMicrotasks';
-export * from './ReactFiberHostConfigWithNoHydration';
-export * from './ReactFiberHostConfigWithNoTestSelectors';
+export interface FormStateMarkerInstance {
+    kind: "FormStateMarkerInstance";
+}
+
+// This host config doesn't support Resources (supportsResources is left
+// unset), so these are never actually produced, but the generic parameters
+// still need concrete stand-in types.
+export interface HoistableRoot {
+    kind: "HoistableRoot";
+}
+export interface Resource {
+    kind: "Resource";
+}
+
+export const rendererVersion = "19.2.0";
+export const rendererPackageName = "react-test-renderer";
+export const extraDevToolsConfig: RendererInspectionConfig | null = null;
+
+export * from "./ReactFiberHostConfigWithNoHydration";
+export * from "./ReactFiberHostConfigWithNoMicrotasks";
+export * from "./ReactFiberHostConfigWithNoPersistence";
+export * from "./ReactFiberHostConfigWithNoTestSelectors";
 
 const NO_CONTEXT = {};
 const UPDATE_SIGNAL = {};
@@ -74,14 +98,14 @@ const nodeToInstanceMap = new WeakMap();
 
 export function getPublicInstance(inst: Instance | TextInstance): any {
     switch (inst.tag) {
-        case 'INSTANCE':
+        case "INSTANCE":
             const createNodeMock = inst.rootContainerInstance.createNodeMock;
             const mockNode = createNodeMock({
                 type: inst.type,
                 props: inst.props,
             });
 
-            if (typeof mockNode === 'object' && mockNode !== null) {
+            if (typeof mockNode === "object" && mockNode !== null) {
                 nodeToInstanceMap.set(mockNode, inst);
             }
 
@@ -125,11 +149,7 @@ export function getRootHostContext(rootContainerInstance: Container): HostContex
     return NO_CONTEXT;
 }
 
-export function getChildHostContext(
-    parentHostContext: HostContext,
-    type: string,
-    rootContainerInstance: Container,
-): HostContext {
+export function getChildHostContext(parentHostContext: HostContext, type: string): HostContext {
     return NO_CONTEXT;
 }
 
@@ -162,7 +182,7 @@ export function createInstance(
         children: [],
         internalInstanceHandle,
         rootContainerInstance,
-        tag: 'INSTANCE',
+        tag: "INSTANCE",
     };
 }
 
@@ -178,25 +198,11 @@ export function finalizeInitialChildren(
     testElement: Instance,
     type: string,
     props: Props,
-    rootContainerInstance: Container,
     hostContext: {
         [key: string]: any;
     },
 ): boolean {
     return false;
-}
-
-export function prepareUpdate(
-    testElement: Instance,
-    type: string,
-    oldProps: Props,
-    newProps: Props,
-    rootContainerInstance: Container,
-    hostContext: {
-        [key: string]: any;
-    },
-): null | {} {
-    return UPDATE_SIGNAL;
 }
 
 export function shouldSetTextContent(type: string, props: Props): boolean {
@@ -216,12 +222,8 @@ export function createTextInstance(
     return {
         text,
         isHidden: false,
-        tag: 'TEXT',
+        tag: "TEXT",
     };
-}
-
-export function getCurrentEventPriority() {
-    return ReactReconcilerConstants.DefaultEventPriority;
 }
 
 export const isPrimaryRenderer = false;
@@ -240,7 +242,6 @@ export const supportsMutation = true;
 
 export function commitUpdate(
     instance: Instance,
-    updatePayload: {},
     type: string,
     oldProps: Props,
     newProps: Props,
@@ -333,3 +334,93 @@ export function detachDeletedInstance(node: Instance): void {
 export function logRecoverableError(error: any): void {
     // noop
 }
+
+export const NotPendingTransition = null;
+
+export function shouldAttemptEagerTransition() {
+    return false;
+}
+
+export function startSuspendingCommit(): SuspendedState {
+    return { kind: "SuspendedState" };
+}
+
+export function suspendInstance(state: SuspendedState, instance: Instance, type: Type, props: Props): void {
+    // noop
+}
+
+export function trackSchedulerEvent() {
+    // noop
+}
+
+export function waitForCommitToBeReady(state: SuspendedState, timeoutOffset: number) {
+    return null;
+}
+
+export function getCurrentUpdatePriority() {
+    return ReactReconcilerConstants.DefaultEventPriority;
+}
+
+export function resolveUpdatePriority() {
+    return ReactReconcilerConstants.DefaultEventPriority;
+}
+
+export function setCurrentUpdatePriority(newPriority: number) {
+    // noop
+}
+
+export function requestPostPaintCallback() {
+    // noop
+}
+
+export function resetFormInstance() {
+    // noop
+}
+
+export function resolveEventTimeStamp() {
+    return -1.1;
+}
+
+export function resolveEventType() {
+    return null;
+}
+
+export function maySuspendCommit() {
+    return false;
+}
+
+export function maySuspendCommitOnUpdate(type: Type, oldProps: Props, newProps: Props) {
+    return false;
+}
+
+export function maySuspendCommitInSyncRender(type: Type, props: Props) {
+    return false;
+}
+
+export function preloadInstance(instance: Instance, type: Type, props: Props) {
+    return true;
+}
+
+export function suspendOnActiveViewTransition(state: SuspendedState, rootContainer: Container): void {
+    // noop
+}
+
+export function getSuspendedCommitReason(state: SuspendedState, rootContainer: Container): null | string {
+    return null;
+}
+
+export function bindToConsole(methodName: string, args: any[], badgeName: string): () => any {
+    // noop — this test config doesn't replay Server console logs.
+    return () => undefined;
+}
+
+const REACT_CONTEXT_TYPE = Symbol.for("react.context");
+
+export const HostTransitionContext: ReactContext<TransitionStatus> = {
+    $$typeof: REACT_CONTEXT_TYPE,
+    Provider: null as any,
+    Consumer: null as any,
+    _currentValue: NotPendingTransition,
+    _currentValue2: NotPendingTransition,
+    _threadCount: 0,
+};

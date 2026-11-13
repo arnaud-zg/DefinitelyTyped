@@ -1,7 +1,7 @@
 export = Connection;
-declare function Connection(host: string | Database, opt_dbName?: string): void;
+declare function Connection(host: string | Database, dbName?: string): void;
 declare class Connection {
-    constructor(host: string | Database, opt_dbName?: string);
+    constructor(host: string | Database, dbName?: string);
     private _tables;
     private classDefManager_;
     workloadType: string;
@@ -26,7 +26,12 @@ declare class Connection {
     login(userName: string, password: string): boolean;
     logout(): void;
     executeSql(sqlExpression: string | string[]): void;
-    getDataSet(sqlOrArrayOfSql: string | string[], options?: any): DataSet | DataSet[];
+    getDataSet(
+        sqlOrArrayOfSql: string | string[],
+        options?: {
+            queryCacheLifeTime?: number;
+        }
+    ): DataSet | DataSet[];
     cloneLocalCache(tableName: string): DataSet;
     copyStructureLocalCache(tableName: string): void;
     getPermission(
@@ -133,8 +138,10 @@ declare class Connection {
         iVfsOrParentKey?: DataSet | number,
         iClass?: DataSet
     ): ModelDef;
-    sendMail(mail: Mail): void;
-    scheduledSendMail(mail: Mail, maxSize?: number): void;
+    sendEmail(email: Email): void;
+    private sendMail;
+    scheduledSendEmail(email: Email, maxSize?: number): void;
+    private scheduledSendMail;
     newTask(task: Task, userName: string | null, password: string | null): void;
     skipSatSunHoliday(dt: Date, uf: number | null, localidade: number | null): Date;
     getUserGroups(userKey: number): number[];
@@ -142,12 +149,12 @@ declare class Connection {
     getTimezoneOffset(): number;
 }
 declare namespace Connection {
-    export { fromConfig, Database, ModelDef, Mail, Task };
+    export { fromConfig, Database, ModelDef, Email, Task };
 }
-type Database = import('../database/Database');
 import DataSet = require('../dataset/DataSet.js');
 import DBKey = require('../dbkey/DBKey.js');
-type ModelDef = import('../classdef/ModelDef');
-type Mail = import('../mail/Mail');
-type Task = import('../scheduler/Task');
 declare function fromConfig(key: DBKey | number): Connection;
+type Database = import('../database/Database');
+type ModelDef = import('../classdef/ModelDef');
+type Email = import('../email/Email');
+type Task = import('../scheduler/Task');

@@ -31,11 +31,35 @@ async function test() {
     await libnpmpublish.publish();
     // @ts-expect-error
     await libnpmpublish.publish(manifest);
-    await libnpmpublish.publish(manifest, tarballData); // $ExpectType Response
-    await libnpmpublish.publish(manifest, tarballData, options); // $ExpectType Response
+    await libnpmpublish.publish(manifest, tarballData); // $ExpectType Response & { stageId?: string | undefined }
+    await libnpmpublish.publish(manifest, tarballData, options); // $ExpectType Response & { stageId?: string | undefined }
+
+    const publishOptions = {
+        ...options,
+        defaultTag: "latest",
+        access: "public",
+        provenance: true,
+        provenanceFile: "path/to/provenanceFile",
+        npmVersion: "1.0.0",
+        algorithms: ["sha512"],
+    };
+    await libnpmpublish.publish(manifest, tarballData, publishOptions); // $ExpectType Response & { stageId?: string | undefined }
 
     // @ts-expect-error
     await libnpmpublish.unpublish();
     await libnpmpublish.unpublish("npmpackage"); // $ExpectType boolean
     await libnpmpublish.unpublish("npmpackage", options); // $ExpectType boolean
+}
+
+async function stagingTest() {
+    const options = {
+        stage: true,
+    } as const;
+    const manifest: PackageJson = {
+        name: "",
+        version: "",
+    };
+    const tarballData: Buffer = Buffer.from("thisisafillerforthebuffertowork");
+
+    await libnpmpublish.publish(manifest, tarballData, options); // $ExpectType Response & { stageId: string }
 }

@@ -1,20 +1,120 @@
-// Type definitions for @node-red/util 1.2
-// Project: https://github.com/node-red/node-red/tree/master/packages/node_modules/%40node-red/util, https://nodered.org/
-// Definitions by: Alex Kaul <https://github.com/alexk111>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// Minimum TypeScript Version: 3.1
+import { SpawnOptions } from "child_process";
+import { EventEmitter } from "events";
 
-import { EventEmitter } from 'events';
-import { Expression as JsonataExpression } from 'jsonata';
+import * as registry from "@node-red/registry";
+import * as runtime from "@node-red/runtime";
 
-import * as registry from '@node-red/registry';
-import * as runtime from '@node-red/runtime';
+// https://github.com/node-red/jsonata-nr/blob/2.2.2-nr.01/jsonata.d.ts
+declare namespace jsonata {
+    interface ExprNode {
+        type:
+            | "binary"
+            | "unary"
+            | "function"
+            | "partial"
+            | "lambda"
+            | "condition"
+            | "transform"
+            | "block"
+            | "name"
+            | "parent"
+            | "string"
+            | "number"
+            | "value"
+            | "wildcard"
+            | "descendant"
+            | "variable"
+            | "regexp"
+            | "operator"
+            | "error";
+        value?: any;
+        position?: number;
+        arguments?: ExprNode[];
+        name?: string;
+        procedure?: ExprNode;
+        steps?: ExprNode[];
+        expressions?: ExprNode[];
+        stages?: ExprNode[];
+        lhs?: ExprNode | ExprNode[] | [ExprNode, ExprNode][];
+        rhs?: ExprNode;
+    }
+
+    interface JsonataError extends Error {
+        code: string;
+        position: number;
+        token: string;
+    }
+
+    interface Environment {
+        bind(name: string | symbol, value: any): void;
+        lookup(name: string | symbol): any;
+        readonly timestamp: Date;
+        readonly async: boolean;
+    }
+
+    interface Focus {
+        readonly environment: Environment;
+        readonly input: any;
+    }
+
+    interface Expression {
+        evaluate(input: any, bindings?: Record<string, any>): Promise<any>;
+        evaluate(
+            input: any,
+            bindings: Record<string, any> | undefined,
+            callback: (err: JsonataError, resp: any) => void,
+        ): void;
+        assign(name: string, value: any): void;
+        registerFunction(name: string, implementation: (this: Focus, ...args: any[]) => any, signature?: string): void;
+        ast(): ExprNode;
+    }
+}
 
 declare const util: util.UtilModule;
 
 export = util;
 
 declare namespace util {
+    type JsonataExpression = jsonata.Expression;
+
+    /**
+     * Runtime events
+     */
+    interface Events extends EventEmitter {} // eslint-disable-line @typescript-eslint/no-empty-interface
+
+    interface ExecRunOptions extends SpawnOptions {
+        shell?: boolean;
+    }
+
+    interface ExecRunResult {
+        code: number | null;
+        stdout: string;
+        stderr: string;
+    }
+
+    /**
+     * Run a system command with stdout/err being emitted as 'event-log' events
+     * on the @node-red/util/events handler.
+     *
+     * The main arguments to this function are the same as passed to `child_process.spawn`
+     *
+     * @param command - the command to run
+     * @param args - arguments for the command
+     * @param options - options to pass child_process.spawn
+     * @param emit - whether to emit events to the event-log for each line of stdout/err
+     * @return A promise that resolves (rc=0) or rejects (rc!=0) when the command completes. The value
+     *                   of the promise is an object of the form:
+     *
+     *       {
+     *           code: <exit code>,
+     *           stdout: <standard output from the command>,
+     *           stderr: <standard error from the command>
+     *       }
+     */
+    interface Exec {
+        run(command: string, args?: string[], options?: {}, emit?: boolean): Promise<ExecRunResult>;
+    }
+
     interface LogMessageObject {
         level: number;
         msg?: LogMessage | undefined;
@@ -97,13 +197,17 @@ declare namespace util {
         file: string;
     }
 
-    // tslint:disable-next-line:interface-name
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     interface I18nTFunction {
         (id: string, tplStrs?: Record<string, string | number>): string;
     }
 
-    // tslint:disable-next-line:interface-name
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     interface I18n {
+        /**
+         * The default language of the runtime
+         */
+        readonly defaultLang: "en-US";
         /**
          * Perform a message catalog lookup.
          */
@@ -132,7 +236,7 @@ declare namespace util {
 
     interface Util {
         /**
-         * Generates a psuedo-unique-random id.
+         * Generates a pseudo-unique-random id.
          * @returns a random-ish id
          */
         generateId(): string;
@@ -159,12 +263,12 @@ declare namespace util {
          * @param msg - the message object to clone
          * @returns the cloned message
          */
-        cloneMessage<T extends registry.NodeMessage>(msg: T): T;
+        cloneMessage<TNodeMessage extends registry.NodeMessage>(msg: TNodeMessage): TNodeMessage;
         /**
          * Compares two objects, handling various JavaScript types.
          *
-         * @param obj1
-         * @param obj2
+         * @param obj1 - the first object
+         * @param obj2 - the second object
          * @returns whether the two objects are the same
          */
         compareObjects(obj1: object, obj2: object): boolean;
@@ -175,33 +279,59 @@ declare namespace util {
          *
          * For example, `a["b"].c` returns `['a','b','c']`
          *
+         * If `msg` is provided, any internal cross-references will be evaluated against that
+         * object. Otherwise, it will return a nested set of properties
+         *
+         * For example, without msg set, 'a[msg.foo]' returns `['a', [ 'msg', 'foo'] ]`
+         * But if msg is set to '{"foo": "bar"}', 'a[msg.foo]' returns `['a', 'bar' ]`
+         *
+         * If `toString` is set to true, the returned array will be converted to a string
+         *
          * @param str - the property expression
+         * @param msg - the message object to use for cross-references
+         * @param toString - whether to convert the returned array to a string
          * @returns the normalised expression
+         * @throws Will throw an error if the expression is incorrect
          */
-        normalisePropertyExpression(str: string): Array<string | number>;
+        normalisePropertyExpression(str: string, msg?: registry.NodeMessage, toString?: false): Array<string | number>;
+        normalisePropertyExpression(str: string, msg: registry.NodeMessage, toString: true): string;
         /**
          * Gets a property of a message object.
          *
-         * Unlike `getObjectProperty`, this function will strip `msg.` from the
+         * Unlike {@link getObjectProperty}, this function will strip `msg.` from the
          * front of the property expression if present.
          *
          * @param msg - the message object
          * @param expr - the property expression
          * @returns the message property, or undefined if it does not exist
+         * @throws Will throw an error if the *parent* of the property does not exist
          */
-        getMessageProperty(msg: object, expr: string): any;
+        getMessageProperty(msg: registry.NodeMessage, expr: string): any;
         /**
          * Gets a property of an object.
+         * Given the object:
+         *
+         *     {
+         *       "pet": {
+         *           "type": "cat"
+         *       }
+         *     }
+         *
+         * - `pet.type` will return `"cat"`.
+         * - `pet.name` will return `undefined`
+         * - `car` will return `undefined`
+         * - `car.type` will throw an Error (as `car` does not exist)
          *
          * @param msg - the object
          * @param expr - the property expression
          * @returns the object property, or undefined if it does not exist
+         * @throws Will throw an error if the *parent* of the property does not exist
          */
-        getObjectProperty(msg: object, expr: string): any;
+        getObjectProperty(msg: registry.NodeMessage, expr: string): any;
         /**
          * Sets a property of a message object.
          *
-         * Unlike `setObjectProperty`, this function will strip `msg.` from the
+         * Unlike {@link setObjectProperty}, this function will strip `msg.` from the
          * front of the property expression if present.
          *
          * @param  msg           - the message object
@@ -209,7 +339,7 @@ declare namespace util {
          * @param  value         - the value to set
          * @param  createMissing - whether to create missing parent properties
          */
-        setMessageProperty(msg: object, prop: string, value: any, createMissing?: boolean): boolean;
+        setMessageProperty(msg: registry.NodeMessage, prop: string, value: any, createMissing?: boolean): boolean;
         /**
          * Sets a property of an object.
          *
@@ -218,25 +348,15 @@ declare namespace util {
          * @param  value         - the value to set
          * @param  createMissing - whether to create missing parent properties
          */
-        setObjectProperty(msg: object, prop: string, value: any, createMissing?: boolean): boolean;
+        setObjectProperty(msg: registry.NodeMessage, prop: string, value: any, createMissing?: boolean): boolean;
         /**
          * Get value of environment variable.
          * @param node - accessing node
          * @param name - name of variable
+         * @param flow - accessing flow
          * @returns value of env var
          */
-        getSetting(node: registry.Node, name: string): string;
-        /**
-         * Checks if a String contains any Environment Variable specifiers and returns
-         * it with their values substituted in place.
-         *
-         * For example, if the env var `WHO` is set to `Joe`, the string `Hello ${WHO}!`
-         * will return `Hello Joe!`.
-         * @param value - the string to parse
-         * @param node - the node evaluating the property
-         * @returns The parsed string
-         */
-        evaluateEnvProperty(value: string, node: registry.Node): string;
+        getSetting(node: registry.Node, name: string, flow?: runtime.Flow): string | undefined;
         /**
          * Parses a context property string, as generated by the TypedInput, to extract
          * the store name if present.
@@ -257,12 +377,12 @@ declare namespace util {
          * @param   callback - (optional) called when the property is evaluated
          * @returns The evaluted property, if no `callback` is provided
          */
-        evaluateNodeProperty(value: string, type: string, node: registry.Node, msg: object): any;
+        evaluateNodeProperty(value: string, type: string, node: registry.Node, msg: registry.NodeMessage): any;
         evaluateNodeProperty(
             value: string,
             type: string,
             node: registry.Node,
-            msg: object,
+            msg: registry.NodeMessage,
             callback: (err: Error | null, result: any) => void,
         ): void;
         /**
@@ -276,19 +396,17 @@ declare namespace util {
         prepareJSONataExpression(value: string, node: registry.Node): JsonataExpression;
         /**
          * Evaluates a JSONata expression.
-         * The expression must have been prepared with `prepareJSONataExpression`
+         * The expression must have been prepared with {@link prepareJSONataExpression}
          * before passing to this function.
          *
          * @param   expr     - the prepared JSONata expression
          * @param   msg      - the message object to evaluate against
-         * @param   callback - (optional) called when the expression is evaluated
-         * @returns If no callback was provided, the result of the expression
+         * @param   callback - a callback with the result of the expression
          */
-        evaluateJSONataExpression(expr: JsonataExpression, msg: object): any;
         evaluateJSONataExpression(
             expr: JsonataExpression,
-            msg: object,
-            callback: (err: Error | null, resp: any) => void,
+            msg: registry.NodeMessage,
+            callback: (error: Error | null, result: any) => void,
         ): void;
         /**
          * Normalise a node type name to camel case.
@@ -313,8 +431,9 @@ declare namespace util {
     }
 
     // Used `boolean` in PromiseLike instead of `false` because it caused problems with `async` functions
-    type HandlerFunction<T> = (payload: T, callback: (err?: any) => void) => void | false | PromiseLike<void | boolean>; // tslint:disable-line:void-return
+    type HandlerFunction<T> = (payload: T, callback: (err?: any) => void) => void | false | PromiseLike<void | boolean>; // eslint-disable-line @typescript-eslint/no-invalid-void-type
 
+    /** @link https://nodered.org/docs/api/hooks/ */
     interface Hooks {
         /**
          * A node has called `node.send()` with one or more messages.
@@ -330,7 +449,7 @@ declare namespace util {
          *
          * If the hook returns `false`, the messages will not proceed any further.
          */
-        add(hookName: 'onSend', hookHandler: HandlerFunction<SendEvent[]>): void;
+        add(hookName: "onSend", hookHandler: HandlerFunction<SendEvent[]>): void;
 
         /**
          * A message is about to be routed to its destination.
@@ -345,7 +464,7 @@ declare namespace util {
          *
          * If the hook returns `false`, the message will not proceed any further.
          */
-        add(hookName: 'preRoute', handlerFunction: HandlerFunction<SendEvent>): void;
+        add(hookName: "preRoute", handlerFunction: HandlerFunction<SendEvent>): void;
 
         /**
          * A message is about to be delivered
@@ -357,14 +476,14 @@ declare namespace util {
          *
          * If the hook returns `false`, the messages will not proceed any further.
          */
-        add(hookName: 'preDeliver', handlerFunction: HandlerFunction<SendEvent>): void; // tslint:disable-line:unified-signatures
+        add(hookName: "preDeliver", handlerFunction: HandlerFunction<SendEvent>): void; // tslint:disable-line:unified-signatures
 
         /**
          * A message has been dispatched to its destination.
          *
          * The hook is passed a single `SendEvent`. The message is delivered asynchronously to the hooks execution.
          */
-        add(hookName: 'postDeliver', handlerFunction: HandlerFunction<SendEvent>): void; // tslint:disable-line:unified-signatures
+        add(hookName: "postDeliver", handlerFunction: HandlerFunction<SendEvent>): void; // tslint:disable-line:unified-signatures
 
         /**
          * A message is about to be received by a node.
@@ -373,21 +492,21 @@ declare namespace util {
          *
          * If the hook returns `false`, the messages will not proceed any further.
          */
-        add(hookName: 'onReceive', handlerFunction: HandlerFunction<ReceiveEvent>): void;
+        add(hookName: "onReceive", handlerFunction: HandlerFunction<ReceiveEvent>): void;
 
         /**
          * A message has been received by a node.
          *
          * The hook is passed `ReceiveEvent` when the message has been given to the node’s `input` handler.
          */
-        add(hookName: 'postReceive', handlerFunction: HandlerFunction<ReceiveEvent>): void; // tslint:disable-line:unified-signatures
+        add(hookName: "postReceive", handlerFunction: HandlerFunction<ReceiveEvent>): void; // tslint:disable-line:unified-signatures
 
         /**
          * A node has completed with a message or logged an error for it.
          *
          * The hook is passed a `CompleteEvent`.
          */
-        add(hookName: 'onComplete', handlerFunction: HandlerFunction<CompleteEvent>): void;
+        add(hookName: "onComplete", handlerFunction: HandlerFunction<CompleteEvent>): void;
 
         /**
          * Called before running `npm install` to install an npm module.
@@ -402,7 +521,7 @@ declare namespace util {
          *
          * If the hook throws an error, the install will be cleanly failed.
          */
-        add(hookName: 'preInstall', handlerFunction: HandlerFunction<InstallEvent>): void;
+        add(hookName: "preInstall", handlerFunction: HandlerFunction<InstallEvent>): void;
 
         /**
          * Called after `npm install` finishes installing an npm module.
@@ -415,7 +534,7 @@ declare namespace util {
          *
          * If the preceding `npm install` returned an error, this hook will not be invoked.
          */
-        add(hookName: 'postInstall', handlerFunction: HandlerFunction<InstallEvent>): void; // tslint:disable-line:unified-signatures
+        add(hookName: "postInstall", handlerFunction: HandlerFunction<InstallEvent>): void; // tslint:disable-line:unified-signatures
 
         /**
          * Called before running `npm remove` to uninstall an npm module.
@@ -430,7 +549,7 @@ declare namespace util {
          *
          * If the hook throws an error, the uninstall will be cleanly failed.
          */
-        add(hookName: 'preUninstall', handlerFunction: HandlerFunction<UninstallEvent>): void;
+        add(hookName: "preUninstall", handlerFunction: HandlerFunction<UninstallEvent>): void;
 
         /**
          * Called after `npm remove` finishes removing an npm module.
@@ -441,7 +560,7 @@ declare namespace util {
          *
          * If the hook throws an error, it will be logged, but the uninstall will complete cleanly as we cannot rollback an `npm remove` after it has completed.
          */
-        add(hookName: 'postUninstall', handlerFunction: HandlerFunction<UninstallEvent>): void; // tslint:disable-line:unified-signatures
+        add(hookName: "postUninstall", handlerFunction: HandlerFunction<UninstallEvent>): void; // tslint:disable-line:unified-signatures
 
         /**
          * Register a new hook handler.
@@ -458,10 +577,20 @@ declare namespace util {
          * To remove all hooks with a given label, `*.my-hooks` can be used.
          */
         remove(hookName: string): void;
+
+        /**
+         * Check if the hook has been registered.
+         * @param hookName the name of the hook
+         */
         has(hookName: string): boolean;
+
+        /**
+         * Clears all registered hook handlers.
+         */
+        clear(): void;
     }
 
-    //#region Hook Event Objects
+    // #region Hook Event Objects
 
     interface SendEvent {
         msg: registry.NodeMessage;
@@ -522,7 +651,7 @@ declare namespace util {
         args: string[];
     }
 
-    //#endregion
+    // #endregion
 
     interface UtilModule {
         /**
@@ -530,6 +659,16 @@ declare namespace util {
          * @param settings
          */
         init(settings: runtime.LocalSettings): void;
+
+        /**
+         * Runtime events
+         */
+        events: Events;
+
+        /**
+         * Run system commands with event-log integration
+         */
+        exec: Exec;
 
         /**
          * Logging utilities

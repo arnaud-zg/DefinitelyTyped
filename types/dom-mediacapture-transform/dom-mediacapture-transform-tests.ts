@@ -108,15 +108,21 @@ async function topLevel() {
 
     // MediaStreamTrackGenerator-video.https.html
 
-    const videoFrame = new VideoFrame(imageBitmap, { timestamp: 1, alpha: 'discard' });
+    const videoFrame = new VideoFrame(imageBitmap, { timestamp: 1, alpha: "discard" });
 
     {
-        const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+        const generator = new MediaStreamTrackGenerator({ kind: "video" });
 
         // Use a MediaStreamTrackProcessor as a sink for |generator| to verify
         // that |processor| actually forwards the frames written to its writable
         // field.
         const processor = new MediaStreamTrackProcessor({ track: generator });
+
+        // $ExpectType number
+        processor.discardedFrames;
+
+        // $ExpectType number
+        processor.totalFrames;
 
         // $ExpectType ReadableStreamDefaultReader<VideoFrame>
         const reader = processor.readable.getReader();
@@ -131,13 +137,13 @@ async function topLevel() {
     }
 
     {
-        const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+        const generator = new MediaStreamTrackGenerator({ kind: "video" });
 
         new MediaStream([generator]);
     }
 
     {
-        const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+        const generator = new MediaStreamTrackGenerator({ kind: "video" });
 
         // $ExpectType WritableStreamDefaultWriter<VideoFrame>
         const writer = generator.writable.getWriter();

@@ -1,18 +1,19 @@
 // This file was auto-generated. Please do not edit it.
 
-import * as p5 from '../../index';
+import p5 = require("../../index");
 
 declare module '../../index' {
     interface p5InstanceExtensions {
         /**
          *   Loads an opentype font file (.otf, .ttf) from a
-         *   file or a URL, and returns a PFont Object. This
-         *   method is asynchronous, meaning it may not finish
-         *   before the next line in your sketch is executed.
-         *   The path to the font should be relative to the
-         *   HTML file that links in your sketch. Loading fonts
-         *   from a URL or other remote location may be blocked
-         *   due to your browser's built-in security.
+         *   file or a URL, and returns a p5.Font object. This
+         *   function is asynchronous, meaning it may not
+         *   finish before the next line in your sketch is
+         *   executed. The path to the font should be relative
+         *   to the HTML file that links in your sketch.
+         *   Loading fonts from a URL or other remote location
+         *   may be blocked due to your browser's built-in
+         *   security.
          *   @param path name of the file or url to load
          *   @param [callback] function to be executed after
          *   loadFont() completes

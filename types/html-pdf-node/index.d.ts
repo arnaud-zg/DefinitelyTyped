@@ -1,8 +1,3 @@
-// Type definitions for html-pdf-node 1.0
-// Project: https://github.com/mrafiqk/html-pdf-node#readme
-// Definitions by: bojovypstros <https://github.com/bojovypstros>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
 /// <reference types="node"/>
 
 export interface File {
@@ -34,14 +29,16 @@ export interface Options {
     preferCSSPageSize?: boolean | undefined;
 }
 
+export type PdfOutput<T extends File = File> = Omit<T, "content"> & { buffer: Buffer };
+
 export function generatePdf(
     file: File,
     options?: Options,
     callback?: (err: Error, buffer: Buffer) => void,
-): void;
+): Promise<Buffer>;
 
-export function generatePdfs(
-    files: File[],
+export function generatePdfs<T extends File>(
+    files: T[],
     options?: Options,
-    callback?: (err: Error, buffer: Buffer) => void,
-): void;
+    callback?: (err: Error, output: Array<PdfOutput<T>>) => void,
+): Promise<Array<PdfOutput<T>>>;

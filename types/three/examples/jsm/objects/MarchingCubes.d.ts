@@ -1,4 +1,4 @@
-import { BufferGeometry, Material, Mesh, Color } from '../../../src/Three';
+import { BufferGeometry, Color, Material, Mesh } from "three";
 
 export class MarchingCubes extends Mesh {
     constructor(
@@ -66,10 +66,11 @@ export class MarchingCubes extends Mesh {
     blur(intensity: number): void;
 
     reset(): void;
+    update(): void;
     render(renderCallback: any): void;
     generateGeometry(): BufferGeometry;
     generateBufferGeometry(): BufferGeometry;
 }
 
-export const edgeTable: Int32Array[];
-export const triTable: Int32Array[];
+export const edgeTable: Int32Array;
+export const triTable: Int32Array;

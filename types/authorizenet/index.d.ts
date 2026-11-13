@@ -1,7 +1,3 @@
-// Type definitions for authorizenet 1.0
-// Project: https://github.com/AuthorizeNet/sdk-node
-// Definitions by: Shahaed Hasan <https://github.com/shahaed>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 export namespace APIContracts {
     class ANetApiRequest {
         constructor(obj?: any, ...args: any[]);
@@ -3543,6 +3539,7 @@ export namespace APIControllers {
         validateRequest(): void;
         validate(): void;
         getResponse(): any;
+        getError(): any;
         getResultcode(): any;
         getMessagetype(): any;
         beforeExecute(): void;

@@ -1,46 +1,46 @@
-import Docker = require('dockerode');
-import * as fs from 'fs';
+import Docker = require("dockerode");
+import * as fs from "fs";
 
 // Code samples from Dockerode 'Getting started'
 const docker = new Docker();
-const docker1 = new Docker({ socketPath: '/var/run/docker.sock' });
-const docker2 = new Docker({ host: 'http://192.168.1.10', port: 3000 });
-const docker3 = new Docker({ protocol: 'http', host: '127.0.0.1', port: 3000 });
-const docker4 = new Docker({ host: '127.0.0.1', port: 3000 });
+const docker1 = new Docker({ socketPath: "/var/run/docker.sock" });
+const docker2 = new Docker({ host: "http://192.168.1.10", port: 3000 });
+const docker3 = new Docker({ protocol: "http", host: "127.0.0.1", port: 3000 });
+const docker4 = new Docker({ host: "127.0.0.1", port: 3000 });
 
 const docker5 = new Docker({
-    host: '192.168.1.10',
+    host: "192.168.1.10",
     port: process.env.DOCKER_PORT || 2375,
-    ca: 'ca',
-    cert: 'cert',
-    key: 'key',
+    ca: "ca",
+    cert: "cert",
+    key: "key",
 });
 
 const docker6 = new Docker({
-    protocol: 'https', // you can enforce a protocol
-    host: '192.168.1.10',
+    protocol: "https", // you can enforce a protocol
+    host: "192.168.1.10",
     port: process.env.DOCKER_PORT || 2375,
-    ca: 'ca',
-    cert: 'cert',
-    key: 'key',
+    ca: "ca",
+    cert: "cert",
+    key: "key",
 });
 
 const docker7 = new Docker({
-    host: '192.168.1.10',
+    host: "192.168.1.10",
     port: process.env.DOCKER_PORT || 2375,
-    ca: fs.readFileSync('ca.pem'),
-    cert: fs.readFileSync('cert.pem'),
-    key: fs.readFileSync('key.pem'),
-    version: 'v1.25', // required when Docker >= v1.13, https://docs.docker.com/engine/api/version-history/
+    ca: fs.readFileSync("ca.pem"),
+    cert: fs.readFileSync("cert.pem"),
+    key: fs.readFileSync("key.pem"),
+    version: "v1.25", // required when Docker >= v1.13, https://docs.docker.com/engine/api/version-history/
 });
 
 const docker8 = new Docker({
-    protocol: 'https', // you can enforce a protocol
-    host: '192.168.1.10',
+    protocol: "https", // you can enforce a protocol
+    host: "192.168.1.10",
     port: process.env.DOCKER_PORT || 2375,
-    ca: fs.readFileSync('ca.pem'),
-    cert: fs.readFileSync('cert.pem'),
-    key: fs.readFileSync('key.pem'),
+    ca: fs.readFileSync("ca.pem"),
+    cert: fs.readFileSync("cert.pem"),
+    key: fs.readFileSync("key.pem"),
 });
 
 const docker9 = new Docker({
@@ -48,18 +48,39 @@ const docker9 = new Docker({
 });
 
 const docker10 = new Docker({
-    protocol: 'ssh', // SSH support is possible
-    host: '192.168.1.10',
+    protocol: "ssh", // SSH support is possible
+    host: "192.168.1.10",
     port: 22,
-    username: 'test',
-    sshAuthAgent: '/tmp/ssh-abcde/agent.12345',
+    username: "test",
+    sshAuthAgent: "/tmp/ssh-abcde/agent.12345",
+});
+
+const docker11 = new Docker({
+    headers: {
+        Host: "custom-host",
+    },
+});
+
+const docker12 = new Docker({
+    sshOptions: {
+        host: "192.168.1.10",
+        port: 3000,
+        forceIPv4: true,
+        forceIPv6: true,
+    },
 });
 
 async function foo() {
-    const containers = await docker7.listContainers();
+    const containers = await docker7.listContainers({
+        all: false,
+        limit: 5,
+        size: true,
+        filters: undefined,
+    });
     for (const container of containers) {
         const foo = await docker7.getContainer(container.Id);
         const inspect = await foo.inspect();
+        const healthCheck = inspect.Config.Healthcheck;
     }
 
     const images = await docker5.listImages();
@@ -67,9 +88,23 @@ async function foo() {
         const imageSharedSize: number = image.SharedSize;
         const imageContainers: number = image.Containers;
         const foo = await docker5.getImage(image.Id);
-        const inspect = await foo.inspect();
+        const inspect = await foo.inspect({ manifests: true });
+        const imageDescriptor = inspect.Descriptor;
+        const imageManifests = inspect.Manifests;
+        const healthCheck = inspect.Config.Healthcheck;
         await foo.remove();
     }
+
+    const volumes = await docker8.listVolumes({
+        abortSignal: new AbortController().signal,
+        digests: false,
+        filters: undefined,
+    });
+
+    const nodes = await docker9.listNodes({
+        abortSignal: undefined,
+        filters: undefined,
+    });
 }
 
 docker.getEvents(
@@ -85,7 +120,7 @@ docker.getEvents(
 docker.getEvents(
     {
         since: new Date().getTime() / 1000,
-        filters: { event: ['pull'] },
+        filters: { event: ["pull"] },
     },
     (err, stream) => {
         // NOOP
@@ -100,12 +135,31 @@ docker.getEvents().then(stream => {
     // NOOP
 });
 
-const container = docker.getContainer('container-id');
+const container = docker.getContainer("container-id");
+
+container.inspect({ abortSignal: new AbortController().signal });
+
 container.inspect((err, data) => {
     // NOOP
 });
 
+container.start({ abortSignal: new AbortController().signal }, (err, data) => {
+    // NOOP
+});
+
 container.start((err, data) => {
+    // NOOP
+});
+
+container.exec({
+    Cmd: ["echo", "hello"],
+    AttachStdin: true,
+    AttachStdout: true,
+    AttachStderr: true,
+    Tty: true,
+    User: "root",
+    ConsoleSize: [80, 24],
+}, (err, data) => {
     // NOOP
 });
 
@@ -118,12 +172,12 @@ container.remove({ v: true, force: false, link: true }, (err, data) => {
 });
 
 container.logs((err, logs) => {
-    // $ExpectType Buffer
+    // $ExpectType Buffer || Buffer<ArrayBufferLike>
     logs;
 });
 
 container.logs({}, (err, logs) => {
-    // $ExpectType Buffer
+    // $ExpectType Buffer || Buffer<ArrayBufferLike>
     logs;
 });
 
@@ -133,20 +187,20 @@ container.logs({ follow: true }, (err, logs) => {
 });
 
 container.logs({ follow: false }, (err, logs) => {
-    // $ExpectType Buffer
+    // $ExpectType Buffer || Buffer<ArrayBufferLike>
     logs;
 });
 
-// $ExpectType Promise<Buffer>
+// $ExpectType Promise<Buffer> || Promise<Buffer<ArrayBufferLike>>
 container.logs({ since: 0, until: 10, stdout: true, stderr: true });
 
-// $ExpectType Promise<Buffer>
-container.logs({ since: '12345.987654321', until: '54321.123456789', stdout: true, stderr: true });
+// $ExpectType Promise<Buffer> || Promise<Buffer<ArrayBufferLike>>
+container.logs({ since: "12345.987654321", until: "54321.123456789", stdout: true, stderr: true });
 
 // $ExpectType Promise<ReadableStream>
 container.logs({ follow: true });
 
-// $ExpectType Promise<Buffer>
+// $ExpectType Promise<Buffer> || Promise<Buffer<ArrayBufferLike>>
 container.logs({ follow: false });
 
 container.stats((err, logs) => {
@@ -176,7 +230,7 @@ container.stats();
 container.stats({});
 
 // $ExpectType Promise<ContainerStats>
-container.stats({ 'one-shot': true });
+container.stats({ "one-shot": true });
 
 // $ExpectType Promise<ReadableStream>
 container.stats({ stream: true });
@@ -184,10 +238,40 @@ container.stats({ stream: true });
 // $ExpectType Promise<ContainerStats>
 container.stats({ stream: false });
 
-const abortController = new AbortController();
 container.wait({
-    condition: 'next-exit',
-    abortSignal: abortController.signal,
+    condition: "next-exit",
+    abortSignal: new AbortController().signal,
+});
+
+// $ExpectType Promise<ReadWriteStream>
+container.attach({
+    detachKeys: "",
+    hijack: false,
+    logs: false,
+    stream: false,
+    stdin: false,
+    stdout: false,
+    stderr: false,
+});
+
+container.attach(
+    {
+        detachKeys: "",
+        hijack: false,
+        logs: false,
+        stream: false,
+        stdin: false,
+        stdout: false,
+        stderr: false,
+    },
+    (err, stream) => {
+        // $ExpectType ReadWriteStream
+        stream;
+    },
+);
+
+container.stop({
+    t: 0,
 });
 
 docker.listContainers((err, containers) => {
@@ -198,29 +282,57 @@ docker.listContainers((err, containers) => {
     });
 });
 
-docker.listContainers().then(containers => {
-    return containers.map(container => docker.getContainer(container.Id));
-});
-
-docker.listImages({ all: true, filters: '{"dangling":["true"]}', digests: true }).then(images => {
-    return images.map(image => docker.getImage(image.Id));
-});
-
-docker.buildImage('archive.tar', { t: 'imageName' }, (err, response) => {
+docker.listNetworks({ abortSignal: new AbortController().signal }, (err, response) => {
     // NOOP
 });
 
-docker.buildImage({ context: '.', src: ['Dockerfile', 'test.sh'] }, { t: 'imageName' }, (err, response) => {
+docker.listContainers({ abortSignal: new AbortController().signal }).then(containers => {
+    return containers.map(container => docker.getContainer(container.Id));
+});
+
+docker.listImages({
+    all: true,
+    filters: "{\"dangling\":[\"true\"]}",
+    digests: true,
+    abortSignal: new AbortController().signal,
+}).then(images => {
+    return images.map(image => docker.getImage(image.Id));
+});
+
+docker.listImages({
+    all: true,
+    filters: { "dangling": ["true"] },
+    digests: true,
+    abortSignal: new AbortController().signal,
+}).then(images => {
+    return images.map(image => docker.getImage(image.Id));
+});
+
+docker.listImages({
+    all: true,
+    filters: { "dangling": ["true"] },
+    manifests: true,
+    digests: true,
+    abortSignal: new AbortController().signal,
+}).then(images => {
+    return images.map(image => docker.getImage(image.Id));
+});
+
+docker.buildImage("archive.tar", { t: "imageName" }, (err, response) => {
+    // NOOP
+});
+
+docker.buildImage({ context: ".", src: ["Dockerfile", "test.sh"] }, { t: "imageName" }, (err, response) => {
     // NOOP
 });
 
 docker.buildImage(
-    'archive.tar',
+    "archive.tar",
     {
         registryconfig: {
-            'https://index.docker.io/v1/': {
-                username: 'user',
-                password: 'pass',
+            "https://index.docker.io/v1/": {
+                username: "user",
+                password: "pass",
             },
         },
     },
@@ -228,6 +340,10 @@ docker.buildImage(
         /* NOOP*/
     },
 );
+
+docker.buildImage(".", { nocache: true, version: "2", pull: true }, (err, response) => {
+    // NOOP
+});
 
 docker.createContainer({ Tty: true }, (err, container) => {
     container.start((err, data) => {
@@ -244,7 +360,7 @@ docker.createContainer({ HostConfig: { Init: true } }, (err, container) => {
 docker.createContainer(
     {
         HostConfig: {
-            DnsSearch: ['example.com'],
+            DnsSearch: ["example.com"],
             CpuCount: 2,
             CpuPercent: 50,
             CpuRealtimePeriod: 0,
@@ -259,7 +375,7 @@ docker.createContainer(
 );
 
 docker.createContainer(
-    { Healthcheck: { Test: ['CMD', 'true'], Interval: 10, Timeout: 10, Retries: 3, StartPeriod: 10 } },
+    { Healthcheck: { Test: ["CMD", "true"], Interval: 10, Timeout: 10, Retries: 3, StartPeriod: 10 } },
     (err, container) => {
         container.start((err, data) => {
             // NOOP
@@ -267,7 +383,74 @@ docker.createContainer(
     },
 );
 
-docker.createNetwork({ Name: 'networkName' }, (err, network) => {
+docker.createNetwork({ Name: "networkName" }, (err, network) => {
+    network.remove((err, data) => {
+        // NOOP
+    });
+});
+
+// Should support all network create options
+// See: https://github.com/moby/moby/blob/7ea613d780be40e08665f0fc15bf53f5993455a9/api/types/network/network.go#L23-L46
+docker.createNetwork({
+    Name: "networkName",
+    CheckDuplicate: true,
+    abortSignal: new AbortController().signal,
+    Driver: "bridge",
+    Scope: "local",
+    EnableIPv4: true,
+    EnableIPv6: true,
+    IPAM: {
+        Driver: "default",
+        Options: {
+            foo: "bar",
+        },
+        Config: [
+            {
+                Subnet: "172.28.0.0/16",
+                IPRange: "172.28.1.0/24",
+                Gateway: "172.28.0.1",
+            },
+        ],
+    },
+    Internal: true,
+    Attachable: true,
+    Ingress: true,
+    // Docker doesn't accept ConfigFrom & ConfigOnly together,
+    // but that's not dockerode's job to enforce.
+    ConfigOnly: true,
+    ConfigFrom: { Network: "configOnlyNetwork" },
+    Options: { someOption: "someValue" },
+    Labels: { someLabel: "someValue" },
+}, (err, network) => {
+    network.remove((err, data) => {
+        // NOOP
+    });
+});
+
+// Should support all network create IPAM config options
+// See: https://github.com/moby/moby/blob/5d7550e9ef36f860738af643d321a132539452af/api/types/network/ipam.go#L11-L24
+docker.createNetwork({
+    Name: "ipamNetwork",
+    IPAM: {
+        Driver: "default",
+        Config: [
+            {
+                Subnet: "172.28.0.0/16",
+                IPRange: "172.28.5.0/24",
+                Gateway: "172.28.5.254",
+                AuxiliaryAddresses: {
+                    host1: "172.28.1.5",
+                    host2: "172.28.1.6",
+                    host3: "172.28.1.7",
+                },
+            },
+        ],
+        Options: {
+            foo: "bar",
+            bar: "0",
+        },
+    },
+}, (err, network) => {
     network.remove((err, data) => {
         // NOOP
     });
@@ -275,22 +458,42 @@ docker.createNetwork({ Name: 'networkName' }, (err, network) => {
 
 docker.createVolume();
 
-docker.createVolume({ Name: 'volumeName' });
+// The promise resolves with the same Volume instance the callback receives.
+// $ExpectType Promise<Volume>
+docker.createVolume({ Name: "volumeName" });
 
-docker.createVolume({
-    Name: 'volumeName',
-    Driver: 'local',
-    DriverOpts: { device: '/dev/sda1' },
-    Labels: { 'com.example.some-label': 'some-value' },
+docker.createVolume({ Name: "volumeName" }).then(volume => {
+    volume.remove();
 });
 
-docker.createVolume({ Name: 'volumeName' }, (err, volume) => {
+docker.createVolume({ Name: "volumeName", abortSignal: new AbortController().signal });
+
+docker.createVolume({
+    Name: "volumeName",
+    Driver: "local",
+    DriverOpts: { device: "/dev/sda1" },
+    Labels: { "com.example.some-label": "some-value" },
+});
+
+docker.createVolume({ Name: "volumeName" }, (err, volume) => {
     volume.remove((err, data) => {
+        // NOOP
+    });
+
+    volume.remove({ abortSignal: new AbortController().signal }, (err, data) => {
+        // NOOP
+    });
+
+    volume.remove({ force: true }, (err, data) => {
+        // NOOP
+    });
+
+    volume.remove({ force: true, abortSignal: new AbortController().signal }, (err, data) => {
         // NOOP
     });
 });
 
-docker.createNetwork({ Name: 'networkName' }).then(network => {
+docker.createNetwork({ Name: "networkName" }).then(network => {
     network.remove().then(response => {
         // NOOP
     });
@@ -304,6 +507,10 @@ docker.pruneImages((err, response) => {
     // NOOP
 });
 
+docker.pruneBuilder((err, response) => {
+    // NOOP
+});
+
 docker.pruneNetworks((err, response) => {
     // NOOP
 });
@@ -312,19 +519,27 @@ docker.pruneVolumes((err, response) => {
     // NOOP
 });
 
+docker.pruneVolumes({
+    abortSignal: new AbortController().signal,
+}, (err, response) => {
+    // NOOP
+});
+
+docker.listVolumes({});
+
 docker.createService(
     {
-        Name: 'network-name',
+        Name: "network-name",
         Networks: [
             {
-                Target: 'network-target',
+                Target: "network-target",
                 Aliases: [],
             },
         ],
         TaskTemplate: {
             ContainerSpec: {
                 Image: `my-image`,
-                Env: ['my-env'],
+                Env: ["my-env"],
             },
         },
         Mode: {
@@ -335,7 +550,7 @@ docker.createService(
         EndpointSpec: {
             Ports: [
                 {
-                    Protocol: 'tcp',
+                    Protocol: "tcp",
                     TargetPort: 80,
                 },
             ],
@@ -346,16 +561,27 @@ docker.createService(
     },
 );
 
-docker.listServices({ filters: JSON.stringify({ name: ['network-name'] }), status: true }).then(services => {
+docker.listServices({ filters: JSON.stringify({ name: ["network-name"] }), status: true }).then(services => {
     return services.map(service => docker.getService(service.ID));
 });
 
-docker.listServices({ filters: { name: ['network-name'] } }).then(services => {
+docker.listServices({ filters: { name: ["network-name"] } }).then(services => {
     return services.map(service => docker.getService(service.ID));
 });
 
-const image = docker.getImage('imageName');
-image.remove({ force: true, noprune: false }, (err, response) => {
+(async () => {
+    // $ExpectType ReadableStream
+    const pullStream = await docker.pull("hello-world", { authconfig: { username: "username", password: "password" } });
+
+    // $ExpectType Image
+    const pushImage = docker.getImage("hello-world");
+
+    // $ExpectType ReadableStream
+    const pushStream = await pushImage.push({ authconfig: { username: "username", password: "password" } });
+});
+
+const image = docker.getImage("imageName");
+image.remove({ force: true, noprune: false, abortSignal: new AbortController().signal }, (err, response) => {
     // NOOP;
 });
 
@@ -363,11 +589,13 @@ image.distribution({}, (err, response) => {
     // NOOP;
 });
 
+image.tag({ abortSignal: new AbortController().signal, repo: "hello/world", tag: "latest" });
+
 image.distribution((err, response) => {
     // NOOP;
 });
 
-const plugin = docker.getPlugin('pluginName', 'remoteName');
+const plugin = docker.getPlugin("pluginName", "remoteName");
 plugin.configure((err, response) => {
     // NOOP;
 });
@@ -404,7 +632,7 @@ plugin.upgrade({}, (err, response) => {
     // NOOP
 });
 
-const secret = docker.getSecret('secretName');
+const secret = docker.getSecret("secretName");
 secret.inspect((err, response) => {
     // NOOP
 });
@@ -417,7 +645,7 @@ secret.update((err, response) => {
     // NOOP
 });
 
-const node = docker.getNode('nodeName');
+const node = docker.getNode("nodeName");
 node.inspect((err, reponse) => {
     // NOOP
 });
@@ -449,3 +677,13 @@ node.remove((err, response) => {
 node.remove({}).then(response => {
     // NOOP;
 });
+
+docker.run(
+    "ubuntu",
+    ["bash", "-c", "uname -a"],
+    process.stdout,
+    { name: "foo", platform: "linux/amd64", Healthcheck: { Test: ["CMD-SHELL", "echo 'pass' && exit 0"] } },
+    (err, data) => {
+        console.log(data.StatusCode);
+    },
+);

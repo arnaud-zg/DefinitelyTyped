@@ -1,9 +1,3 @@
-// Type definitions for node-media-server 2.3
-// Project: https://github.com/illuspas/Node-Media-Server
-// Definitions by: Thomas Seberechts <https://github.com/Tseberechts>
-//                 Chris Frewin <https://github.com/princefishthrower>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
 interface Config {
     logType?: number;
     rtmp?: RtmpConfig;
@@ -40,6 +34,9 @@ interface AuthConfig {
     play?: boolean;
     publish?: boolean;
     secret?: string;
+    api?: boolean;
+    api_user?: string;
+    api_pass?: string;
 }
 
 interface TransConfig {
@@ -79,6 +76,7 @@ interface RelayTaskConfig {
     mode: string;
     edge: string;
     rtsp_transport?: string;
+    appendName?: boolean;
 }
 
 interface FissionTaskConfig {
@@ -98,7 +96,14 @@ declare class NodeMediaServer {
     run(): void;
     on(eventName: string, listener: (id: string, StreamPath: string, args: object) => void): void;
     stop(): void;
-    getSession(id: string): Map<string, unknown>;
+    /**
+     * Looks up a single session by its id.
+     *
+     * The returned value is one of the internal session objects (`NodeRtmpSession`,
+     * `NodeFlvSession`, `NodeRelaySession`, ...), which this package does not
+     * declare, or `undefined` when no session is registered for `id`.
+     */
+    getSession(id: string): unknown;
 }
 
 export = NodeMediaServer;

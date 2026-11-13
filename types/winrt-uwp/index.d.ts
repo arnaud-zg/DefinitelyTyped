@@ -1,9 +1,3 @@
-// Type definitions for Universal Windows Platform
-// Project: http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx
-// Definitions by: Kagami Sascha Rosylight <https://github.com/saschanaz>, Taylor Starfield <https://github.com/taylor224>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 2.2
-
 // Generator: uwp-type-generator <https://github.com/saschanaz/uwp-type-generator>
 
 declare namespace Windows {
@@ -26996,12 +26990,12 @@ declare namespace Windows {
                  * Returns the raw buffer of the message in binary protocol description unit (PDU) format as a byte array.
                  * @return A byte array representing message data. If there is no message data, the returned array is empty.
                  */
-                getData(): Array<number>;
+                getData(): number[];
                 /**
                  * Specifies the raw binary payload of the SMS message. It should be formatted according to the protocol description unit (PDU) standard.
                  * @param value A byte array representing message data, formatted according to the protocol description unit (PDU) standard.
                  */
-                setData(value: Array<number>): void;
+                setData(value: number[]): void;
                 /** Retrieves the detected protocol description unit (PDU) format of this message. */
                 format: Windows.Devices.Sms.SmsDataFormat;
             }
@@ -34252,7 +34246,7 @@ declare namespace Windows {
                     /** Gets the HdmiDisplayMode object, which provides info about the current display mode of a connected device, like a TV. */
                     getCurrentDisplayMode(): Windows.Graphics.Display.Core.HdmiDisplayMode;
                     /** Gets the display modes that are supported by your current display. This is determined in combination by your device type, specifications, and settings. */
-                    getSupportedDisplayModes(): Array<Windows.Graphics.Display.Core.HdmiDisplayMode>;
+                    getSupportedDisplayModes(): Windows.Graphics.Display.Core.HdmiDisplayMode[];
                     /** Sends request to set only the display mode for the display. */
                     requestSetCurrentDisplayModeAsync(
                         hdmiDisplayMode: Windows.Graphics.Display.Core.HdmiDisplayMode,
@@ -47540,7 +47534,7 @@ declare namespace Windows {
                      * @param uri The URI from which the download engine gets content.
                      * @param sessionIDBytes The session identifier used to identify the session. The session identifier must be 16 bytes.
                      */
-                    open(uri: Windows.Foundation.Uri, sessionIDBytes: Array<number>): void;
+                    open(uri: Windows.Foundation.Uri, sessionIDBytes: number[]): void;
                     /** Notifies the download engine to pause downloading. */
                     pause(): void;
                     /** Notifies the download engine to resume a paused download. */
@@ -47577,7 +47571,7 @@ declare namespace Windows {
                      * Parses samples from a PlayReady-ND media stream.
                      * @param dataBytes The data to be parsed.
                      */
-                    parseData(dataBytes: Array<number>): void;
+                    parseData(dataBytes: number[]): void;
                     /** Gets the stream parser notifier that will provide notification of stream parser events from the transmitter. */
                     notifier: Windows.Media.Protection.PlayReady.NDStreamParserNotifier;
                 }
@@ -47590,8 +47584,8 @@ declare namespace Windows {
                      * @return The result of the license fetch request.
                      */
                     sendLicenseFetchRequestAsync(
-                        sessionIDBytes: Array<number>,
-                        challengeDataBytes: Array<number>,
+                        sessionIDBytes: number[],
+                        challengeDataBytes: number[],
                     ): Windows.Foundation.IPromiseWithIAsyncOperation<Windows.Media.Protection.PlayReady.INDSendResult>;
                     /**
                      * Sends the specified data in an asynchronous proximity detection response message.
@@ -47603,9 +47597,9 @@ declare namespace Windows {
                      */
                     sendProximityDetectionResponseAsync(
                         pdType: Windows.Media.Protection.PlayReady.NDProximityDetectionType,
-                        transmitterChannelBytes: Array<number>,
-                        sessionIDBytes: Array<number>,
-                        responseDataBytes: Array<number>,
+                        transmitterChannelBytes: number[],
+                        sessionIDBytes: number[],
+                        responseDataBytes: number[],
                     ): Windows.Foundation.IPromiseWithIAsyncOperation<Windows.Media.Protection.PlayReady.INDSendResult>;
                     /**
                      * Sends the specified data in an asynchronous proximity detection start message.
@@ -47617,9 +47611,9 @@ declare namespace Windows {
                      */
                     sendProximityDetectionStartAsync(
                         pdType: Windows.Media.Protection.PlayReady.NDProximityDetectionType,
-                        transmitterChannelBytes: Array<number>,
-                        sessionIDBytes: Array<number>,
-                        challengeDataBytes: Array<number>,
+                        transmitterChannelBytes: number[],
+                        sessionIDBytes: number[],
+                        challengeDataBytes: number[],
                     ): Windows.Foundation.IPromiseWithIAsyncOperation<Windows.Media.Protection.PlayReady.INDSendResult>;
                     /**
                      * Sends the specified data in an asynchronous registration request message.
@@ -47628,8 +47622,8 @@ declare namespace Windows {
                      * @return The result of the license fetch request.
                      */
                     sendRegistrationRequestAsync(
-                        sessionIDBytes: Array<number>,
-                        challengeDataBytes: Array<number>,
+                        sessionIDBytes: number[],
+                        challengeDataBytes: number[],
                     ): Windows.Foundation.IPromiseWithIAsyncOperation<Windows.Media.Protection.PlayReady.INDSendResult>;
                 }
                 /** Provides the result, in the form of a response message, from the PlayReady-ND messenger. */
@@ -47659,7 +47653,7 @@ declare namespace Windows {
                      * @param responseBytes The response result to be processed.
                      * @return If the methods succeeds, it returns S_OK. If it fails, it returns an error code.
                      */
-                    processManualEnablingResponse(responseBytes: Array<number>): WinRTError;
+                    processManualEnablingResponse(responseBytes: number[]): WinRTError;
                     /** Gets or sets the custom data of the request challenge. */
                     challengeCustomData: string;
                     /** Gets the custom data that was returned in the response from the service. */
@@ -57977,22 +57971,22 @@ declare namespace Windows {
                 /**
                  * Retrieves a Windows Store collections ID key that can be used to query for product entitlements or to consume product entitlements that are owned by the current user.
                  * @param serviceTicket An Azure Active Directory access token that identifies the publisher of the current app. For more information about generating this token, see Manage product entitlements from a service.
-                 * @param publisherUserId An anonymous ID that identifies the current user in the context of services that are managed by the publisher of the current app. If the publisher maintains anonymous user IDs for use in their services, they can use this parameter to correlate these user IDs with the calls they make to Windows Store services. This parameter is optional.
+                 * @param publisherUserId An anonymous ID that identifies the current user in the context of services that are managed by the publisher of the current app. If the publisher maintains anonymous user IDs for use in their services, they can use this parameter to correlate these user IDs with the calls they make to Windows Store services. If there's no need to link a user ID with the Microsoft Store ID key, provide any string value instead.
                  * @return An asynchronous operation that, on successful completion, returns the collections ID key for the current user. This key is valid for 90 days.
                  */
                 getCustomerCollectionsIdAsync(
                     serviceTicket: string,
-                    publisherUserId?: string,
+                    publisherUserId: string,
                 ): Windows.Foundation.IPromiseWithIAsyncOperation<string>;
                 /**
                  * Retrieves a Windows Store purchase ID key that can be used to grant entitlements for free products on behalf of the current user.
                  * @param serviceTicket An Azure Active Directory access token that identifies the publisher of the current app. For more information about generating this token, see Manage product entitlements from a service.
-                 * @param publisherUserId An anonymous ID that identifies the current user in the context of services that are managed by the publisher of the current app. If the publisher maintains anonymous user IDs for use in their services, they can use this parameter to correlate these user IDs with the calls they make to Windows Store services. This parameter is optional.
+                 * @param publisherUserId An anonymous ID that identifies the current user in the context of services that are managed by the publisher of the current app. If the publisher maintains anonymous user IDs for use in their services, they can use this parameter to correlate these user IDs with the calls they make to Windows Store services.  If there's no need to link a user ID with the Microsoft Store ID key, provide any string value instead.
                  * @return An asynchronous operation that, on successful completion, returns the purchase ID key for the current user. This key is valid for 90 days.
                  */
                 getCustomerPurchaseIdAsync(
                     serviceTicket: string,
-                    publisherUserId?: string,
+                    publisherUserId: string,
                 ): Windows.Foundation.IPromiseWithIAsyncOperation<string>;
                 /**
                  * Gets a StoreContext object that can be used to access and manage Windows Store-related data for the current user in the context of the current app.
@@ -70974,6 +70968,10 @@ declare namespace Windows {
                 visibleBounds: Windows.Foundation.Rect;
                 addEventListener(type: string, listener: Windows.Foundation.EventHandler<any>): void;
                 removeEventListener(type: string, listener: Windows.Foundation.EventHandler<any>): void;
+                /**
+                 * Tries to hide the current app view. This method is a programmatic equivalent to a user closing the app.
+                 */
+                tryConsolidateAsync(): Windows.Foundation.IPromiseWithIAsyncOperation<boolean>;
             }
             /** The bounds used by the framework to lay out the contents of a window (app view). */
             enum ApplicationViewBoundsMode {

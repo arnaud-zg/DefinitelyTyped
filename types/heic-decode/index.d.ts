@@ -1,20 +1,22 @@
-// Type definitions for heic-decode 1.1
-// Project: https://github.com/catdad-experiments/heic-decode
-// Definitions by: hieyou1 <https://github.com/hieyou1>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
 interface HasBuffer {
-    buffer: ArrayBufferLike;
+    buffer: Uint8Array;
 }
 
 interface DecodedImage {
     width: number;
     height: number;
-    data: ArrayBuffer;
+    data: Uint8ClampedArray;
 }
 
 interface Decodable {
+    width: number;
+    height: number;
     decode(): Promise<DecodedImage>;
+}
+
+interface DecodableImages extends Array<Decodable> {
+    /** Frees the memory of the decoded images. Call it when done with them. */
+    dispose(): void;
 }
 
 /**
@@ -26,7 +28,7 @@ declare namespace decode {
     /**
      * @async
      */
-    function all(bufobj: HasBuffer): Promise<Decodable[]>;
+    function all(bufobj: HasBuffer): Promise<DecodableImages>;
 }
 
 export = decode;

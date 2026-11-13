@@ -1,8 +1,10 @@
-import { Matrix4 } from './Matrix4';
-import { Quaternion } from './Quaternion';
-import { Vector3 } from './Vector3';
+import { Matrix4 } from "./Matrix4.js";
+import { Quaternion } from "./Quaternion.js";
+import { Vector3 } from "./Vector3.js";
 
-export type EulerOrder = 'XYZ' | 'YXZ' | 'ZXY' | 'ZYX' | 'YZX' | 'XZY';
+export type EulerOrder = "XYZ" | "YXZ" | "ZXY" | "ZYX" | "YZX" | "XZY";
+
+export type EulerTuple = [x: number, y: number, z: number, order?: EulerOrder];
 
 export class Euler {
     constructor(x?: number, y?: number, z?: number, order?: EulerOrder);
@@ -23,7 +25,7 @@ export class Euler {
     z: number;
 
     /**
-     * @default THREE.Euler.DefaultOrder
+     * @default THREE.Euler.DEFAULT_ORDER
      */
     order: EulerOrder;
     readonly isEuler: true;
@@ -38,12 +40,11 @@ export class Euler {
     setFromVector3(v: Vector3, order?: EulerOrder): Euler;
     reorder(newOrder: EulerOrder): Euler;
     equals(euler: Euler): boolean;
-    fromArray(xyzo: [number, number, number, EulerOrder?, ...any[]]): Euler;
-    toArray(array?: Array<number | string | undefined>, offset?: number): Array<number | string | undefined>;
+    fromArray(array: EulerTuple): Euler;
+    toArray(array?: Partial<EulerTuple>, offset?: number): EulerTuple;
     _onChange(callback: () => void): this;
 
-    static RotationOrders: EulerOrder[];
-    static DefaultOrder: 'XYZ';
+    static DEFAULT_ORDER: "XYZ";
 
     [Symbol.iterator](): Generator<string | number, void>;
 }

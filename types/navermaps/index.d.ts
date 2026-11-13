@@ -1,14 +1,4 @@
-// Type definitions for non-npm package NAVER Maps JavaScript API 3.6
-// Project: https://navermaps.github.io/maps.js.ncp/
-// Definitions by: Ckboyjiy <https://github.com/ckboyjiy>
-//                 DongKyuuuu <https://github.com/DongKyuuuu>
-//                 Minchul Joh <https://github.com/fclemonschool>
-//                 Suhwan Cha <https://github.com/suhwancha>
-//                 Yellowinq <https://github.com/hig4342>
-//                 kkokko Jeong <https://github.com/kkokkojeong>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
-// NAVER Maps JavaScript API Version: 3.6
+// NAVER Maps JavaScript API Version: 3.10
 
 /// <reference types="geojson" />
 
@@ -16,7 +6,7 @@ declare namespace naver.maps {
     /***** static members *****/
     let VERSION: string;
     let jsContentLoaded: boolean;
-    function onJsContentLoaded(...args: any): void;
+    function onJSContentLoaded(...args: any): void;
 
     // --------------------------------------------------------------------------
     //  Types
@@ -48,19 +38,19 @@ declare namespace naver.maps {
     type ArrayOfCoordsLiteral = PointLiteral[] | LatLngLiteral[];
     type padding = Margin;
     type StrokeStyleType =
-        | 'solid'
-        | 'shortdash'
-        | 'shortdot'
-        | 'shortdashdot'
-        | 'shortdashdotdot'
-        | 'dot'
-        | 'dash'
-        | 'longdash'
-        | 'dashdot'
-        | 'longdashdot'
-        | 'longdashdotdot';
-    type StrokeLineCapType = 'butt' | 'round' | 'square';
-    type StrokeLineJoinType = 'miter' | 'round' | 'bevel';
+        | "solid"
+        | "shortdash"
+        | "shortdot"
+        | "shortdashdot"
+        | "shortdashdotdot"
+        | "dot"
+        | "dash"
+        | "longdash"
+        | "dashdot"
+        | "longdashdot"
+        | "longdashdotdot";
+    type StrokeLineCapType = "butt" | "round" | "square";
+    type StrokeLineJoinType = "miter" | "round" | "bevel";
 
     // --------------------------------------------------------------------------
     //  Interfaces
@@ -120,60 +110,323 @@ declare namespace naver.maps {
      */
     interface MapOptions {
         // See https://navermaps.github.io/maps.js.ncp/docs/naver.maps.html#.MapOptions
+        /**
+         * The image URL or CSS color value to be used as the background for the map element.
+         *
+         * 지도 요소의 배경으로 사용할 이미지 URL 또는 CSS 색상값입니다.
+         */
         background?: string;
+        /**
+         * Sets the opacity of the map's base tile. The value range is 0 to 1.
+         *
+         * 지도 기본 타일의 불투명도를 설정합니다. 값의 범위는 0~1입니다.
+         */
         baseTileOpacity?: number;
+        /**
+         * The initial coordinate bounds of the map.
+         *
+         * 지도의 초기 좌표 경계입니다.
+         */
         bounds?: Bounds | BoundsLiteral;
+        /**
+         * The initial center coordinates of the map.
+         *
+         * 지도의 초기 중심 좌표입니다.
+         */
         center?: Coord | CoordLiteral; // default naver.maps.LatLng(37.5666103, 126.9783882)
+        /**
+         * The initial zoom level of the map.
+         *
+         * 지도의 초기 줌 레벨입니다.
+         */
         zoom?: number; // default 16
+        /**
+         * Whether to allow users to zoom in by double-clicking on the map.
+         *
+         * 사용자가 지도 위에서 마우스 버튼을 더블 클릭해 지도를 확대하는 기능의 사용 여부입니다.
+         */
         disableDoubleClickZoom?: boolean;
+        /**
+         * Whether to allow users to zoom in by double-tapping with one finger on the map.
+         *
+         * 사용자가 지도 위에서 한 손가락으로 더블 탭해 지도를 확대하는 기능의 사용 여부입니다.
+         */
         disableDoubleTapZoom?: boolean;
+        /**
+         * Whether to use the inertia effect (continued map movement after the user ends the action) when the user drags the map.
+         *
+         * 사용자가 지도를 드래그했을 때 관성 효과(사용자가 동작을 끝낸 후에도 계속되는 지도의 움직임)의 사용 여부입니다.
+         */
         disableKineticPan?: boolean;
+        /**
+         * Whether to allow users to zoom out by double-tapping with two fingers on the map.
+         *
+         * 사용자가 지도 위에서 두 손가락으로 두 번 탭해 지도를 축소하는 기능의 사용 여부입니다.
+         */
         disableTwoFingerTapZoom?: boolean;
+        /**
+         * Whether to allow map panning using mouse or fingers.
+         *
+         * 마우스 또는 손가락을 이용한 지도 이동(패닝) 허용 여부입니다.
+         */
         draggable?: boolean;
+        /**
+         * Whether to allow map panning using keyboard arrow keys.
+         *
+         * 키보드 방향 키를 이용한 지도 이동(패닝) 허용 여부입니다.
+         */
         keyboardShortcuts?: boolean;
+        /**
+         * Whether to display the NAVER logo control.
+         *
+         * NAVER 로고 컨트롤의 표시 여부입니다.
+         */
         logoControl?: boolean;
+        /**
+         * Options for the NAVER logo control.
+         *
+         * NAVER 로고 컨트롤의 옵션입니다.
+         */
         logoControlOptions?: LogoControlOptions;
+        /**
+         * Whether to display the map data copyright control.
+         *
+         * 지도 데이터 저작권 컨트롤의 표시 여부입니다.
+         */
         mapDataControl?: boolean;
+        /**
+         * Options for the map data copyright control.
+         *
+         * 지도 데이터 저작권 컨트롤의 옵션입니다.
+         */
         mapDataControlOptions?: MapDataControlOptions;
+        /**
+         * Whether to display the map type control.
+         *
+         * 지도 유형 컨트롤의 표시 여부입니다.
+         */
         mapTypeControl?: boolean;
+        /**
+         * Options for the map type control.
+         *
+         * 지도 유형 컨트롤의 옵션입니다.
+         */
         mapTypeControlOptions?: MapTypeControlOptions;
-        mapTypeId?: string;
+        /**
+         * The initial map type id.
+         *
+         * 지도의 초기 지도 유형 id입니다.
+         */
+        mapTypeId?: MapTypeIdLiteral;
+        /**
+         * An object containing a collection of map types.
+         *
+         * 지도 유형의 컬렉션을 포함하는 객체입니다.
+         */
         mapTypes?: MapTypeRegistry;
+        /**
+         * The maximum coordinate bounds visible on the map.
+         *
+         * 지도에서 보이는 최대 좌표 경계입니다.
+         */
         maxBounds?: Bounds | BoundsLiteral;
+        /**
+         * The maximum zoom level of the map.
+         *
+         * 지도의 최대 줌 레벨입니다.
+         */
         maxZoom?: number;
+        /**
+         * The minimum zoom level of the map.
+         *
+         * 지도의 최소 줌 레벨입니다.
+         */
         minZoom?: number;
+        /**
+         * The inner padding of the map viewport.
+         *
+         * 지도 뷰포트의 안쪽 여백(패딩)입니다
+         */
         padding?: padding;
+        /**
+         * Whether to allow map zooming in/out using pinch gestures.
+         *
+         * 핀치 제스처를 이용한 지도 확대/축소 허용 여부입니다.
+         */
         pinchZoom?: boolean;
+        /**
+         * The origin point to fix when resizing the map.
+         *
+         * 지도 크기 조정 시 고정할 원점입니다.
+         */
         resizeOrigin?: Position;
+        /**
+         * Whether to display the map scale control.
+         *
+         * 지도 축척 컨트롤의 표시 여부입니다.
+         */
         scaleControl?: boolean;
+        /**
+         * Options for the map scale control.
+         *
+         * 지도 축척 컨트롤의 옵션입니다.
+         */
         scaleControlOptions?: ScaleControlOptions;
+        /**
+         * Whether to allow map zooming in/out using the mouse scroll wheel.
+         *
+         * 마우스 스크롤 휠을 이용한 지도 확대/축소 허용 여부입니다.
+         */
         scrollWheel?: boolean;
+        /**
+         * The initial size of the map.
+         *
+         * 지도의 초기 크기입니다.
+         */
         size?: Size | SizeLiteral;
+        /**
+         * The target for applying zoom effects to shapes, markers, and other overlays.
+         *
+         * 도형, 마커 등 오버레이의 줌 효과 적용 대상입니다.
+         */
         overlayZoomEffect?: null | string;
+        /**
+         * Specifies the number of extra tiles to load beyond the map's size.
+         *
+         * 지도의 크기보다 여유있게 로딩할 타일의 개수를 지정합니다.
+         */
         tileSpare?: number;
+        /**
+         * Whether to use a fade-in effect (tiles gradually appearing) when switching map tiles.
+         *
+         * 지도 타일을 전환할 때 페이드 인 효과(타일이 서서히 나타나는 것)의 사용 여부입니다.
+         */
         tileTransition?: boolean;
+        /**
+         * The duration of the fade-in effect (tiles gradually appearing) when switching map tiles.
+         *
+         * 지도 타일을 전환할 때 페이드 인 효과(타일이 서서히 나타나는 것)의 지속 시간 입니다.
+         */
         tileDuration?: number;
+        /**
+         * Whether to display the zoom control.
+         *
+         * 줌 컨트롤의 표시 여부입니다.
+         */
         zoomControl?: boolean;
+        /**
+         * Options for the zoom control.
+         * 줌 컨트롤의 옵션입니다.
+         */
         zoomControlOptions?: ZoomControlOptions;
+        /**
+         * The reference coordinate to fix when applying zoom effects.
+         *
+         * 줌 효과 시 고정하여 적용할 기준 좌표입니다
+         */
         zoomOrigin?: Coord | CoordLiteral;
+        /**
+         * An option to set the URL for blank tile images.
+         *
+         * 빈 타일 이미지 URL을 설정할 수 있는 옵션입니다.
+         */
         blankTileImage?: null | string;
+        /**
+         * An option to enable the GL submodule vector map. This option is applied only in the GL submodule.
+         *
+         * GL 서브 모듈 벡터맵을 활성화할 수 있는 옵션입니다. GL 서브 모듈을 반드시 로드해야 옵션이 적용됩니다.
+         */
+        gl?: boolean;
+        /**
+         * An option to set the My Style ID issued by the Style Editor. This option is applied only in the GL submodule.
+         *
+         * Style Editor에서 발행한 My Style ID입니다. GL 서브 모듈에서만 적용됩니다.
+         */
+        customStyleId?: string;
     }
 
     /**
      * MarkerOptions
      */
     interface MarkerOptions {
+        /**
+         * The animation to start when the marker is added to the map.
+         *
+         * 마커가 지도에 추가될 때 시작할 애니메이션입니다.
+         */
         animation?: Animation;
+        /**
+         * The Map object to display the marker on.
+         *
+         * 마커를 표시할 Map 객체입니다.
+         */
         map?: Map;
+        /**
+         * The map coordinates representing the marker's position.
+         *
+         * 마커의 위치를 나타내는 지도 좌표입니다.
+         */
         position: Coord | CoordLiteral;
+        /**
+         * The shape of the marker.
+         *
+         * 마커의 모양입니다.
+         */
         icon?: string | ImageIcon | SymbolIcon | HtmlIcon;
+        /**
+         * The interaction area of the marker.
+         *
+         * 마커의 인터랙션 영역입니다.
+         */
         shape?: MarkerShape;
+        /**
+         * The tooltip string that appears when the mouse hovers over the marker.
+         *
+         * 마커에 마우스 오버 시 나타나는 툴팁 문자열입니다.
+         */
         title?: string;
+        /**
+         * The shape of the pointer that appears when the mouse hovers over the marker.
+         *
+         * 마커에 마우스 오버 시 나타나는 포인터 모양입니다.
+         */
         cursor?: string;
+        /**
+         * Whether the marker is clickable.
+         *
+         * 마커의 클릭 허용 여부입니다.
+         */
         clickable?: boolean;
+        /**
+         * Whether the marker is draggable.
+         *
+         * 마커의 드래그 허용 여부입니다.
+         */
         draggable?: boolean;
+        /**
+         * Whether the marker is visible.
+         *
+         * 마커의 노출 허용 여부입니다.
+         */
         visible?: boolean;
+        /**
+         * The stacking order of the marker.
+         *
+         * 마커의 쌓임 순서입니다.
+         */
         zIndex?: number;
+        /**
+         * Whether to enable collision handling with other markers. This option is applied only in the GL submodule.
+         *
+         * 마커와 주기 충돌처리 허용 여부입니다. GL 서브 모듈에서만 사용 가능합니다.
+         */
+        collisionBehavior?: boolean;
+        /**
+         * The collision area of the marker. This option is applied only in the GL submodule.
+         *
+         * 마커의 충돌처리 영역입니다. GL 서브 모듈에서만 사용 가능합니다.
+         */
+        collisionBoxSize?: Size;
     }
 
     /**
@@ -189,18 +442,89 @@ declare namespace naver.maps {
      * InfoWindowOptions
      */
     interface InfoWindowOptions {
+        /**
+         * The position of the info window.
+         *
+         * 정보 창의 위치입니다.
+         */
         position?: Coord | CoordLiteral;
+        /**
+         * The content of the info window.
+         *
+         * 정보 창의 콘텐츠입니다.
+         */
         content: string | HTMLElement;
+        /**
+         * The stacking order of the info window.
+         *
+         * 정보 창의 쌓임 순서입니다.
+         */
         zIndex?: number;
+        /**
+         * The maximum width of the info window.
+         *
+         * 정보 창의 최대 너비입니다.
+         */
         maxWidth?: number;
+        /**
+         * The offset from the tail of the info window to the point where the info window is positioned.
+         *
+         * 정보 창의 꼬리에서 정보 창이 위치한 지점까지의 오프셋입니다.
+         */
         pixelOffset?: Point | PointLiteral;
+        /**
+         * The background color of the info window. Set using CSS color notation.
+         *
+         * 정보 창의 배경색입니다. CSS 색상 표현법으로 설정합니다.
+         */
         backgroundColor?: string;
+        /**
+         * The border color of the info window. Set using CSS color notation.
+         *
+         * 정보 창의 테두리 색상입니다. CSS 색상 표현법으로 설정합니다.
+         */
         borderColor?: string;
+        /**
+         * The border thickness of the info window.
+         *
+         * 정보 창의 테두리 두께입니다.
+         */
         borderWidth?: number;
+        /**
+         * Whether to use automatic movement (panning) to show the entire info window when opening it.
+         *
+         * 정보 창을 열 때 정보 창 전체를 보여줄 수 있는 자동 이동(패닝) 사용 여부입니다.
+         */
         disableAutoPan?: boolean;
+        /**
+         * The padding applied when auto panning, in screen pixels. Defaults to {x: 20, y: 20}.
+         *
+         * 자동 이동(패닝) 사용 시 적용되는 여백(패딩)입니다. 단위는 화면 픽셀이며, 기본값은 {x: 20, y: 20}입니다.
+         */
+        autoPanPadding?: Point;
+        /**
+         * Whether to use the default speech bubble tail.
+         *
+         * 기본 말풍선 꼬리의 사용 여부입니다.
+         */
         disableAnchor?: boolean;
+        /**
+         * Whether to use the skew effect for the default speech bubble tail.
+         *
+         * 기본 말풍선 꼬리의 기울임(skew) 효과 사용 여부입니다.
+         */
         anchorSkew?: boolean;
+        /**
+         * The size of the default speech bubble tail.
+         *
+         * 기본 말풍선 꼬리의 크기입니다.
+         */
         anchorSize?: Size | SizeLiteral;
+        /**
+         * The color of the default speech bubble tail. Set using CSS color notation.
+         *
+         * 기본 말풍선 꼬리의 색상입니다. CSS 색상 표현법으로 설정합니다.
+         */
         anchorColor?: string;
     }
 
@@ -221,6 +545,12 @@ declare namespace naver.maps {
         getTileUrl?: (x: number, y: number, z: number) => string[];
         tileSet?: string | string[];
         overlayType?: string; // https://navermaps.github.io/maps.js.ncp/docs/tutorial-StyleMap-2-Custom-OverlayType.html
+        /**
+         * The duration of the tile fade-in effect, in milliseconds.
+         *
+         * 타일의 fadeIn 효과 지속 시간 (밀리초 단위)
+         */
+        tileDuration?: number;
     }
 
     /**
@@ -237,6 +567,12 @@ declare namespace naver.maps {
         clickable?: boolean;
         map?: Map | null;
         opacity?: number;
+        /**
+         * The crossOrigin attribute of the image. Needed to access the pixel data of the image.
+         *
+         * 이미지에 crossOrigin 속성을 추가할지 여부입니다. 이미지의 픽셀 데이터에 액세스하려면 이 속성이 필요합니다.
+         */
+        crossOrigin?: string;
     }
 
     /**
@@ -272,8 +608,22 @@ declare namespace naver.maps {
         coord: Coord;
         point: Point;
         offset: Point;
+        originalEvent: DOMEvent;
         pointerEvent: DOMEvent;
+        /**
+         * The overlay where the event occurred.
+         *
+         * 이벤트가 발생한 오버레이 객체입니다.
+         */
+        overlay?: OverlayView;
         feature: Feature;
+    }
+
+    /**
+     * KeyboardEvent
+     */
+    interface KeyboardEvent {
+        keyboardEvent: DOMEvent;
     }
 
     /**
@@ -307,7 +657,7 @@ declare namespace naver.maps {
      * ControlOptions
      */
     interface ControlOptions {
-        position: Position;
+        position?: Position;
     }
     type LogoControlOptions = ControlOptions;
     type MapDataControlOptions = ControlOptions;
@@ -318,8 +668,14 @@ declare namespace naver.maps {
         legendDisabled?: boolean;
     }
     interface MapTypeControlOptions extends ControlOptions {
-        mapTypeIds: MapTypeId[] | null;
-        style: MapTypeControlStyle;
+        mapTypeIds?: MapTypeId[] | null;
+        style?: MapTypeControlStyle;
+        /**
+         * The delay before the button style control hides on mouse out. Defaults to 2000ms.
+         *
+         * 버튼 스타일 컨트롤 마우스 아웃 시 숨김 delay 값. 기본값은 2000ms 입니다.
+         */
+        hideTime?: number;
     }
 
     /**
@@ -350,14 +706,20 @@ declare namespace naver.maps {
         name: string;
         maxZoom: number;
         minZoom: number;
-        projection: Projection;
+        projection?: Projection;
         tileSize?: Size | SizeLiteral;
+        /**
+         * The duration of the tile fade-in effect, in milliseconds.
+         *
+         * 타일의 fadeIn 효과 지속 시간 (밀리초 단위)
+         */
+        tileDuration?: number;
         repeatX?: boolean;
         vendor?: string;
         provider?: MapDataProvider[];
         uid?: string;
-        darktheme?: boolean ;
-        getTileData?: (() => any);
+        darktheme?: boolean;
+        getTileData?: (x: number, y: number, z: number) => any;
     }
 
     /**
@@ -412,6 +774,12 @@ declare namespace naver.maps {
         overlayMap: boolean;
         zIndex: number;
     }
+    // Deprecated!!
+    // See https://navermaps.github.io/maps.js.ncp/docs/naver.maps.BicycleLayer.html
+    interface BicycleLayerOptions {
+        overlayMap?: boolean;
+        zIndex?: number;
+    }
     interface TrafficLayerOptions {
         interval?: number;
         overlayMap?: boolean;
@@ -443,7 +811,7 @@ declare namespace naver.maps {
      */
     interface SymbolIcon {
         path: SymbolPath | Point[] | PointLiteral[];
-        style?: SymbolStyle;
+        style?: SymbolStyle | `${SymbolStyle}`;
         radius?: number;
         fillColor?: string;
         fillOpacity?: number;
@@ -457,7 +825,7 @@ declare namespace naver.maps {
     /**
      * MarkerShape
      */
-     interface MarkerShape {
+    interface MarkerShape {
         coords: any[];
         type: string;
     }
@@ -465,13 +833,13 @@ declare namespace naver.maps {
     /**
      * CircleOptions
      */
-     interface CircleOptions {
+    interface CircleOptions {
         map?: Map;
         center: Coord | CoordLiteral;
         radius?: number;
         strokeWeight?: number;
         strokeOpacity?: number;
-        strokeColor?: string ;
+        strokeColor?: string;
         strokeStyle?: StrokeStyleType;
         strokeLineCap?: StrokeLineCapType;
         strokeLineJoin?: StrokeLineJoinType;
@@ -486,18 +854,83 @@ declare namespace naver.maps {
      * PolygonOptions
      */
     interface PolygonOptions {
+        /**
+         * The Map object to display the polygon on.
+         *
+         * 도형이 그려질 지도 객체입니다.
+         */
         map?: Map;
-        paths: ArrayOfCoords[] | KVOArrayOfCoords[] | ArrayOfCoordsLiteral[];
+        /**
+         * The paths of the polygon.
+         *
+         * 도형의 좌표 목록입니다.
+         */
+        paths: ArrayOfCoords[] | KVOArray<KVOArrayOfCoords> | ArrayOfCoordsLiteral[];
+        /**
+         * The weight of the polygon's stroke.
+         *
+         * 도형의 선 두께입니다.
+         */
         strokeWeight?: number;
+        /**
+         * The opacity of the polygon's stroke.
+         *
+         * 도형의 선 불투명도입니다.
+         */
         strokeOpacity?: number;
+        /**
+         * The color of the polygon's stroke. Set using CSS color notation.
+         *
+         * 도형의 선 색상입니다. CSS 색상 표현법으로 설정합니다.
+         */
         strokeColor?: string;
+        /**
+         * The style of the polygon's stroke.
+         *
+         * 도형의 선 스타일입니다.
+         */
         strokeStyle?: StrokeStyleType;
+        /**
+         * The line cap of the polygon's stroke.
+         *
+         * 도형에 사용되는 선의 마감 스타일입니다.
+         */
         strokeLineCap?: StrokeLineCapType;
+        /**
+         * The line join of the polygon's stroke.
+         *
+         * 도형에 사용되는 선들이 맞닿는 부분의 마감 스타일입니다.
+         */
         strokeLineJoin?: StrokeLineJoinType;
+        /**
+         * The color of the polygon's fill. Set using CSS color notation.
+         *
+         * 도형 영역을 채울 색상입니다. CSS 색상 표현법으로 설정합니다.
+         */
         fillColor?: string;
+        /**
+         * The opacity of the polygon's fill.
+         *
+         * 도형 영역을 채울 색상의 불투명도입니다.
+         */
         fillOpacity?: number;
+        /**
+         * Whether the polygon is clickable.
+         *
+         * 도형의 클릭 허용 여부입니다.
+         */
         clickable?: boolean;
+        /**
+         * Whether the polygon is visible.
+         *
+         * 도형의 노출 허용 여부입니다.
+         */
         visible?: boolean;
+        /**
+         * The stacking order of the polygon.
+         *
+         * 도형의 쌓임 순서입니다.
+         */
         zIndex?: number;
     }
 
@@ -505,20 +938,95 @@ declare namespace naver.maps {
      * PolylineOptions
      */
     interface PolylineOptions {
+        /**
+         * The Map object to display the polyline on.
+         *
+         * 도형이 그려질 지도 객체입니다.
+         */
         map?: Map;
+        /**
+         * The path of the polyline.
+         *
+         * 도형의 좌표 목록입니다.
+         */
         path: ArrayOfCoords | KVOArrayOfCoords | ArrayOfCoordsLiteral;
+        /**
+         * The weight of the polyline's stroke.
+         *
+         * 도형의 선 두께입니다.
+         */
         strokeWeight?: number;
+        /**
+         * The opacity of the polyline's stroke.
+         *
+         * 도형의 선 불투명도입니다.
+         */
         strokeOpacity?: number;
+        /**
+         * The color of the polyline's stroke. Set using CSS color notation.
+         *
+         * 도형의 선 색상입니다. CSS 색상 표현법으로 설정합니다.
+         */
         strokeColor?: string;
+        /**
+         * The style of the polyline's stroke.
+         *
+         * 도형의 선 스타일입니다.
+         */
         strokeStyle?: StrokeStyleType;
+        /**
+         * The line cap of the polyline's stroke.
+         *
+         * 도형에 사용되는 선의 마감 스타일입니다.
+         */
         strokeLineCap?: StrokeLineCapType;
+        /**
+         * The line join of the polyline's stroke.
+         *
+         * 도형에 사용되는 선들이 맞닿는 부분의 마감 스타일입니다.
+         */
         strokeLineJoin?: StrokeLineJoinType;
+        /**
+         * Whether the polyline is clickable.
+         *
+         * 도형의 클릭 허용 여부입니다.
+         */
         clickable?: boolean;
+        /**
+         * Whether the polyline is visible.
+         *
+         * 도형의 노출 허용 여부입니다.
+         */
         visible?: boolean;
+        /**
+         * The stacking order of the polyline.
+         *
+         * 도형의 쌓임 순서입니다.
+         */
         zIndex?: number;
+        /**
+         * The pointing icon at the start of the polyline.
+         *
+         * 도형의 시작점에 표시할 아이콘입니다.
+         */
         startIcon?: PointingIcon;
+        /**
+         * The size of the pointing icon at the start of the polyline.
+         *
+         * 도형의 시작점에 표시할 아이콘의 크기(픽셀)입니다.
+         */
         startIconSize?: number;
+        /**
+         * The pointing icon at the end of the polyline.
+         *
+         * 도형의 끝점에 표시할 아이콘입니다.
+         */
         endIcon?: PointingIcon;
+        /**
+         * The size of the pointing icon at the end of the polyline.
+         *
+         * 도형의 끝점에 표시할 아이콘의 크기(픽셀)입니다.
+         */
         endIconSize?: number;
     }
 
@@ -543,7 +1051,7 @@ declare namespace naver.maps {
 
     interface DOMEventListener {
         eventName: string;
-        listener: () => any;
+        listener: (event: any) => any;
         target: HTMLElement;
     }
 
@@ -594,11 +1102,12 @@ declare namespace naver.maps {
      * MapTypeId
      */
     enum MapTypeId {
-        NORMAL = 'normal',
-        TERRAIN = 'terrain',
-        SATELLITE = 'satellite',
-        HYBRID = 'hybrid',
+        NORMAL = "normal",
+        TERRAIN = "terrain",
+        SATELLITE = "satellite",
+        HYBRID = "hybrid",
     }
+    type MapTypeIdLiteral = `${MapTypeId}`;
 
     /**
      * PointingIcon
@@ -644,9 +1153,9 @@ declare namespace naver.maps {
      * SymbolStyle
      */
     enum SymbolStyle {
-        CIRCLE = 'circle',
-        PATH = 'path',
-        CLOSED_PATH = 'closedPath'
+        CIRCLE = "circle",
+        PATH = "path",
+        CLOSED_PATH = "closedPath",
     }
 
     /**
@@ -660,8 +1169,8 @@ declare namespace naver.maps {
         unbind(key: string): void;
         unbindAll(): void;
         setValues(properties: { [key: string]: any }): void;
-        addListener(eventName: string, listener: () => any): MapEventListener;
-        addListenerOnce(eventName: string, listener: () => any): MapEventListener;
+        addListener(eventName: string, listener: (event: any) => any): MapEventListener;
+        addListenerOnce(eventName: string, listener: (event: any) => any): MapEventListener;
         hasListener(eventName: string): boolean;
         removeListener(listeners: MapEventListener | MapEventListener[]): void;
         clearListeners(eventName: string): void;
@@ -700,7 +1209,7 @@ declare namespace naver.maps {
         add(point: Coord | PointLiteral): Point;
         ceil(): Point;
         clone(): Point;
-        div(point: Coord | PointLiteral): void;
+        div(point: Coord | PointLiteral): Point;
         div(x: number, y: number): Point;
         equals(point: Coord | PointLiteral): boolean;
         floor(): Point;
@@ -811,10 +1320,14 @@ declare namespace naver.maps {
         mapSystemProjection: MapSystemProjection;
 
         constructor(mapDiv: string | HTMLElement, mapOptions?: MapOptions);
+        addOverlayPane(name: string, elementOrZIndex: HTMLElement | number): void;
         addPane(name: string, elementOrIndex: HTMLElement | number): void;
         autoResize(): void;
         destroy(): void;
-        fitBounds(bounds: Bounds | BoundsLiteral | ArrayOfCoords | ArrayOfCoordsLiteral, fitBoundsOptions?: FitBoundsOptions): void;
+        fitBounds(
+            bounds: Bounds | BoundsLiteral | ArrayOfCoords | ArrayOfCoordsLiteral,
+            fitBoundsOptions?: FitBoundsOptions,
+        ): void;
         getBounds(): Bounds;
         getCenter(): Coord;
         getCenterPoint(): Coord;
@@ -833,15 +1346,18 @@ declare namespace naver.maps {
         panTo(coord: Coord | CoordLiteral, transitionOptions?: TransitionOptions): void;
         panToBounds(bounds: Bounds | BoundsLiteral, transitionOptions?: TransitionOptions, margin?: Margin): void;
         refresh(noEffect?: boolean): void;
+        removeOverlayPane(name: string): void;
         removePane(name: string): void;
         setCenter(center: Coord | CoordLiteral): void;
         setCenterPoint(point: Point | PointLiteral): void;
+        setCursor(cursor: string): void;
         setMapTypeId(mapTypeId: string): void;
         setOptions(newOptionsOrKey: { [key: string]: any } | string, value?: any): void;
         setSize(size: Size | SizeLiteral): void;
         setZoom(zoom: number, effect?: boolean): void;
         updateBy(coord: Coord | CoordLiteral, zoom: number): void;
         zoomBy(deltaZoom: number, zoomOrigin?: Coord | CoordLiteral, effect?: boolean): void;
+        stop(): void;
     }
 
     /**
@@ -870,6 +1386,7 @@ declare namespace naver.maps {
         setOpacity(opacity: number): void;
         setSize(size: Size): void;
         setTileIndex(tileIndex: TileIndex): void;
+        setDuration(duration: number): void;
         setZIndex(zIndex: number): void;
         show(): void;
     }
@@ -1080,6 +1597,17 @@ declare namespace naver.maps {
      */
     class StreetLayer extends LabelLayer {
         constructor(option?: StreetLayerOptions);
+        // Only available in the Maps GL submodule.
+        setAirWaterView?(visible: boolean): void;
+        // Only available in the Maps GL submodule.
+        isVisibleAirWaterView?(): boolean;
+    }
+
+    /**
+     * BicycleLayer
+     */
+    class BicycleLayer extends LabelLayer {
+        constructor(option?: BicycleLayerOptions);
     }
 
     /**
@@ -1110,7 +1638,7 @@ declare namespace naver.maps {
         overrideStyle(feature: Feature, style: StyleOptions): void;
         removeFeature(feature: Feature): void;
         removeGeoJson(geojson: GeoJSON): void;
-        revertStyle(feature: Feature): void;
+        revertStyle(feature?: Feature): void;
         setMap(map: Map | null): void;
         setStyle(style: StyleOptions | StylingFunction): void;
         toGeoJson(): GeoJSON;
@@ -1198,6 +1726,9 @@ declare namespace naver.maps {
      */
     class Ellipse extends AbstractShapeOverlay {
         constructor(options?: EllipseOptions);
+        // Only available when the drawing submodule is loaded.
+        // See https://navermaps.github.io/maps.js.ncp/docs/tutorial-Drawing.html
+        setEditable?(editable: boolean, controlPointOptions?: drawing.ControlPointOptions): void;
         getAreaSize(): number;
         getBounds(): Bounds;
         getDrawingRect(): Bounds;
@@ -1217,6 +1748,7 @@ declare namespace naver.maps {
         getOpacity(): number;
         getUrl(): string;
         setOpacity(opacity: number): void;
+        setUrl(url: string): void;
     }
 
     /**
@@ -1225,11 +1757,12 @@ declare namespace naver.maps {
     class InfoWindow extends OverlayView {
         constructor(options: InfoWindowOptions);
         close(): void;
-        getContent(): HTMLElement;
+        getContent(): string | HTMLElement;
+        getContentElement(): HTMLElement;
         getOptions(key?: string): any; // if key is undefined, return InfoWindowOptions
         getPosition(): Coord;
         getZIndex(): number;
-        open(map: Map, anchor?: Coord | CoordLiteral | Marker): void;
+        open(map: Map | Panorama, anchor?: Coord | CoordLiteral | Marker): void;
         setContent(content: string | HTMLElement): void;
         setOptions(options: InfoWindowOptions): void;
         setPosition(position: Coord | CoordLiteral): void;
@@ -1241,11 +1774,12 @@ declare namespace naver.maps {
      */
     class Marker extends OverlayView {
         constructor(options: MarkerOptions);
-        getAnimation(): Animation;
+        getAnimation(): Animation | null;
         getClickable(): boolean;
         getCursor(): string;
         getDraggable(): boolean;
         getDrawingRect(): Bounds;
+        getElement(): HTMLElement;
         getIcon(): ImageIcon | SymbolIcon | HtmlIcon;
         getOptions(key?: string): any; // if key is undefined, return MarkerOptions
         getPosition(): Coord;
@@ -1253,12 +1787,14 @@ declare namespace naver.maps {
         getTitle(): string;
         getVisible(): boolean;
         getZIndex(): number;
-        setAnimation(animation: Animation): void;
+        setAnimation(animation: Animation | null): void;
+        setMap(map: Map | Panorama | null): void;
         setClickable(clickable: boolean): void;
         setCursor(cursor: string): void;
         setDraggable(draggable: boolean): void;
         setIcon(icon: string | ImageIcon | SymbolIcon | HtmlIcon): void;
         setOptions(options: MarkerOptions): void;
+        setOptions(key: string, value: unknown): void;
         setPosition(position: Coord | CoordLiteral): void;
         setShape(shape: MarkerShape): void;
         setTitle(title: string): void;
@@ -1271,15 +1807,20 @@ declare namespace naver.maps {
      */
     class Polygon extends AbstractShapeOverlay {
         constructor(options?: PolygonOptions);
+        // Only available when the drawing submodule is loaded.
+        // See https://navermaps.github.io/maps.js.ncp/docs/tutorial-Drawing.html
+        setEditable?(editable: boolean, controlPointOptions?: drawing.ControlPointOptions): void;
         getAreaSize(): number;
         getBounds(): Bounds;
         getDrawingRect(): Bounds;
         getPath(): ArrayOfCoords | KVOArrayOfCoords;
-        getPaths(): ArrayOfCoords[] | KVOArrayOfCoords[];
-        setOptions(key: string, value: any): void;
+        getPaths(): ArrayOfCoords[] | KVOArray<KVOArrayOfCoords>;
+        getOptions<K extends keyof PolygonOptions>(key: K): PolygonOptions[K];
+        getOptions(): PolygonOptions;
+        setOptions<K extends keyof PolygonOptions>(key: K, value: PolygonOptions[K]): void;
         setOptions(options: PolygonOptions): void;
         setPath(path: ArrayOfCoords | KVOArrayOfCoords | ArrayOfCoordsLiteral): void;
-        setPaths(paths: ArrayOfCoords[] | KVOArrayOfCoords[] | ArrayOfCoordsLiteral[]): void;
+        setPaths(paths: ArrayOfCoords[] | KVOArray<KVOArrayOfCoords> | ArrayOfCoordsLiteral[]): void;
         setStyles(key: string, value: any): void;
         setStyles(options: PolygonOptions): void;
     }
@@ -1289,6 +1830,9 @@ declare namespace naver.maps {
      */
     class Polyline extends AbstractShapeOverlay {
         constructor(options?: PolylineOptions);
+        // Only available when the drawing submodule is loaded.
+        // See https://navermaps.github.io/maps.js.ncp/docs/tutorial-Drawing.html
+        setEditable?(editable: boolean, controlPointOptions?: drawing.ControlPointOptions): void;
         getBounds(): Bounds;
         getDistance(): number;
         getDrawingRect(): Bounds;
@@ -1305,6 +1849,9 @@ declare namespace naver.maps {
      */
     class Rectangle extends AbstractShapeOverlay {
         constructor(options?: RectangleOptions);
+        // Only available when the drawing submodule is loaded.
+        // See https://navermaps.github.io/maps.js.ncp/docs/tutorial-Drawing.html
+        setEditable?(editable: boolean, controlPointOptions?: drawing.ControlPointOptions): void;
         getAreaSize(): number;
         getBounds(): Bounds;
         getDrawingRect(): Bounds;
@@ -1319,7 +1866,11 @@ declare namespace naver.maps {
     //  static objects
     // --------------------------------------------------------------------------
     namespace Event {
-        function addDOMListener(element: HTMLElement, eventName: string, listener: (event: any) => any): void;
+        function addDOMListener(
+            element: HTMLElement,
+            eventName: string,
+            listener: (event: any) => any,
+        ): DOMEventListener;
         function addListener(target: any, eventName: string, listener: (event: any) => any): MapEventListener;
         function clearInstanceListeners(target: any): void;
         function clearListeners(target: any, fromEventName: string): void;
@@ -1468,6 +2019,15 @@ declare namespace naver.maps {
         fromOffsetToCoord(offset: Point): LatLng;
     }
 
+    /**
+     * The status passed to the pano_status event.
+     * See https://navermaps.github.io/maps.js.ncp/docs/tutorial-3-panorama-event.example.html
+     */
+    enum PanoramaStatus {
+        OK = "OK",
+        ERROR = "ERROR",
+    }
+
     class Panorama extends KVO {
         constructor(panoramaDiv: string | HTMLElement, panoramaOptions: PanoramaOptions);
         getElement(): HTMLElement;
@@ -1531,26 +2091,26 @@ declare namespace naver.maps {
             MARKER,
         }
 
-        enum DrawingEvent {
-            ADD = 'drawing_added',
-            REMOVE = 'drawing_removed',
-            SELECT = 'drawing_selected',
-            CANCLE = 'drawing_cancled',
-            START = 'drawing_start'
+        enum DrawingEvents {
+            ADD = "drawing_added",
+            REMOVE = "drawing_removed",
+            SELECT = "drawing_selected",
+            CANCLE = "drawing_cancled",
+            START = "drawing_start",
         }
 
         interface DrawingOptions {
             map?: Map;
-            drawingControl?: DrawingMode[];
+            drawingControl?: DrawingMode[] | null;
             drawingControlOptions?: DrawingControlOptions;
             drawingMode?: DrawingMode;
             controlPointOptions?: ControlPointOptions;
-            rectangleOptions?: RectangleOptions;
-            ellipseOptions?: EllipseOptions;
-            polylineOptions?: PolylineOptions;
-            arrowlineOptions?: PolylineOptions;
-            polygonOptions?: PolygonOptions;
-            markerOptions?: MarkerOptions;
+            rectangleOptions?: Partial<RectangleOptions>;
+            ellipseOptions?: Partial<EllipseOptions>;
+            polylineOptions?: Partial<PolylineOptions>;
+            arrowlineOptions?: Partial<PolylineOptions>;
+            polygonOptions?: Partial<PolygonOptions>;
+            markerOptions?: Partial<MarkerOptions>;
         }
 
         interface DrawingControlOptions extends ControlOptions {
@@ -1568,14 +2128,25 @@ declare namespace naver.maps {
 
         class DrawingManager extends KVO {
             constructor(options?: DrawingOptions);
-            addDrawing(overlay: DrawingOverlay, drawingMode: DrawingMode, id?: string): void;
-            addListener(eventName: DrawingEvent, listener: (overlay: DrawingOverlay) => void): MapEventListener;
+            addDrawing(
+                overlay: DrawingOverlay | Rectangle | Ellipse | Polyline | Polygon | Marker,
+                drawingMode: DrawingMode,
+                id?: string,
+            ): void;
+            addListener(
+                eventName: DrawingEvents | `${string}${"Added" | "Removed" | "Selected"}`,
+                listener: (overlay: DrawingOverlay) => void,
+            ): MapEventListener;
             destroy(): void;
             getDrawing(id: string): DrawingOverlay;
             getDrawings(): { [key: string]: DrawingOverlay };
             getMap(): Map | null;
+            removeDrawing(overlayOrId: DrawingOverlay | string): void;
             setMap(map: Map | null): void;
             toGeoJson(): GeoJSON;
+            getOptions<K extends keyof DrawingOptions>(key: K): DrawingOptions[K];
+            setOptions<K extends keyof DrawingOptions>(key: K, value: DrawingOptions[K]): void;
+            setOptions(options: DrawingOptions): void;
         }
     }
 
@@ -1585,22 +2156,22 @@ declare namespace naver.maps {
      */
     namespace visualization {
         enum SpectrumStyle {
-            JET = 'jet',
-            HSV = 'hsv',
-            HOT = 'hot',
-            COOL = 'cool',
-            GREYS = 'greys',
-            YIGnBu = 'YIGnBu',
-            YIOrRd = 'YIOrRd',
-            RdBu = 'RdBu',
-            RAINBOW = 'rainbow',
-            PORTLAND = 'portland',
-            OXYGEN = 'oxygen',
+            JET = "jet",
+            HSV = "hsv",
+            HOT = "hot",
+            COOL = "cool",
+            GREYS = "greys",
+            YIGnBu = "YIGnBu",
+            YIOrRd = "YIOrRd",
+            RdBu = "RdBu",
+            RAINBOW = "rainbow",
+            PORTLAND = "portland",
+            OXYGEN = "oxygen",
         }
 
         interface DotMapOptions {
             map?: Map;
-            data: LatLng[] | PointArrayLiteral[] | WeightedLocation[];
+            data: LatLng[] | PointArrayLiteral[] | WeightedLocation[] | WeightedLocationLiteral[];
             opacity?: number;
             radius?: number;
             strokeWeight?: number;
@@ -1612,7 +2183,7 @@ declare namespace naver.maps {
 
         interface HeatMapOptions {
             map?: Map;
-            data: LatLng[] | PointArrayLiteral[] | WeightedLocation[];
+            data: LatLng[] | PointArrayLiteral[] | WeightedLocation[] | WeightedLocationLiteral[];
             opacity?: number;
             radius?: number;
             colorMap?: SpectrumStyle;
@@ -1645,6 +2216,15 @@ declare namespace naver.maps {
             setOptions(options: HeatMapOptions): void;
         }
 
+        /**
+         * Weighted data in literal form. The visualization submodule converts it to WeightedLocation.
+         * See https://navermaps.github.io/maps.js.ncp/docs/tutorial-Visualization.html
+         */
+        interface WeightedLocationLiteral {
+            weight: number;
+            location: LatLng | PointArrayLiteral | LatLngObjectLiteral;
+        }
+
         class WeightedLocation {
             constructor(lat: number, lng: number, weight?: number);
             clone(): WeightedLocation;
@@ -1662,37 +2242,37 @@ declare namespace naver.maps {
      */
     namespace Service {
         enum CoordinatesType {
-            LATLNG = 'epsg:4326',
-            UTMK = 'nhn:2048',
-            TM128 = 'nhn:128',
-            EPSG3857 = 'epsg:3857',
+            LATLNG = "epsg:4326",
+            UTMK = "nhn:2048",
+            TM128 = "nhn:128",
+            EPSG3857 = "epsg:3857",
         }
 
         enum OrderType {
-            LEGAL_CODE = 'legalcode',
-            ADDR = 'addr',
-            ROAD_ADDR = 'roadaddr',
-            ADM_CODE = 'admcode',
+            LEGAL_CODE = "legalcode",
+            ADDR = "addr",
+            ROAD_ADDR = "roadaddr",
+            ADM_CODE = "admcode",
         }
 
         enum ReverseGeocodeStatusName {
-            OK = 'ok',
-            NO_RESULTS = 'no results',
-            INVALID_REQUEST = 'invalid request',
-            UNKNOWN_ERROR_IO_ERROR = 'unknown error / io error',
+            OK = "ok",
+            NO_RESULTS = "no results",
+            INVALID_REQUEST = "invalid request",
+            UNKNOWN_ERROR_IO_ERROR = "unknown error / io error",
         }
 
         enum ReverseGeocodeStatusCode {
-            CODE_0 = '0',
-            CODE_3 = '3',
-            CODE_100 = '100',
-            CODE_900 = '900',
+            CODE_0 = "0",
+            CODE_3 = "3",
+            CODE_100 = "100",
+            CODE_900 = "900",
         }
 
         enum GeocodeStatus {
-            OK = 'OK',
-            INVALID_REQUEST = 'INVALID_REQUEST',
-            SYSTEM_ERROR = 'SYSTEM_ERROR',
+            OK = "OK",
+            INVALID_REQUEST = "INVALID_REQUEST",
+            SYSTEM_ERROR = "SYSTEM_ERROR",
         }
 
         enum Status {
@@ -1739,14 +2319,14 @@ declare namespace naver.maps {
                 longName: string;
                 shortName: string;
                 types:
-                | 'SIDO'
-                | 'SIGUGUN'
-                | 'RI'
-                | 'ROAD_NAME'
-                | 'BUILDING_NUMBER'
-                | 'BUILDING_NAME'
-                | 'LAND_NUMBER'
-                | 'POSTAL_CODE';
+                    | "SIDO"
+                    | "SIGUGUN"
+                    | "RI"
+                    | "ROAD_NAME"
+                    | "BUILDING_NUMBER"
+                    | "BUILDING_NAME"
+                    | "LAND_NUMBER"
+                    | "POSTAL_CODE";
             }>;
             x: string;
             y: string;
@@ -1798,6 +2378,11 @@ declare namespace naver.maps {
             number1: string;
             number2: string;
             coords: Coords;
+            addition0: Addition;
+            addition1: Addition;
+            addition2: Addition;
+            addition3: Addition;
+            addition4: Addition;
         }
 
         interface Area {
@@ -1816,22 +2401,17 @@ declare namespace naver.maps {
             area2: Area;
             area3: Area;
             area4: Area;
-            land: Land;
-            addition0: Addition;
-            addition1: Addition;
-            addition2: Addition;
-            addition3: Addition;
-            addition4: Addition;
         }
 
         interface ResultItem {
             name: string;
             code: {
                 id: string;
-                type: 'L' | 'A' | 'S' | string;
+                type: "L" | "A" | "S" | string;
                 mappingId: string;
             };
             region: Region;
+            land: Land;
         }
 
         interface ReverseGeocodeResponse {
@@ -1848,8 +2428,14 @@ declare namespace naver.maps {
             };
         }
 
-        function fromAddrToCoord(options: GeocodeServiceOptions, callback?: (status: Status, response: GeocodeResponse) => void): void;
-        function fromCoordToAddr(options: ReverseServiceOptions, callback?: (status: Status, response: ReverseGeocodeResponse) => void): void;
+        function fromAddrToCoord(
+            options: GeocodeServiceOptions,
+            callback?: (status: Status, response: GeocodeResponse) => void,
+        ): void;
+        function fromCoordToAddr(
+            options: ReverseServiceOptions,
+            callback?: (status: Status, response: ReverseGeocodeResponse) => void,
+        ): void;
         function geocode(
             options: GeocodeServiceOptions,
             callback?: (status: Status, response: GeocodeResponse) => void,

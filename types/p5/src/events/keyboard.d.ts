@@ -1,6 +1,6 @@
 // This file was auto-generated. Please do not edit it.
 
-import * as p5 from '../../index';
+import p5 = require("../../index");
 
 declare module '../../index' {
     interface p5InstanceExtensions {
@@ -43,7 +43,7 @@ declare module '../../index' {
          *   more information. Browsers may have different
          *   default behaviors attached to various key events.
          *   To prevent any default behavior for this event,
-         *   add "return false" to the end of the method.
+         *   add "return false" to the end of the function.
          *   @param [event] optional KeyboardEvent callback
          *   argument.
          */
@@ -67,7 +67,7 @@ declare module '../../index' {
          *   Browsers may have different default behaviors
          *   attached to various key events. To prevent any
          *   default behavior for this event, add "return
-         *   false" to the end of the method.
+         *   false" to the end of the function.
          *   @param [event] optional KeyboardEvent callback
          *   argument.
          */

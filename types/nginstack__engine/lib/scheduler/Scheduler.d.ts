@@ -1,6 +1,10 @@
 export = Scheduler;
 declare function Scheduler(): void;
 declare class Scheduler {
+    taskCount: number;
+    runningTaskCount: number;
+    failingTaskCount: number;
+    maxConcurrentTaskCount: number;
     maxSimultaneousTasks: number;
     getTasks(): DataSet;
     saveTasks(tasks: DataSet, userId?: string, password?: string): void;
@@ -8,9 +12,17 @@ declare class Scheduler {
     startTasks(taskIds: string | string[]): void;
     stopTasks(taskIds: string | string[]): void;
     getCurrentTaskId(): string | null;
+    checkIntegrity(): void;
+    repairDatabase(): RepairDatabaseResult;
 }
 declare namespace Scheduler {
-    export { getInstance, DataSet };
+    export { getInstance, DataSet, RepairDatabaseResult };
 }
-type DataSet = import('../dataset/DataSet');
 declare function getInstance(): Scheduler;
+type DataSet = import('../dataset/DataSet');
+interface RepairDatabaseResult {
+    completed: boolean;
+    recoveredCount: number;
+    failedCount: number;
+    errors: string[];
+}
